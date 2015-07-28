@@ -17,13 +17,31 @@ function start() {
     }
   }
 
+  menuInit();
+
   windowInit();
 }
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
 var mainWindow = null;
+var mainMenu = null;
 
+// Initialize loading the menus
+function menuInit() {
+  var platform = process.platform;
+
+  // Only 2 supported platforms at the moment
+  if (platform !== 'win32' && platform !== 'darwin') {
+    platform = 'win32'; // Default to windows menu
+  }
+
+  mainMenu = require('../menus/menu-' + platform)();
+}
+
+/**
+ * Initialize the menus
+ */
 function windowInit() {
   // Quit when all windows are closed.
   app.on('window-all-closed', function() {
@@ -34,8 +52,8 @@ function windowInit() {
     }
   });
 
-  // This method will be called when Electron has done everything
-  // initialization and ready for creating browser windows.
+  // This method will be called when Electron has done all the initialization
+  // and should be ready for creating browser windows.
   app.on('ready', function() {
 
     // Create the main application window.
@@ -68,4 +86,6 @@ function windowInit() {
   });
 }
 
+// Actually start initializing. We do this here to ensure we can completely exit
+// initialization without loading any windows during Squirrel updates.
 start();
