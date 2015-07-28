@@ -17,8 +17,6 @@ function start() {
     }
   }
 
-  menuInit();
-
   windowInit();
 }
 
@@ -53,8 +51,9 @@ function windowInit() {
   });
 
   // This method will be called when Electron has done all the initialization
-  // and should be ready for creating browser windows.
+  // and should be ready for creating menus & browser windows.
   app.on('ready', function() {
+    menuInit();
 
     // Create the main application window.
     mainWindow = new BrowserWindow({
