@@ -1,0 +1,16 @@
+{
+  "name": "PancakeCreator",
+  "version": "0.1.0",
+  "description": "A simple drawing application and GCODE generator for the PancakeBot",
+  "main": "src/main.js",
+  "author": "techninja",
+  "stage": "development",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "fs-plus": "^2.8.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PancakeBot/PancakeCreator.git"
+  }
+}
