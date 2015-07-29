@@ -1,6 +1,7 @@
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
 var dialog = require('dialog');
+var i18n = require('i18next');
 
 // Report crashes to our server.
 //require('crash-reporter').start();
@@ -34,7 +35,7 @@ function menuInit() {
     platform = 'win32'; // Default to windows menu
   }
 
-  mainMenu = require('../menus/menu-' + platform)();
+  mainMenu = require('../menus/menu-' + platform)(i18n.t);
 }
 
 /**
@@ -53,34 +54,45 @@ function windowInit() {
   // This method will be called when Electron has done all the initialization
   // and should be ready for creating menus & browser windows.
   app.on('ready', function() {
-    menuInit();
+    i18n.init({
+      ns: {
+        namespaces: ['app', 'menus', 'buttons'],
+        defaultNs: 'app'
+      },
+      resGetPath: 'locales/__lng__/__ns__-__lng__.json', // Path to find file
+      resSetPath: 'locales/__lng__/__ns__-__lng__.json', // Path to store file
+      sendMissingTo: 'fallback|current|all', // Send missing values to
+      lng: 'en-US'
+    }, function(){
+      menuInit();
 
-    // Create the main application window.
-    mainWindow = new BrowserWindow({
-      center: true,
-      'min-width': 600,
-      'min-height': 420,
-      width: 980,
-      height: 600,
-      resizable: true,
-      icon: "resources/app.png",
-      title: "PancakeCreator"
-    });
+      // Create the main application window.
+      mainWindow = new BrowserWindow({
+        center: true,
+        'min-width': 600,
+        'min-height': 420,
+        width: 980,
+        height: 600,
+        resizable: true,
+        icon: "resources/app.png",
+        title: "PancakeCreator"
+      });
 
-    // Window wrapper for dialog (can't include module outside of this) :P
-    mainWindow.dialog = function(options, callback) {
-      dialog['show' + options.type](mainWindow, options, callback);
-    }
+      // Window wrapper for dialog (can't include module outside of this) :P
+      mainWindow.dialog = function(options, callback) {
+        dialog['show' + options.type](mainWindow, options, callback);
+      }
 
-    // and load the index.html of the app.
-    mainWindow.loadUrl('file://' + __dirname + '/index.html');
+      // and load the index.html of the app.
+      mainWindow.loadUrl('file://' + __dirname + '/index.html');
 
-    // Emitted when the window is closed.
-    mainWindow.on('closed', function() {
-      // Dereference the window object, usually you would store windows
-      // in an array if your app supports multi windows, this is the time
-      // when you should delete the corresponding element.
-      mainWindow = null;
+      // Emitted when the window is closed.
+      mainWindow.on('closed', function() {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        mainWindow = null;
+      });
     });
   });
 }

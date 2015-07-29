@@ -9,10 +9,10 @@
 // Must use require syntax for including these libs because of node duality.
 window.$ = window.jQuery = require('jquery');
 window._ = require('underscore');
-window.$.i18n = window.i18n = require('i18next');
 
 // Main Process ===========================================---------------------
 // Include global main process connector objects for the renderer (this window).
 var remote = require('remote');
 var mainWindow = remote.getCurrentWindow();
+$.i18n = window.i18n = remote.require('i18next');
 var app = remote.require('app');

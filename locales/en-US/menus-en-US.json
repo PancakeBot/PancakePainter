@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "creator": "techninja",
+    "target": "en-US",
+    "langname": "English",
+    "release": "0.1.0"
+  },
+  "file": {
+    "title": "&File",
+    "new": "&New Project",
+    "open": "&Open Project",
+    "close": "&Close Project",
+    "save": "&Save Project",
+    "saveas": "Save Project &as…"
+  },
+  "mac": {
+    "about": "About __name__",
+    "hide": "Hide __name__",
+    "hideothers": "Hide Others",
+    "show": "Show All",
+    "quit": "Quit"
+  }
+}
