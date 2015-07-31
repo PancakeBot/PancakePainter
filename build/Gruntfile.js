@@ -28,7 +28,7 @@ module.exports = function(grunt) {
           name: appInfo.name,
           dir: './',
           out: 'build/dist',
-          icon: 'resources/mac/app.icns',
+          icon: 'resources/darwin/app.icns',
           version: electronVer,
           platform: 'darwin',
           arch: 'x64',
