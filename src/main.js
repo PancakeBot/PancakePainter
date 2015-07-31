@@ -1,4 +1,7 @@
 var app = require('app');  // Module to control application life.
+var appPath = app.getAppPath() + '/';
+var fs = require('fs-plus');
+var _ = require('underscore');
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
 var dialog = require('dialog');
 var i18n = require('i18next');
@@ -18,6 +21,7 @@ function start() {
     }
   }
 
+  settingsInit();
   windowInit();
 }
 
@@ -39,7 +43,52 @@ function menuInit() {
 }
 
 /**
- * Initialize the menus
+ * Initialize the settings & defaults
+ */
+function settingsInit() {
+  var settingsFile = appPath + 'settings.json';
+  app.settings = {
+    v: {}, // Values are saved to/from here
+    defaults: {
+      window: {
+        width: 980,
+        height: 600,
+        y: 'center',
+        x: 'center'
+      },
+      lastFile: ''
+    },
+    save: function() {
+      fs.writeFileSync(settingsFile, JSON.stringify(this.v));
+    },
+    load: function() {
+      this.v = {};
+      try {
+        if (fs.existsSync(settingsFile)) {
+          this.v = JSON.parse(fs.readFileSync(settingsFile));
+        }
+      } catch(e) {}
+
+      // Comb in defaults
+      for(var i in this.defaults) {
+        console.log(i, this.defaults[i]);
+        if (!_.has(this.v, i)) {
+          this.v[i] = this.defaults[i];
+        }
+      }
+
+      console.dir(this.v);
+
+      this.save(); // Resave when we're done loading.
+    }
+  };
+
+  app.settings.load();
+}
+
+
+/**
+ * Initialize the windows/attach menus
  */
 function windowInit() {
   // Quit when all windows are closed.
@@ -66,17 +115,26 @@ function windowInit() {
     }, function(){
       menuInit();
 
-      // Create the main application window.
-      mainWindow = new BrowserWindow({
-        center: true,
+      var windowSettings = {
         'min-width': 600,
         'min-height': 420,
-        width: 980,
-        height: 600,
+        width: app.settings.v.window.width,
+        height: app.settings.v.window.height,
         resizable: true,
         icon: "resources/app.png",
         title: "PancakeCreator"
-      });
+      };
+
+      // Centered or fixed window position?
+      if (app.settings.v.window.y === 'center') {
+        windowSettings.center = true;
+      } else {
+        windowSettings.x = app.settings.v.window.x;
+        windowSettings.y = app.settings.v.window.y;
+      }
+
+      // Create the main application window.
+      mainWindow = new BrowserWindow(windowSettings);
 
       // Window wrapper for dialog (can't include module outside of this) :P
       mainWindow.dialog = function(options, callback) {
@@ -85,6 +143,17 @@ function windowInit() {
 
       // and load the index.html of the app.
       mainWindow.loadUrl('file://' + __dirname + '/index.html');
+
+
+      // Save Move/Resize back to file
+      mainWindow.on('move', function(){
+        var b = this.getBounds();
+        app.settings.v.window.x = b.x;
+        app.settings.v.window.y = b.y;
+        app.settings.v.window.width = b.width;
+        app.settings.v.window.height = b.height;
+        app.settings.save();
+      });
 
       // Emitted when the window is closed.
       mainWindow.on('closed', function() {
