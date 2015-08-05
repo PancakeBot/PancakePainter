@@ -111,8 +111,8 @@ function windowInit() {
         namespaces: ['app', 'menus', 'buttons'],
         defaultNs: 'app'
       },
-      resGetPath: 'locales/__lng__/__ns__-__lng__.json', // Path to find file
-      resSetPath: 'locales/__lng__/__ns__-__lng__.json', // Path to store file
+      resGetPath: appPath + 'locales/__lng__/__ns__-__lng__.json', // Path to find file
+      resSetPath: appPath + 'locales/__lng__/__ns__-__lng__.json', // Path to store file
       sendMissingTo: 'fallback|current|all', // Send missing values to
       lng: 'en-US'
     }, function(){
@@ -124,7 +124,7 @@ function windowInit() {
         width: app.settings.v.window.width,
         height: app.settings.v.window.height,
         resizable: true,
-        icon: "resources/app.png",
+        icon: appPath + "resources/app.png",
         title: "PancakeCreator"
       };
 
