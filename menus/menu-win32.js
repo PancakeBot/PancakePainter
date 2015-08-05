@@ -7,8 +7,6 @@ module.exports = function applyTemplate(t) {
   var BrowserWindow = require('browser-window');
   var Menu = require('menu');
   var path = require("path");
-  var packageData = require(path.join(app.getAppPath(), 'package.json'));
-  var appName = packageData.name;
 
   var template = [
     {
