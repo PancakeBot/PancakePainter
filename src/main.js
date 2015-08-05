@@ -1,3 +1,10 @@
+/**
+ * @file This is the central "main process" node-only window/update manager
+ * script file for PacnackeCreator. This is loaded first and is always running
+ * as long as the application runs.
+ **/
+"use strict";
+
 var app = require('app');  // Module to control application life.
 var appPath = app.getAppPath() + '/';
 var fs = require('fs-plus');
@@ -139,7 +146,7 @@ function windowInit() {
       // Window wrapper for dialog (can't include module outside of this) :P
       mainWindow.dialog = function(options, callback) {
         dialog['show' + options.type](mainWindow, options, callback);
-      }
+      };
 
       // and load the index.html of the app.
       mainWindow.loadUrl('file://' + __dirname + '/index.html');

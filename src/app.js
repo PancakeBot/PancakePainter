@@ -1,8 +1,8 @@
-/*
+/**
  * @file This is the central application logic and window management src file.
  * This is the central render process main window JS, and has access to
  * the DOM and all node abilities.
- */
+ **/
 "use strict";
 
 // Libraries ==============================================---------------------
