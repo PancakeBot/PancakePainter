@@ -71,6 +71,7 @@ function initEditor() {
     editorLoad(); // Load the editor (if it hasn't already been loaded)
     // This must happen after the very first resize, otherwise the canvas doesn't
     // have the correct dimensions for Paper to size to.
+    $(mainWindow).trigger('move');
   }).resize();
 }
 
