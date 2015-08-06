@@ -10,6 +10,8 @@ module.exports = function(grunt) {
   var fsp = require('fs-plus');
   var path = require('path');
 
+  require('../node_modules/electron-compile').initForProduction('src/cache');
+
   grunt.registerTask('build-win', 'Build the release application for windows.', function(){
     log('Running electon-packager for win build...');
     grunt.task.run('electron:winbuild', 'build-win-icon');

@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 
   var appInfo = grunt.file.readJSON('package.json');
   var version = appInfo.version;
-  var buildIgnore = "build";
+  var buildIgnore = 'build|"node_modules/electron-compile/node_modules/electron-compilers"';
 
   // Project configuration.
   grunt.initConfig({

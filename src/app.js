@@ -17,6 +17,7 @@ var mainWindow = remote.getCurrentWindow();
 $.i18n = window.i18n = remote.require('i18next');
 var app = remote.require('app');
 require('../menus/menu-init')(app); // Initialize the menus
+
 var scale = {};
 
 // Page loaded

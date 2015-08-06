@@ -1,0 +1,56 @@
+// Editor ======================================================================
+#editor-wrapper {
+  img {
+    display: block;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+
+  #editor {
+    z-index: 1;
+    position: absolute;
+  }
+}
+
+// Toolbar/sidebar =============================================================
+#tools {
+  position: absolute;
+  left: 0;
+  width: 75px;
+  top: 50%;
+  transform: translate(0, -50%);
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+    li {
+      border: 1px solid #fff; // Avoids border size change on hover
+      cursor: pointer;
+      margin: 4px 6px;
+      float: left;
+      padding: 0.5em;
+
+      &:hover, &.active {
+        border: 1px solid #888;
+        border-radius: 8px;
+
+        img { opacity: 1; } // You can fully see the icon on hover or select
+      }
+
+      &.active {
+        background-color: #00A000;
+        border-color: red;
+      }
+    }
+
+    img {
+      width: 50px;
+      opacity: 0.5;
+    }
+  }
+}

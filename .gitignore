@@ -31,3 +31,6 @@ node_modules
 
 # App User Settings
 settings.json
+
+# Compiled resource cache (though this is sent out with production versions)
+/src/cache
