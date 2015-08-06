@@ -24,6 +24,18 @@ var scale = {};
 $(function(){
    // After page load, wait for the griddle image to finish before initializing.
   $('#griddle').load(initEditor);
+
+  // Apply element translation
+  $('[data-i18n=""]').each(function() {
+    var $node = $(this);
+
+    if ($node.text().indexOf('.') > -1 && $node.attr('data-i18n') == "") {
+      var key = $node.text();
+      $node.attr('data-i18n', key);
+      $node.text(i18n.t(key));
+    }
+  });
+
 });
 
 function initEditor() {
