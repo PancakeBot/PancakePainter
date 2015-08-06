@@ -118,7 +118,8 @@ function buildToolbar() {
     $t.append($('<li>').append(
       $('<img>').attr({
         src: 'images/icon-' + tool.key + '.png',
-        title: i18n.t(tool.name)
+        title: i18n.t(tool.name),
+        draggable: 'false'
       })
     ).click(function(){
       $('#tools li.active').removeClass('active');
