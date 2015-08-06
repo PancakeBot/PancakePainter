@@ -6,8 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="../node_modules/paper/dist/paper-full.js"></script>
+    <style type="text/css">
+      #editor {
+        z-index: 1;
+        position: absolute;
+      }
+
+      #editor-wrapper img {
+        display: block;
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+      }
+    </style>
   </head>
   <body>
-    <div>Welcome to PancakeCreator</div>
+    <div id="editor-wrapper">
+      <canvas id="editor" resize></canvas>
+      <img id="griddle" src="images/griddle.svg">
+    </div>
   </body>
 </html>

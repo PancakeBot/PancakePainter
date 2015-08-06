@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 436.1 234.9" enable-background="new 0 0 436.1 234.9" xml:space="preserve">
+<radialGradient id="SVGID_1_" cx="105.5467" cy="2.2853" r="326.9792" gradientUnits="userSpaceOnUse">
+	<stop  offset="0" style="stop-color:#1D221B"/>
+	<stop  offset="8.700246e-002" style="stop-color:#21251F"/>
+	<stop  offset="0.6352" style="stop-color:#363732"/>
+	<stop  offset="1" style="stop-color:#3D3D39"/>
+</radialGradient>
+<polygon fill="url(#SVGID_1_)" points="415.4,0 20.7,0 16.8,0.6 13.3,2.3 10,4.9 8.1,8.4 6.8,12.3 3.2,42.1 1,72.3 0,102.4 0,132.5 
+	1,162.6 3.2,192.8 6.8,222.9 8.1,226.8 10,230 13.3,232.6 16.8,234.6 20.7,234.9 415.4,234.9 419.3,234.6 423.1,232.6 426.1,230 
+	428.3,226.8 429.3,222.9 432.9,192.8 435.1,162.6 436.1,132.5 436.1,102.4 435.1,72.3 432.9,42.1 429.3,12.3 428.3,8.4 426.1,4.9 
+	423.1,2.3 419.3,0.6 "/>
+<g>
+	<radialGradient id="SVGID_2_" cx="16.5219" cy="12.3456" r="417.9003" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#42383D"/>
+		<stop  offset="1" style="stop-color:#262922"/>
+	</radialGradient>
+	<polygon fill="url(#SVGID_2_)" points="21,227.9 18.9,227.7 17.2,226.8 15.4,225.4 14.5,223.9 13.7,221.4 10.2,192.1 8,162.3 
+		7,132.4 7,102.5 8,72.6 10.2,42.8 13.7,13.9 14.5,11.2 15.5,9.4 17,8.3 18.9,7.4 21.3,7 414.8,7 417.3,7.4 419.4,8.3 420.7,9.4 
+		421.8,11.2 422.4,13.6 425.9,42.8 428.1,72.6 429.1,102.5 429.1,132.4 428.1,162.3 425.9,192.1 422.4,221.6 421.9,223.8 
+		420.8,225.4 419.2,226.8 417.3,227.7 415.1,227.9 	"/>
+	<polygon fill="none" stroke="#FF00FF" stroke-miterlimit="10" stroke-dasharray="3.9999,2" points="21,227.9 18.9,227.7 
+		17.2,226.8 15.4,225.4 14.5,223.9 13.7,221.4 10.2,192.1 8,162.3 7,132.4 7,102.5 8,72.6 10.2,42.8 13.7,13.9 14.5,11.2 15.5,9.4 
+		17,8.3 18.9,7.4 21.3,7 414.8,7 417.3,7.4 419.4,8.3 420.7,9.4 421.8,11.2 422.4,13.6 425.9,42.8 428.1,72.6 429.1,102.5 
+		429.1,132.4 428.1,162.3 425.9,192.1 422.4,221.6 421.9,223.8 420.8,225.4 419.2,226.8 417.3,227.7 415.1,227.9 	"/>
+</g>
+<rect x="25.3" y="22.7" fill="none" stroke="#FFFF00" stroke-width="0.72" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="390.1" height="184.7"/>
+</svg>

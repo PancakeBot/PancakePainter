@@ -16,3 +16,76 @@ var remote = require('remote');
 var mainWindow = remote.getCurrentWindow();
 $.i18n = window.i18n = remote.require('i18next');
 var app = remote.require('app');
+var scale = {};
+
+// Page loaded
+$(function(){
+   // After page load, wait for the griddle image to finish before initializing.
+  $('#griddle').load(initEditor);
+});
+
+function initEditor() {
+  var $griddle = $('#editor-wrapper img');
+  var $editor = $('#editor');
+
+  $griddle.aspect = 0.5390;
+  $editor.aspect = 0.4717;
+  $editor.pos = {
+    left: 27,
+    top: 24,
+    right: 48,
+    bottom: 52
+  };
+
+  var margin = [80, 100];
+
+  // Set maximum work area render size
+  $(window).on('resize', function(e){
+    var win = [$(window).width(), $(window).height()];
+
+    // Assume size to width
+    $griddle.width(win[0] - margin[0]);
+    $griddle.height((win[0] - margin[0]) * $griddle.aspect);
+
+
+    // If too large, size to height
+    if ($griddle.height() > win[1] - margin[1]) {
+      $griddle.width((win[1] - margin[1]) / $griddle.aspect);
+      $griddle.height((win[1] - margin[1]));
+    }
+
+    scale = {};
+    scale.x = ($griddle.width()) / $griddle[0].naturalWidth;
+    scale.y = ($griddle.height()) / $griddle[0].naturalHeight;
+
+    scale = (scale.x < scale.y ? scale.x : scale.y);
+
+    var off = $griddle.offset();
+    $editor.css({
+      top: off.top + (scale * $editor.pos.top),
+      left: off.left + (scale * $editor.pos.left),
+      width: $griddle.width() - ($editor.pos.right * scale),
+      height: $griddle.height() - ($editor.pos.bottom * scale)
+    });
+
+    editorLoad(); // Load the editor (if it hasn't already been loaded)
+  }).resize();
+}
+
+// Load the actual editor PaperScript (only when the canvas is ready).
+var editorLoaded = false;
+function editorLoad() {
+  if (!editorLoaded) {
+    editorLoaded = true;
+    paper.PaperScript.load($('<script>').attr({
+      type:"text/paperscript",
+      src: "editor.ps.js",
+      canvas: "editor"
+    })[0]);
+  }
+}
+
+// Trigger load init resize only after editor has called this function.
+function editorLoadedInit() {
+  $(window).resize();
+}
