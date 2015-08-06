@@ -310,7 +310,14 @@ function onKeyDown(event) {
 function cancelPolygonDraw() {
   if (polygonalDraw) {
     polygonalDraw = false;
-    drawPath.fullySelected = true;
+
+    // Remove orphan node paths
+    if (drawPath.segments.length === 1) {
+      drawPath.remove();
+    } else {
+      drawPath.fullySelected = true;
+    }
+
     drawPath = null;
     bandLine.remove();
     bandLine = null;
