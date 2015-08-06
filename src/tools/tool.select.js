@@ -141,10 +141,13 @@ module.exports = function(paper) {
   tool.onMouseMove = function(event) {
     project.activeLayer.selected = false;
 
+    var boundItem = getBoundSelection(event.point);
+
     if (event.item) {
       event.item.selected = true;
       paper.setCursor('copy');
-    } else if (getBoundSelection(event.point)) {
+    } else if (boundItem) {
+      boundItem.selected = true;
       paper.setCursor('move');
     } else {
       paper.setCursor();
