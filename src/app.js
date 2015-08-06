@@ -37,7 +37,7 @@ function initEditor() {
     bottom: 52
   };
 
-  var margin = [80, 100];
+  var margin = [160, 100];
 
   // Set maximum work area render size
   $(window).on('resize', function(e){
@@ -69,6 +69,8 @@ function initEditor() {
     });
 
     editorLoad(); // Load the editor (if it hasn't already been loaded)
+    // This must happen after the very first resize, otherwise the canvas doesn't
+    // have the correct dimensions for Paper to size to.
   }).resize();
 }
 
@@ -88,4 +90,26 @@ function editorLoad() {
 // Trigger load init resize only after editor has called this function.
 function editorLoadedInit() {
   $(window).resize();
+  buildToolbar();
+}
+
+function buildToolbar() {
+  var $t = $('<ul>').appendTo('#tools');
+
+  _.each(paper.tools, function(tool, index){
+    $t.append($('<li>').append(
+      $('<img>').attr({
+        src: 'images/icon-' + tool.key + '.png',
+        title: i18n.t(tool.name)
+      })
+    ).click(function(){
+      $('#tools li.active').removeClass('active');
+      $(this).addClass('active');
+      tool.activate();
+      $('#editor').css('cursor', 'url("images/cursor-' + tool.key + '.png"), move');
+    }));
+  });
+
+  // Activate the first (default) tool.
+  $t.find('li:first').click();
 }
