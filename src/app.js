@@ -86,6 +86,8 @@ function initEditor() {
     // This must happen after the very first resize, otherwise the canvas doesn't
     // have the correct dimensions for Paper to size to.
     $(mainWindow).trigger('move');
+
+    updateFrosted();
   }).resize();
 }
 
@@ -106,6 +108,7 @@ function editorLoad() {
 function editorLoadedInit() {
   $(window).resize();
   buildToolbar();
+  bindControls();
 }
 
 function buildToolbar() {
@@ -129,17 +132,72 @@ function buildToolbar() {
   $t.find('li:first').click();
 }
 
-// Callback/event for when any menu item is clicked
-app.menuClick = function(menu) {
-  switch (menu) {
-    case 'file.export':
-      showExport();
-      break;
-    default:
-      console.log(menu);
-  }
-};
+function toggleExport(doShow) {
+  if (!$('#overlay').is(':visible') || doShow) {
+    $('#overlay').fadeIn('slow');
 
-function showExport() {
-  // TODO: This;
+    updateFrosted(function(){
+      $('#export').fadeIn('slow');
+    });
+  } else {
+    $('#overlay').fadeOut('slow');
+    $('#export').fadeOut('slow');
+  }
+}
+
+// When the page is done loading, all the controls in the page can be bound.
+function bindControls() {
+  // Export window
+  $('#export button').click(function(e){
+    switch ($(this).attr('class')) {
+      case 'done':
+        toggleExport();
+        break;
+      case 'start':
+        $(this).prop('disabled', true);
+        generateGcode(function(){
+          $(this).prop('disabled', false);
+        });
+        break;
+    }
+  });
+
+  // Catch all keystrokes
+  $(document).keyup(function(e){
+    if (e.keyCode === 27) {
+      toggleExport(false);
+    }
+  });
+
+  // Callback/event for when any menu item is clicked
+  app.menuClick = function(menu) {
+    switch (menu) {
+      case 'file.export':
+        toggleExport(true);
+        break;
+      default:
+        console.log(menu);
+    }
+  };
+}
+
+
+function updateFrosted(callback) {
+  if ($('#overlay').is(':visible')) {
+    html2canvas($("#non-overlay-wrapper"), {
+      onrendered: function(canvas) {
+        $("#frosted").remove();
+        $("#overlay").append(canvas);
+        $("#overlay canvas").attr('id', 'frosted');
+        stackBlurCanvasRGB('frosted', 0, 0, $("#frosted").width(), $("#frosted").height(), 20);
+        if (callback) callback();
+      }
+    });
+  }
+}
+
+// Create gcode from current project
+function generateGcode(callback) {
+
+  if (callback) callback();
 }

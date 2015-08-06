@@ -5,8 +5,16 @@
     "langname": "English",
     "release": "0.3.0"
   },
+  "common": {
+    "done": "Done",
+    "complete": "Complete"
+  },
   "tools": {
     "pen": "Pen",
     "select": "Select"
+  },
+  "export": {
+    "title": "Export for printing",
+    "start": "Start Export"
   }
 }

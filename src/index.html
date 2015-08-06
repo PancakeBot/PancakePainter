@@ -6,13 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="../node_modules/paper/dist/paper-full.js"></script>
+    <script type="text/javascript" src="libs/stackblur.js"></script>
+    <script type="text/javascript" src="libs/html2canvas.js"></script>
     <link rel="stylesheet" href="index.scss" media="screen" charset="utf-8">
   </head>
   <body>
-    <div id="tools"></div>
-    <div id="editor-wrapper">
-      <canvas id="editor" resize></canvas>
-      <img id="griddle" src="images/griddle.svg">
+    <div id="non-overlay-wrapper">
+      <div id="tools"></div>
+      <div id="editor-wrapper">
+        <canvas id="editor" resize></canvas>
+        <img id="griddle" src="images/griddle.svg">
+      </div>
+    </div>
+    <div id="overlay"> </div>
+    <div id="export">
+      <h2 data-i18n>export.title</h2>
+      <textarea></textarea>
+      <button class="done" data-i18n>common.done</button>
+      <button class="start" data-i18n>export.start</button>
     </div>
   </body>
 </html>
