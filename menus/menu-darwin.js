@@ -2,11 +2,11 @@
  * @file Menu "module", provides menu for Mac/darwin only.
  */
 "use strict";
-module.exports = function applyTemplate(t) {
-  var app = require('app');
-  var BrowserWindow = require('browser-window');
-  var Menu = require('menu');
-  var path = require("path");
+module.exports = function applyTemplate() {
+  var remote = require('remote');
+  var app = remote.require('app');
+  var BrowserWindow = remote.require('browser-window');
+  var path = require('path');
   var packageData = require(path.join(app.getAppPath(), 'package.json'));
   var appName = packageData.name;
 
@@ -15,38 +15,40 @@ module.exports = function applyTemplate(t) {
       label: appName,
       submenu: [
         {
-          label: t('menus:mac.about', {name: appName}),
+          key: 'mac.about',
+          var: {name: appName},
           selector: 'orderFrontStandardAboutPanel:'
         },
         {
           type: 'separator'
         },
         {
-          label: 'Services',
+          key: 'mac.services',
           submenu: []
         },
         {
           type: 'separator'
         },
         {
-          label: t('menus:mac.hide', {name: appName}),
+          key: 'mac.hide',
+          var: {name: appName},
           accelerator: 'Command+H',
           selector: 'hide:'
         },
         {
-          label: t('menus:mac.hideothers'),
+          key: 'mac.hideothers',
           accelerator: 'Command+Shift+H',
           selector: 'hideOtherApplications:'
         },
         {
-          label: t('menus:mac.show'),
+          key: 'mac.show',
           selector: 'unhideAllApplications:'
         },
         {
           type: 'separator'
         },
         {
-          label: t('menus:mac.quit'),
+          key: 'mac.quit',
           accelerator: 'Command+Q',
           click: function () {
             app.quit();
@@ -56,48 +58,40 @@ module.exports = function applyTemplate(t) {
       ]
     },
     {
-      label: t('menus:file.title'),
+      key: 'file.title',
       submenu: [
         {
-          label: t('menus:file.new'),
+          key: 'file.new',
           accelerator: 'Command+N',
           click: function () {
             // TODO: Add this
           }
         },
         {
-          label: t('menus:file.open'),
-          accelerator: 'o',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.open',
+          accelerator: 'o'
         },
         {
           type: 'separator'
         },
         {
-          label: t('menus:file.close'),
-          accelerator: 'Command+W',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.close',
+          accelerator: 'Command+W'
         },
         {
           type: 'separator'
         },
         {
-          label: t('menus:file.save'),
-          accelerator: 'Command+S',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.export',
+          accelerator: 'Command+E'
         },
         {
-          label: t('menus:file.saveas'),
-          accelerator: 'Command+Shift+S',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.save',
+          accelerator: 'Command+S'
+        },
+        {
+          key: 'file.saveas',
+          accelerator: 'Command+Shift+S'
         }
       ]
     },
@@ -141,6 +135,5 @@ module.exports = function applyTemplate(t) {
     }
   ];
 
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
   return template;
 };

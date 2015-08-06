@@ -2,56 +2,43 @@
  * @file Menu "module", provides menu for Windows/win32 only.
  */
 "use strict";
-module.exports = function applyTemplate(t) {
-  var app = require('app');
-  var BrowserWindow = require('browser-window');
-  var Menu = require('menu');
-  var path = require("path");
+module.exports = function applyTemplate() {
+  var remote = require('remote');
+  var BrowserWindow = remote.require('browser-window');
 
   var template = [
     {
-      label: t('menus:file.title'),
+      key: 'file.title',
       submenu: [
         {
-          label: t('menus:file.new'),
-          accelerator: 'Control+N',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.new',
+          accelerator: 'Control+N'
         },
         {
-          label: t('menus:file.open'),
-          accelerator: 'o',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.open',
+          accelerator: 'o'
         },
         {
           type: 'separator'
         },
         {
-          label: t('menus:file.close'),
-          accelerator: 'Control+W',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.close',
+          accelerator: 'Control+W'
         },
         {
           type: 'separator'
         },
         {
-          label: t('menus:file.save'),
-          accelerator: 'Control+S',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.export',
+          accelerator: 'Control+E'
         },
         {
-          label: t('menus:file.saveas'),
-          accelerator: 'Control+Shift+S',
-          click: function () {
-            // TODO: Add this
-          }
+          key: 'file.save',
+          accelerator: 'Control+S'
+        },
+        {
+          key: 'file.saveas',
+          accelerator: 'Control+Shift+S'
         }
       ]
     },
@@ -79,8 +66,7 @@ module.exports = function applyTemplate(t) {
       submenu: [
         {
           label: 'Minimize',
-          accelerator: 'Control+M',
-          selector: 'performMiniaturize:'
+          accelerator: 'Control+M'
         }
       ]
     },
@@ -90,7 +76,5 @@ module.exports = function applyTemplate(t) {
     }
   ];
 
-
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
   return template;
 };

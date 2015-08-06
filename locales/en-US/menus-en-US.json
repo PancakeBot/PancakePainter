@@ -10,12 +10,14 @@
     "new": "&New Project",
     "open": "&Open Project",
     "close": "&Close Project",
+    "export": "&Export for printing...",
     "save": "&Save Project",
     "saveas": "Save Project &as…"
   },
   "mac": {
     "about": "About __name__",
     "hide": "Hide __name__",
+    "services": "Services",
     "hideothers": "Hide Others",
     "show": "Show All",
     "quit": "Quit"

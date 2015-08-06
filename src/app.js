@@ -16,6 +16,7 @@ var remote = require('remote');
 var mainWindow = remote.getCurrentWindow();
 $.i18n = window.i18n = remote.require('i18next');
 var app = remote.require('app');
+require('../menus/menu-init')(app); // Initialize the menus
 var scale = {};
 
 // Page loaded
@@ -113,4 +114,19 @@ function buildToolbar() {
 
   // Activate the first (default) tool.
   $t.find('li:first').click();
+}
+
+// Callback/event for when any menu item is clicked
+app.menuClick = function(menu) {
+  switch (menu) {
+    case 'file.export':
+      showExport();
+      break;
+    default:
+      console.log(menu);
+  }
+};
+
+function showExport() {
+  // TODO: This;
 }

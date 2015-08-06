@@ -35,19 +35,6 @@ function start() {
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
 var mainWindow = null;
-var mainMenu = null;
-
-// Initialize loading the menus
-function menuInit() {
-  var platform = process.platform;
-
-  // Only 2 supported platforms at the moment
-  if (platform !== 'win32' && platform !== 'darwin') {
-    platform = 'win32'; // Default to windows menu
-  }
-
-  mainMenu = require('../menus/menu-' + platform)(i18n.t);
-}
 
 /**
  * Initialize the settings & defaults
@@ -78,13 +65,10 @@ function settingsInit() {
 
       // Comb in defaults
       for(var i in this.defaults) {
-        console.log(i, this.defaults[i]);
         if (!_.has(this.v, i)) {
           this.v[i] = this.defaults[i];
         }
       }
-
-      console.dir(this.v);
 
       this.save(); // Resave when we're done loading.
     }
@@ -116,7 +100,6 @@ function windowInit() {
       sendMissingTo: 'fallback|current|all', // Send missing values to
       lng: 'en-US'
     }, function(){
-      menuInit();
 
       var windowSettings = {
         'min-width': 600,
