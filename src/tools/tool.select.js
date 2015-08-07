@@ -26,6 +26,11 @@ module.exports = function(paper) {
     tolerance: 5
   };
 
+  // Externalize deseletion
+  paper.deselect = function() {
+    if (selectionRectangle) selectionRectangle.remove();
+  }
+
   // Tool identification (for building out tool palette)
   tool.name = 'tools.select';
   tool.key = 'select';
