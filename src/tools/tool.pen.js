@@ -100,7 +100,7 @@ module.exports = function(paper) {
       if (drawPath.segments.length === 1) {
         drawPath.remove();
       } else {
-        drawPath.isPolygonal = true;
+        drawPath.data.isPolygonal = true;
       }
 
       drawPath = null;
