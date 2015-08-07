@@ -66,7 +66,11 @@ module.exports = function(paper) {
           strokeWidth: paper.strokeWidth,
           dashArray: [10, 4]
         });
-        bandLine.onDoubleClick = polygonDrawComplete;
+        bandLine.onDoubleClick = function(){
+          // Remove the last segment (from the first click of the double)
+          drawPath.segments.pop();
+          polygonDrawComplete();
+        };
         paper.setCursor('copy');
       }
 
