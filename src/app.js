@@ -19,6 +19,11 @@ var app = remote.require('app');
 require('../menus/menu-init')(app); // Initialize the menus
 
 var scale = {};
+var flattenResolution = 25; // Flatten curve value (smaller value = more points)
+var printArea = { // Print area limitations (in MM)
+  x: [42, 485],
+  y: [0, 210]
+};
 
 // Page loaded
 $(function(){
@@ -115,18 +120,20 @@ function buildToolbar() {
   var $t = $('<ul>').appendTo('#tools');
 
   _.each(paper.tools, function(tool, index){
-    $t.append($('<li>').append(
-      $('<img>').attr({
-        src: 'images/icon-' + tool.key + '.png',
-        title: i18n.t(tool.name),
-        draggable: 'false'
-      })
-    ).click(function(){
-      $('#tools li.active').removeClass('active');
-      $(this).addClass('active');
-      tool.activate();
-      $('#editor').css('cursor', 'url("images/cursor-' + tool.key + '.png"), move');
-    }));
+    if (tool.key) {
+      $t.append($('<li>').append(
+        $('<img>').attr({
+          src: 'images/icon-' + tool.key + '.png',
+          title: i18n.t(tool.name),
+          draggable: 'false'
+        })
+      ).click(function(){
+        $('#tools li.active').removeClass('active');
+        $(this).addClass('active');
+        tool.activate();
+        $('#editor').css('cursor', 'url("images/cursor-' + tool.key + '.png"), move');
+      }));
+    }
   });
 
   // Activate the first (default) tool.
@@ -134,9 +141,13 @@ function buildToolbar() {
 }
 
 function toggleExport(doShow) {
-  if (!$('#overlay').is(':visible') || doShow) {
-    $('#overlay').fadeIn('slow');
+  if (typeof doShow === 'undefined') {
+    doShow = !$('#overlay').is(':visible');
+  }
 
+  if (doShow) {
+    $('#overlay').fadeIn('slow');
+    paper.deselect();
     updateFrosted(function(){
       $('#export').fadeIn('slow');
     });
@@ -155,10 +166,7 @@ function bindControls() {
         toggleExport();
         break;
       case 'start':
-        $(this).prop('disabled', true);
-        generateGcode(function(){
-          $(this).prop('disabled', false);
-        });
+        generateGcode();
         break;
     }
   });
@@ -199,6 +207,96 @@ function updateFrosted(callback) {
 
 // Create gcode from current project
 function generateGcode(callback) {
+  var workLayer = paper.project.getActiveLayer().clone();
+  var out = getCodeHeader();
 
+  _.each(workLayer.children, function(path){
+    if (!path.data.isPolygonal) {
+      path.flatten(flattenResolution);
+    }
+
+    // Turn on pump and wait for batter to flow for start of path
+    out+= [gc('pumpon'),gc('wait', {t: 2}), ''].join("\n");
+    // Render segment points to Gcode movements
+    _.each(path.segments, function(segment){
+      out+= gc('move', reMap(segment.point)) + "\n";
+    })
+
+    // Turn off pump, ready move to next position
+    out+= gc('pumpoff') + "\n"
+  });
+
+  out += getCodeFooter();
+
+  $('#export textarea').val(out);
+  workLayer.remove();
   if (callback) callback();
+}
+
+function getCodeHeader() {
+  return [
+    gc('units'),
+    gc('pumpoff'),
+    gc('wait', {t: 1}),
+    gc('off'),
+    gc('home'),
+    ''
+  ].join("\n");
+}
+
+function getCodeFooter() {
+  return [
+    gc('wait', {t: 1}),
+    gc('home'),
+    gc('off')
+  ].join("\n");
+}
+
+/**
+ * Create a serial command string from a key:value object
+ *
+ * @param {string} name
+ *   Key in cmds object to find the command string
+ * @param {object} values
+ *   Object containing the keys of placeholders to find in command string, with
+ *   value to replace placeholder
+ * @returns {string}
+ *   Serial command string intended to be outputted directly, empty string
+ *   if error.
+ */
+function gc(name, values) {
+  var cmds = {
+    units: 'G21 ;Set units to MM',
+    abs: 'G90 ;Use Absolute units',
+    home: 'G28 ;Home All Axis',
+    move: 'G1 X%x Y%y',
+    pumpon: 'M106 ;Pump on',
+    pumpoff: 'M107 ;Pump off',
+    wait: 'M84 S%t ;Pause for %t second(s)',
+    off: 'M84 ;Motors off'
+  };
+  if (!name || !cmds[name]) return ''; // Sanity check
+  var out = cmds[name];
+
+  if (values) {
+    for(var v in values) {
+      out = out.replace(new RegExp('%' + v, 'g'), values[v]);
+    }
+  }
+
+  return out;
+}
+
+// Convert an input Paper.js coordinate to an output bot mapped coordinate
+function reMap(p) {
+  var b = paper.view.bounds;
+  return {
+    x: Math.round(map(b.width - (p.x - b.x), 0, b.width, printArea.x[0], printArea.x[1]) * 1000) / 1000,
+    y: Math.round(map(p.y - b.y, 0, b.height, printArea.y[0], printArea.y[1]) * 1000) / 1000
+  };
+}
+
+// Map a value in a given range to a new range
+function map(x, inMin, inMax, outMin, outMax) {
+  return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
