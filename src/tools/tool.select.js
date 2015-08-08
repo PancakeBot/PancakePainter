@@ -55,6 +55,7 @@ module.exports = function(paper) {
         // Deselect if nothing clicked (feels natural for deselection)
         if (selectionRectangle !== null) {
           selectionRectangle.remove();
+          selectionRectangle = null;
         }
 
         return;
@@ -92,8 +93,6 @@ module.exports = function(paper) {
       if ((selectionRectangle === null || selectionRectangle.ppath !== path) && selectionRectangle !== path) {
         initSelectionRectangle(path);
       }
-    } else { // Nothing hit
-      if (selectionRectangle !== null) selectionRectangle.remove();
     }
 
     // If a fill hit, move the path
@@ -177,8 +176,7 @@ module.exports = function(paper) {
   };
 
   function initSelectionRectangle(path) {
-    if (selectionRectangle !== null)
-      selectionRectangle.remove();
+    if (selectionRectangle !== null) selectionRectangle.remove();
 
     var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
     var bounds;
