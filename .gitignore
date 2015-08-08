@@ -33,4 +33,4 @@ node_modules
 settings.json
 
 # Compiled resource cache (though this is sent out with production versions)
-/src/cache
+.sass-cache

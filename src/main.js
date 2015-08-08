@@ -12,7 +12,6 @@ var _ = require('underscore');
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
 var dialog = require('dialog');
 var i18n = require('i18next');
-require('electron-compile').initWithOptions({cacheDir: appPath + 'src/cache'});
 
 // Report crashes to our server.
 //require('crash-reporter').start();
