@@ -124,7 +124,7 @@ module.exports = function(paper) {
       segment.point.y += event.delta.y;
 
       // Smooth -only- non-polygonal paths
-      if (!path.isPolygonal) path.smooth();
+      if (!path.data.isPolygonal) path.smooth();
 
       initSelectionRectangle(path);
     } else if (path) {
