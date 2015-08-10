@@ -15,7 +15,7 @@ module.exports = function(paper) {
   var project = paper.project;
 
   // Handy internal vars
-  var selectionRectangle = null;
+  paper.selectRect = null;
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
   var segment, path;
@@ -28,7 +28,7 @@ module.exports = function(paper) {
 
   // Externalize deseletion
   paper.deselect = function() {
-    if (selectionRectangle) selectionRectangle.remove();
+    if (paper.selectRect) paper.selectRect.remove();
   }
 
   // Tool identification (for building out tool palette)
@@ -53,9 +53,9 @@ module.exports = function(paper) {
         };
       } else {
         // Deselect if nothing clicked (feels natural for deselection)
-        if (selectionRectangle !== null) {
-          selectionRectangle.remove();
-          selectionRectangle = null;
+        if (paper.selectRect !== null) {
+          paper.selectRect.remove();
+          paper.selectRect = null;
         }
 
         return;
@@ -73,24 +73,24 @@ module.exports = function(paper) {
       path = hitResult.item;
 
       if (hitResult.type === 'segment') {
-        if (selectionRectangle !== null && path.name === "selection rectangle") {
+        if (paper.selectRect !== null && path.name === "selection rectangle") {
           if (hitResult.segment.index >= 2 && hitResult.segment.index <= 4) {
             // Rotation hitbox
             selectionRectangleRotation = 0;
           } else {
             // Scale hitbox
-            selectionRectangleScale = event.point.subtract(selectionRectangle.bounds.center).length / path.scaling.x;
+            selectionRectangleScale = event.point.subtract(paper.selectRect.bounds.center).length / path.scaling.x;
           }
         } else {
           segment = hitResult.segment;
         }
-      } else if (hitResult.type === 'stroke' && path !== selectionRectangle) {
+      } else if (hitResult.type === 'stroke' && path !== paper.selectRect) {
         var location = hitResult.location;
         segment = path.insert(location.index + 1, event.point);
         //path.smooth();
       }
 
-      if ((selectionRectangle === null || selectionRectangle.ppath !== path) && selectionRectangle !== path) {
+      if ((paper.selectRect === null || paper.selectRect.ppath !== path) && paper.selectRect !== path) {
         initSelectionRectangle(path);
       }
     }
@@ -104,16 +104,16 @@ module.exports = function(paper) {
   tool.onMouseDrag = function(event) {
     if (selectionRectangleScale !== null) {
       // Path scale adjustment
-      var ratio = event.point.subtract(selectionRectangle.bounds.center).length / selectionRectangleScale;
+      var ratio = event.point.subtract(paper.selectRect.bounds.center).length / selectionRectangleScale;
       var scaling = new Point(ratio, ratio);
-      selectionRectangle.scaling = scaling;
-      selectionRectangle.ppath.scaling = scaling;
+      paper.selectRect.scaling = scaling;
+      paper.selectRect.ppath.scaling = scaling;
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
-      var rotation = event.point.subtract(selectionRectangle.pivot).angle + 90;
-      selectionRectangle.ppath.rotation = rotation;
-      selectionRectangle.rotation = rotation;
+      var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
+      paper.selectRect.ppath.rotation = rotation;
+      paper.selectRect.rotation = rotation;
       return;
     }
 
@@ -128,16 +128,16 @@ module.exports = function(paper) {
       initSelectionRectangle(path);
     } else if (path) {
       // Path translate position adjustment
-      if (path !== selectionRectangle) {
+      if (path !== paper.selectRect) {
         path.position.x += event.delta.x;
         path.position.y += event.delta.y;
-        selectionRectangle.position.x += event.delta.x;
-        selectionRectangle.position.y += event.delta.y;
+        paper.selectRect.position.x += event.delta.x;
+        paper.selectRect.position.y += event.delta.y;
       } else {
-        selectionRectangle.position.x += event.delta.x;
-        selectionRectangle.position.y += event.delta.y;
-        selectionRectangle.ppath.position.x += event.delta.x;
-        selectionRectangle.ppath.position.y += event.delta.y;
+        paper.selectRect.position.x += event.delta.x;
+        paper.selectRect.position.y += event.delta.y;
+        paper.selectRect.ppath.position.x += event.delta.x;
+        paper.selectRect.ppath.position.y += event.delta.y;
       }
     }
   };
@@ -157,8 +157,8 @@ module.exports = function(paper) {
       paper.setCursor();
     }
 
-    if (selectionRectangle) {
-      selectionRectangle.selected = true;
+    if (paper.selectRect) {
+      paper.selectRect.selected = true;
     }
   };
 
@@ -168,15 +168,15 @@ module.exports = function(paper) {
   };
 
   tool.onKeyDown = function (event) {
-    if (event.key === 'delete' && selectionRectangle) {
-      selectionRectangle.ppath.remove();
-      selectionRectangle.remove();
-      selectionRectangle = null;
+    if (event.key === 'delete' && paper.selectRect) {
+      paper.selectRect.ppath.remove();
+      paper.selectRect.remove();
+      paper.selectRect = null;
     }
   };
 
   function initSelectionRectangle(path) {
-    if (selectionRectangle !== null) selectionRectangle.remove();
+    if (paper.selectRect !== null) paper.selectRect.remove();
 
     var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
     var bounds;
@@ -192,24 +192,24 @@ module.exports = function(paper) {
 
     var b = bounds.clone().expand(10, 10);
 
-    selectionRectangle = new Path.Rectangle(b);
-    selectionRectangle.pivot = selectionRectangle.position;
-    selectionRectangle.insert(2, new Point(b.center.x, b.top));
-    selectionRectangle.insert(2, new Point(b.center.x, b.top - 25));
-    selectionRectangle.insert(2, new Point(b.center.x, b.top));
+    paper.selectRect = new Path.Rectangle(b);
+    paper.selectRect.pivot = paper.selectRect.position;
+    paper.selectRect.insert(2, new Point(b.center.x, b.top));
+    paper.selectRect.insert(2, new Point(b.center.x, b.top - 25));
+    paper.selectRect.insert(2, new Point(b.center.x, b.top));
 
     if (!reset) {
-      selectionRectangle.position = path.bounds.center;
-      selectionRectangle.rotation = path.rotation;
-      selectionRectangle.scaling = path.scaling;
+      paper.selectRect.position = path.bounds.center;
+      paper.selectRect.rotation = path.rotation;
+      paper.selectRect.scaling = path.scaling;
     }
 
-    selectionRectangle.strokeWidth = 2;
-    selectionRectangle.strokeColor = 'blue';
-    selectionRectangle.name = "selection rectangle";
-    selectionRectangle.selected = true;
-    selectionRectangle.ppath = path;
-    selectionRectangle.ppath.pivot = selectionRectangle.pivot;
+    paper.selectRect.strokeWidth = 2;
+    paper.selectRect.strokeColor = 'blue';
+    paper.selectRect.name = "selection rectangle";
+    paper.selectRect.selected = true;
+    paper.selectRect.ppath = path;
+    paper.selectRect.ppath.pivot = paper.selectRect.pivot;
   }
 
   function getBoundSelection(point) {
