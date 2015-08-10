@@ -35,8 +35,9 @@ module.exports = function(paper) {
     pencilDraw = true;
     drawPath = new Path({
       segments: [event.point],
-      strokeColor: paper.pancakeShades[0],
-      strokeWidth: paper.strokeWidth
+      strokeColor: paper.pancakeShades[paper.pancakeCurrentShade],
+      strokeWidth: paper.strokeWidth,
+      data: {color: paper.pancakeCurrentShade}
     });
 
   };

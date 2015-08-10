@@ -13,6 +13,13 @@
     "pen": "Pen",
     "select": "Select"
   },
+  "color" : {
+    "title": "Color selection",
+    "color0": "Light",
+    "color1": "Medium",
+    "color2": "Medium dark",
+    "color3": "Dark"
+  },
   "export": {
     "title": "Export for printing",
     "start": "Export"

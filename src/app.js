@@ -113,6 +113,7 @@ function editorLoad() {
 function editorLoadedInit() {
   $(window).resize();
   buildToolbar();
+  buildColorPicker();
   bindControls();
 }
 
@@ -138,6 +139,43 @@ function buildToolbar() {
 
   // Activate the first (default) tool.
   $t.find('li:first').click();
+}
+
+function buildColorPicker() {
+  var $picker  = $('<div>').attr('id', 'picker');
+  _.each(paper.pancakeShades, function(color, index) {
+    $picker.append(
+      $('<a>')
+        .addClass('color' + index + (index === 0 ? ' active' : ''))
+        .attr('href', '#')
+        .attr('title', i18n.t('color.color' + index))
+        .click(function(e){selectColor(index); e.preventDefault();})
+        .css('background-color', color)
+    );
+  });
+
+  var $color = $('<div>')
+    .attr('id', 'color')
+    .attr('title', i18n.t('color.title'))
+    .css('background-color', paper.pancakeShades[0])
+    .append($picker);
+
+  $('#tools').append($color);
+}
+
+function selectColor(index) {
+  paper.pancakeCurrentShade = index;
+  $('#picker a.active').removeClass('active');
+  $('#picker a.color' + index).addClass('active');
+  $('#color').css('background-color', paper.pancakeShades[index]);
+
+  if (paper.selectRect) {
+    if (paper.selectRect.ppath) {
+      paper.selectRect.ppath.strokeColor = paper.pancakeShades[index];
+      paper.selectRect.ppath.data.color = index;
+      paper.view.update();
+    }
+  }
 }
 
 function toggleExport(doShow) {

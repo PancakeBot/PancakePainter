@@ -8,11 +8,13 @@ paper.settings.handleSize = 10;
 
 // Hold onto the base colors for the palette (also custom)
 paper.pancakeShades = [
-  '#d7c3b6',
-  '#e9c7af',
-  '#a15a2c',
-  '#4a2814'
+  '#f2e3bf',
+  '#d9a944',
+  '#bb792f',
+  '#875027'
 ];
+
+paper.pancakeCurrentShade = 0;
 
 var values = {
   paths: 5,

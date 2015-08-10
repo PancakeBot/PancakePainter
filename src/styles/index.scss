@@ -28,6 +28,8 @@ body {
   width: 75px;
   top: 50%;
   transform: translate(0, -50%);
+  margin-left: 6px;
+  z-index: 10; // Just in case anything off of tools needs to be above canvas.
 
   ul {
     list-style: none;
@@ -38,7 +40,7 @@ body {
     li {
       border: 1px solid #fff; // Avoids border size change on hover
       cursor: pointer;
-      margin: 4px 6px;
+      margin: 4px 0;
       float: left;
       padding: 0.5em;
 
@@ -61,6 +63,62 @@ body {
     }
   }
 }
+
+// Color Picker ================================================================
+#color {
+  border: 1px solid #888;
+  border-radius: 8px;
+  width: 65px;
+  height: 65px;
+  overflow: visible;
+  margin-top: 5px;
+
+  &:hover #picker {
+    transform: scale(1);
+  }
+
+  #picker {
+    width: 160px;
+    height: 160px;
+    transform-origin: top left;
+    transform: scale(0.2);
+    transition-duration: 0.3s;
+    transition-property: transform;
+    a {
+
+      &.color1 { transform: rotate(90deg); }
+      &.color2 { transform: rotate(-90deg); }
+      &.color3 { transform: rotate(180deg); }
+
+      &:hover {
+
+      }
+
+      &:hover:after, &.active {
+        content: ' ';
+
+        display: block;
+        width: 70px;
+        height: 70px;
+        border: 5px solid blue;
+        //-webkit-clip-path: polygon(60% 0, 100% 0, 100% 100%, 0 100%, 0 60%);
+        //-webkit-filter: blur(10px);
+      }
+
+      &.active:hover:after {
+        border: none; // Don't show a hover on active elements
+      }
+
+      content: ' ';
+      display: block;
+      -webkit-clip-path: polygon(60% 0, 100% 0, 100% 100%, 0 100%, 0 60%);
+      width: 80px;
+      height: 80px;
+      float: left;
+    }
+  }
+}
+
 
 // Export "window" =============================================================
 #non-overlay-wrapper {
