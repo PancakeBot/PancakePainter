@@ -231,14 +231,12 @@ function bindControls() {
 
 function updateFrosted(callback) {
   if ($('#overlay').is(':visible')) {
-    html2canvas($("#non-overlay-wrapper"), {
-      onrendered: function(canvas) {
-        $("#frosted").remove();
-        $("#overlay").append(canvas);
-        $("#overlay canvas").attr('id', 'frosted');
-        stackBlurCanvasRGB('frosted', 0, 0, $("#frosted").width(), $("#frosted").height(), 20);
-        if (callback) callback();
-      }
+    html2canvas($("#non-overlay-wrapper")).then(function(canvas) {
+      $("#frosted").remove();
+      $("#overlay").append(canvas);
+      $("#overlay canvas").attr('id', 'frosted');
+      stackBlurCanvasRGB('frosted', 0, 0, $("#frosted").width(), $("#frosted").height(), 20);
+      if (callback) callback();
     });
   }
 }
