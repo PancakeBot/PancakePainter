@@ -20,6 +20,7 @@ require('../menus/menu-init')(app); // Initialize the menus
 
 var scale = {};
 var flattenResolution = 25; // Flatten curve value (smaller value = more points)
+var lineEndPreShutoff = 20; // Remaining line length threshold for pump shutoff
 var printArea = { // Print area limitations (in MM)
   x: [42, 485],
   y: [0, 210]
@@ -253,13 +254,23 @@ function generateGcode(callback) {
 
     // Turn on pump and wait for batter to flow for start of path
     out+= [gc('pumpon'),gc('wait', {t: 2}), ''].join("\n");
+
     // Render segment points to Gcode movements
     _.each(path.segments, function(segment){
+
+      // If the remaining length of the line is less than the shutoff value,
+      // throw in the shut off early.
+      if (path.length - path.getOffsetOf(segment.point) <= lineEndPreShutoff) {
+        // Add an artificial move to the exact point where the pump should turn
+        // off, before the next move occurs to ensure correct drip timing.
+        out+= gc('move', reMap(path.getPointAt(path.length - lineEndPreShutoff))) + "\n";
+        out+= gc('pumpoff') + "\n"
+      }
+
       out+= gc('move', reMap(segment.point)) + "\n";
     })
 
-    // Turn off pump, ready move to next position
-    out+= gc('pumpoff') + "\n"
+    // Ready move to next position
   });
 
   out += getCodeFooter();
