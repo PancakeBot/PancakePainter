@@ -21,6 +21,8 @@ require('../menus/menu-init')(app); // Initialize the menus
 var scale = {};
 var flattenResolution = 15; // Flatten curve value (smaller value = more points)
 var lineEndPreShutoff = 25; // Remaining line length threshold for pump shutoff
+var startWait = 0.75; // Time to wait for batter flow
+var endWait = 0.25; // Time to wait for batter flow
 var printArea = { // Print area limitations (in MM)
   x: [42, 485],
   y: [0, 210]
@@ -252,22 +254,29 @@ function generateGcode(callback) {
       path.flatten(flattenResolution);
     }
 
-    // Turn on pump and wait for batter to flow for start of path
-    out+= [gc('pumpon'),gc('wait', {t: 2}), ''].join("\n");
-
     // Render segment points to Gcode movements
-    _.each(path.segments, function(segment){
+    _.each(path.segments, function(segment, index){
 
       // If the remaining length of the line is less than the shutoff value,
       // throw in the shut off early.
       if (path.length - path.getOffsetOf(segment.point) <= lineEndPreShutoff) {
         // Add an artificial move to the exact point where the pump should turn
         // off, before the next move occurs to ensure correct drip timing.
-        out+= gc('move', reMap(path.getPointAt(path.length - lineEndPreShutoff))) + "\n";
+        var offset = Math.min(path.length, path.length - lineEndPreShutoff);
+        out+= gc('move', reMap(path.getPointAt(offset))) + "\n";
         out+= gc('pumpoff') + "\n"
       }
 
       out+= gc('move', reMap(segment.point)) + "\n";
+
+      // This is the first segment of the path! After we've moved to the point,
+      // start the pump and wait for it to warm up
+      if (index === 0) {
+        out+= [gc('pumpon'), gc('wait', {t: startWait}), ''].join("\n");
+      } else if (index === path.segments.length-1) {
+        // Last segment of the path, dwell on the last point
+        out+= gc('wait', {t: endWait}) + "\n"
+      }
     })
 
     // Ready move to next position
