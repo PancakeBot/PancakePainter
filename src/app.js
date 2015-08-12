@@ -283,7 +283,7 @@ function generateGcode(callback) {
 function getCodeHeader() {
   return [
     gc('units'),
-    gc('feed', {f: 6600}),
+    gc('rate', {f: 6600}),
     gc('pumpoff'),
     gc('wait', {t: 1}),
     gc('off'),
@@ -318,7 +318,7 @@ function gc(name, values) {
     abs: 'G90 ;Use Absolute units',
     home: 'G28 ;Home All Axis',
     move: 'G1 X%x Y%y',
-    rate: 'G1 F%f',
+    rate: 'G1 F%f ; Set Feedrate',
     pumpon: 'M106 ;Pump on',
     pumpoff: 'M107 ;Pump off',
     wait: 'M84 S%t ;Pause for %t second(s)',
