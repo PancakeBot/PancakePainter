@@ -19,7 +19,7 @@ var app = remote.require('app');
 require('../menus/menu-init')(app); // Initialize the menus
 
 var scale = {};
-var flattenResolution = 25; // Flatten curve value (smaller value = more points)
+var flattenResolution = 15; // Flatten curve value (smaller value = more points)
 var lineEndPreShutoff = 20; // Remaining line length threshold for pump shutoff
 var printArea = { // Print area limitations (in MM)
   x: [42, 485],
