@@ -338,6 +338,10 @@ function gc(name, values) {
 
 // Convert an input Paper.js coordinate to an output bot mapped coordinate
 function reMap(p) {
+  if (!p) {
+    return {x: 0, y:0};
+    console.error('Null Point given for remap!');
+  }
   var b = paper.view.bounds;
   return {
     x: Math.round(map(b.width - (p.x - b.x), 0, b.width, printArea.x[0], printArea.x[1]) * 1000) / 1000,
