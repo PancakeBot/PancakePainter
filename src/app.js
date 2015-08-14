@@ -19,6 +19,7 @@ var mainWindow = remote.getCurrentWindow();
 $.i18n = window.i18n = remote.require('i18next');
 var app = remote.require('app');
 require('../menus/menu-init')(app); // Initialize the menus
+var fs = remote.require('fs-plus');
 
 // Bot specific configuration & state =====================---------------------
 var scale = {};
@@ -233,7 +234,19 @@ function bindControls() {
   app.menuClick = function(menu) {
     switch (menu) {
       case 'file.export':
-        toggleExport(true);
+        mainWindow.dialog({
+          type: 'SaveDialog',
+          title: i18n.t('export.title'),
+          filters: [
+            { name: 'PancakeBot GCODE', extensions: ['gcode'] }
+          ]
+        }, function(path){
+          if (!path) return; // Cancelled
+
+          // Verify file extension
+          if (path.split('.').pop().toLowerCase() !== 'gcode') path += '.gcode';
+          fs.writeFileSync(path, gcRender()); // Write file!
+        });
         break;
       default:
         console.log(menu);
