@@ -168,7 +168,7 @@ module.exports = function(paper) {
   };
 
   tool.onKeyDown = function (event) {
-    if (event.key === 'delete' && paper.selectRect) {
+    if ((event.key === 'delete' || event.key === 'backspace') && paper.selectRect) {
       paper.selectRect.ppath.remove();
       paper.selectRect.remove();
       paper.selectRect = null;
