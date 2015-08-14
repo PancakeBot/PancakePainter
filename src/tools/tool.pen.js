@@ -8,6 +8,11 @@ module.exports = function(paper) {
   // Init Tool (to be handed back)
   var tool = new paper.Tool();
 
+  // Constant tool tweaks
+  var endSnapDistance = 10;
+  var minLineLength = 8;
+  var simplifyAmount = 5;
+
   // Paper global extenders
   var Path = paper.Path;
 
@@ -16,6 +21,7 @@ module.exports = function(paper) {
   var polygonalDraw = false;
   var pencilDraw = false;
   var bandLine = null;
+  var endSnap = null;
 
   // Tool identification (for building out tool palette)
   tool.name = 'tools.pen';
@@ -26,6 +32,12 @@ module.exports = function(paper) {
     if (drawPath && polygonalDraw) {
       drawPath.add(event.point);
 
+      // Shortcut single click end polygon draw shape via path closing
+      if (drawPath.segments.length > 2 && checkEndSnap(event.point)) {
+        polygonDrawComplete();
+        return;
+      }
+
       // Make a new point, delete the first one
       bandLine.segments[0].point = event.point;
       return;
@@ -33,13 +45,10 @@ module.exports = function(paper) {
 
     // Create a new drawPath and set its stroke color
     pencilDraw = true;
-    drawPath = new Path({
-      segments: [event.point],
-      strokeColor: paper.pancakeShades[paper.pancakeCurrentShade],
-      strokeWidth: paper.strokeWidth,
-      data: {color: paper.pancakeCurrentShade}
-    });
+    drawPath = newBatterPath(event.point);
 
+    // Set position of endSnap notifier
+    initEndSnap(event.point);
   };
 
   tool.onMouseDrag = function(event) {
@@ -47,18 +56,26 @@ module.exports = function(paper) {
     // position of the mouse event
     if (drawPath && !polygonalDraw && pencilDraw) {
       drawPath.add(event.point);
+      if (drawPath.length > endSnapDistance + 5) checkEndSnap(event.point);
     }
   };
 
   tool.onMouseMove = function(event) {
     if (drawPath && polygonalDraw) {
+      // Move the rubber band to the point if polygonal
       bandLine.segments[1].point = event.point;
+
+      if (drawPath.segments.length > 2) checkEndSnap(event.point);
     }
   };
 
   tool.onMouseUp = function(event) {
     if (drawPath) {
-      if (drawPath.length === 0) {
+      if (drawPath.length <= minLineLength) {
+        // Restart the path
+        drawPath.remove()
+        drawPath = newBatterPath(event.point);
+
         polygonalDraw = true;
         pencilDraw = false;
         bandLine = new Path({
@@ -67,6 +84,7 @@ module.exports = function(paper) {
           strokeWidth: paper.strokeWidth,
           dashArray: [10, 4]
         });
+
         bandLine.onDoubleClick = function(){
           // Remove the last segment (from the first click of the double)
           drawPath.segments.pop();
@@ -75,14 +93,28 @@ module.exports = function(paper) {
         paper.setCursor('copy');
       }
 
+
+      // Freehand pencil draw complete
       if (!polygonalDraw && pencilDraw) {
+
+        // If the distance is right and we have end snap... make it closed!
+        if (drawPath.length > endSnapDistance + 5 && checkEndSnap(drawPath.lastSegment.point)) {
+          drawPath.lastSegment.remove();
+          drawPath.closed = true;
+        }
+
+        //drawPath.smooth();
+
         // When the mouse is released, simplify it:
-        drawPath.simplify(10);
+        drawPath.simplify(simplifyAmount);
+
+        drawPath.smooth();
 
         pencilDraw = false;
 
         // Select the drawPath, so we can see its segments:
         drawPath = null;
+        clearEndSnap();
       }
     }
   };
@@ -97,6 +129,12 @@ module.exports = function(paper) {
     if (polygonalDraw) {
       polygonalDraw = false;
 
+      // If the distance is right and we have end snap... make it closed!
+      if (drawPath.segments.length > 2 && checkEndSnap(drawPath.lastSegment.point)) {
+        drawPath.lastSegment.remove();
+        drawPath.closed = true;
+      }
+
       // Remove orphan node paths
       if (drawPath.segments.length === 1) {
         drawPath.remove();
@@ -108,7 +146,51 @@ module.exports = function(paper) {
       bandLine.remove();
       bandLine = null;
       paper.setCursor();
+      clearEndSnap();
     }
+  }
+
+  function newBatterPath(point) {
+    return new Path({
+      segments: [point],
+      strokeColor: paper.pancakeShades[paper.pancakeCurrentShade],
+      strokeWidth: paper.strokeWidth,
+      strokeCap: 'round',
+      miterLimit: 5,
+      data: {color: paper.pancakeCurrentShade}
+    });
+  }
+
+  // Initialize the endSnap notifier and position
+  function initEndSnap(point) {
+    endSnap = new Path.Circle({
+      center: point,
+      radius: endSnapDistance,
+      strokeWidth: 0,
+      strokeColor: 'green'
+    });
+  }
+
+  // Check to see if we're within the end snapping threshold
+  function checkEndSnap(point) {
+    if (!endSnap) return false;
+
+    // Above a certain number of segments, highlight an end fill snap
+    var vector = point.subtract(endSnap.position);
+
+    if (vector.length <= endSnapDistance) {
+      endSnap.strokeWidth = 3;
+      return true;
+    } else {
+      endSnap.strokeWidth = 0;
+      return false;
+    }
+  }
+
+  // Clean up the endSnap path
+  function clearEndSnap() {
+    endSnap.remove();
+    endSnap = null;
   }
 
   return tool;
