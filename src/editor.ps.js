@@ -14,6 +14,12 @@ paper.pancakeShades = [
   '#875027'
 ];
 
+// Handy translated color names
+paper.pancakeShadeNames = [];
+_.each(paper.pancakeShades, function(color, index){
+  paper.pancakeShadeNames.push(i18n.t('color.color' + index));
+});
+
 paper.pancakeCurrentShade = 0;
 
 var values = {

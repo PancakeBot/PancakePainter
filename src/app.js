@@ -162,7 +162,7 @@ function buildColorPicker() {
       $('<a>')
         .addClass('color' + index + (index === 0 ? ' active' : ''))
         .attr('href', '#')
-        .attr('title', i18n.t('color.color' + index))
+        .attr('title', paper.pancakeShadeNames[index])
         .click(function(e){selectColor(index); e.preventDefault();})
         .css('background-color', color)
     );
