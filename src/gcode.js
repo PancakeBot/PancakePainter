@@ -70,8 +70,8 @@ module.exports = function(config) {
 
     out += getCodeFooter();
 
-    return out;
     workLayer.remove();
+    return out;
   };
 
   // Generate Gcode Header
