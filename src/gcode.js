@@ -12,60 +12,36 @@ module.exports = function(config) {
   returnRenderer = function generateGcode() {
     var workLayer = paper.project.getActiveLayer().clone();
     var out = getCodeHeader();
+    var numPaths = workLayer.children.length;
 
-    _.each(workLayer.children, function(path, pathIndex){
-      if (!path.data.isPolygonal) {
-        path.flatten(config.flattenResolution);
-      }
+    var colorGroups = [];
 
-      var pumpOff = false;
+    // Move through each path on the worklayer, and group them in reverse order
+    // by color shade, 0-3, darker first (indicated in the path data.color).
+    _.each(workLayer.children, function(path){
+      var revIndex = 3 - path.data.color;
 
-      // Create an artificial move to the exact point where the pump should turn
-      // off, before the next move occurs to ensure correct drip timing.
-      var offset = Math.min(path.length, path.length - config.lineEndPreShutoff);
-      var gcPreShutoff = gc('note', 'Nearing path end, moving to preshutoff');
-      gcPreShutoff+= gc('move', reMap(path.getPointAt(offset)));
-      gcPreShutoff+= gc('pumpoff');
+      if (!colorGroups[revIndex]) colorGroups[revIndex] = [];
+      colorGroups[revIndex].push(path);
+    });
 
-
-      out+= gc('note', 'Starting path #' + (pathIndex+1) + '/' + workLayer.children.length);
-      // Render segment points to Gcode movements
-      _.each(path.segments, function(segment, index){
-
-        // If the remaining length of the line is less than the shutoff value,
-        // throw in the early shutoff.
-        if (path.length - path.getOffsetOf(segment.point) <= config.lineEndPreShutoff && !pumpOff) {
-          pumpOff = true;
-          out+= gcPreShutoff;
-        }
-
-        out+= gc('move', reMap(segment.point));
-
-        // This is the first segment of the path! After we've moved to the point,
-        // start the pump and wait for it to warm up
-        if (index === 0) {
-          out+= [gc('pumpon'), gc('wait', config.startWait), ''].join('');
-        } else if (index === path.segments.length-1) {
-          // When the path is closed, we're actually missing the last point,
-          // so we need to add it manually
-          if (path.closed) {
-            // If we haven't shut off the pump yet, we need to do that
-            if (!pumpOff) {
-              pumpOff = true;
-              out+= gcPreShutoff;
-            }
-
-            // Move to last position on the path
-            out+= gc('move', reMap(path.getPointAt(path.length)));
-          }
-
-          // Last segment/movement, dwell on the last point
-          out+= gc('wait', config.endWait);
-          out+= gc('note', 'Completed path #' + (pathIndex+1) + '/' + workLayer.children.length);
-        }
+    // Move through each color
+    var pathCount = 0;
+    _.each(colorGroups, function(group, groupIndex){
+      // Move through each path in the given color group
+      _.each(group, function(path){
+        pathCount++;
+        out += [
+          gc('note', 'Starting path #' + pathCount + '/' + numPaths + ' on color #' + (path.data.color + 1)),
+          renderPath(path),
+          gc('note', 'Completed path #' + pathCount + '/' + numPaths  + ' on color #' + (path.data.color + 1))
+        ].join('');
       });
 
-      // Ready move to next position
+      // Trigger color change
+      if (colorGroups[groupIndex+1]) {
+        out += getCodeColorChange(colorGroups[groupIndex+1][0].data.color);
+      }
     });
 
     out += getCodeFooter();
@@ -74,10 +50,67 @@ module.exports = function(config) {
     return out;
   };
 
+  // Render the given path into GCODE
+  function renderPath(path) {
+    if (!path.data.isPolygonal) {
+      path.flatten(config.flattenResolution);
+    }
+
+    var pumpOff = false;
+    var out = '';
+
+    // Create an artificial move to the exact point where the pump should turn
+    // off, before the next move occurs to ensure correct drip timing.
+    var offset = Math.min(path.length, path.length - config.lineEndPreShutoff);
+    var gcPreShutoff = [
+      gc('note', 'Nearing path end, moving to preshutoff'),
+      gc('move', reMap(path.getPointAt(offset))),
+      gc('pumpoff')
+    ].join('');
+
+
+    // Render segment points to Gcode movements
+    _.each(path.segments, function(segment, index){
+
+      // If the remaining length of the line is less than the shutoff value,
+      // throw in the early shutoff.
+      if (path.length - path.getOffsetOf(segment.point) <= config.lineEndPreShutoff && !pumpOff) {
+        pumpOff = true;
+        out+= gcPreShutoff;
+      }
+
+      out+= gc('move', reMap(segment.point));
+
+      // This is the first segment of the path! After we've moved to the point,
+      // start the pump and wait for it to warm up
+      if (index === 0) {
+        out+= [gc('pumpon'), gc('wait', config.startWait), ''].join('');
+      } else if (index === path.segments.length-1) {
+        // When the path is closed, we're actually missing the last point,
+        // so we need to add it manually
+        if (path.closed) {
+          // If we haven't shut off the pump yet, we need to do that
+          if (!pumpOff) {
+            pumpOff = true;
+            out+= gcPreShutoff;
+          }
+
+          // Move to last position on the path
+          out+= gc('move', reMap(path.getPointAt(path.length)));
+        }
+
+        // Last segment/movement, dwell on the last point
+        out+= gc('wait', config.endWait);
+      }
+    });
+    return out;
+  }
+
   // Generate Gcode Header
   function getCodeHeader() {
     return [
       gc('note', 'PancakeCreator v' + config.version + ' GCODE header start'),
+      gc('workspace', config.printArea),
       gc('units'),
       gc('rate', 6600),
       gc('pumpoff'),
@@ -96,6 +129,18 @@ module.exports = function(config) {
       gc('home'),
       gc('off'),
       gc('note', 'PancakeCreator Footer Complete'),
+    ].join('');
+  }
+
+  // Generate Color change
+  function getCodeColorChange(id) {
+    return [
+      gc('note', 'Switching Color to: ' + paper.pancakeShadeNames[id]),
+      gc('wait', 1),
+      gc('home'),
+      gc('off'),
+      gc('change'),
+      gc('wait', 5),
     ].join('');
   }
 
@@ -120,9 +165,11 @@ module.exports = function(config) {
       move: 'G1 X%x Y%y',
       rate: 'G1 F%% ;Set Feedrate',
       pumpon: 'M106 ;Pump on',
-      note: ';%%',
       pumpoff: 'M107 ;Pump off',
+      change: 'M142 ;Bottle change', // TODO: This code is currently unknown!
+      note: ';%%',
       wait: 'M84 S%% ;Pause for %% second(s)',
+      workspace: 'W1 X%x Y%y L%l T%t ;Define Workspace of this file', // Also made up
       off: 'M84 ;Motors off'
     };
     if (!name || !cmds[name]) return ''; // Sanity check
@@ -146,11 +193,11 @@ module.exports = function(config) {
       console.error('Null Point given for remap!');
     }
 
-    var b = paper.view.bounds;
     var pa = config.printArea;
+    var b = paper.view.bounds;
     return {
-      x: Math.round(map(b.width - (p.x - b.x), 0, b.width, pa.x[0], pa.x[1]) * 1000) / 1000,
-      y: Math.round(map(p.y - b.y, 0, b.height, pa.y[0], pa.y[1]) * 1000) / 1000
+      x: Math.round(map(b.width - (p.x - b.x), 0, b.width, pa.x, pa.l) * 1000) / 1000,
+      y: Math.round(map(p.y - b.y, 0, b.height, pa.t, pa.y) * 1000) / 1000
     };
   }
 

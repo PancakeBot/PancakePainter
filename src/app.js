@@ -29,8 +29,10 @@ var renderConfig = {
   startWait: 0.75, // Time to wait for batter flow
   endWait: 0.65, // Time to wait for batter flow
   printArea: { // Print area limitations (in MM)
-    x: [42, 485],
-    y: [0, 210]
+    x: 42,
+    y: 210,
+    l: 485,
+    t: 0,
   },
   version: app.getVersion() // Application version written to GCODE header
 };
