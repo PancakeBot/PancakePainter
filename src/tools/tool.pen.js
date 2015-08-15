@@ -108,7 +108,7 @@ module.exports = function(paper) {
         // When the mouse is released, simplify it:
         drawPath.simplify(simplifyAmount);
 
-        drawPath.smooth();
+        //drawPath.smooth();
 
         pencilDraw = false;
 
