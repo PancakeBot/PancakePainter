@@ -179,6 +179,7 @@ function buildColorPicker() {
   $('#tools').append($color);
 }
 
+// Do everything required when a new color is selected
 function selectColor(index) {
   paper.pancakeCurrentShade = index;
   $('#picker a.active').removeClass('active');
@@ -194,44 +195,11 @@ function selectColor(index) {
   }
 }
 
-function toggleExport(doShow) {
-  if (typeof doShow === 'undefined') {
-    doShow = !$('#overlay').is(':visible');
-  }
 
-  if (doShow) {
-    $('#overlay').fadeIn('slow');
-    paper.deselect();
-    updateFrosted(function(){
-      $('#export').fadeIn('slow');
-    });
-  } else {
-    $('#overlay').fadeOut('slow');
-    $('#export').fadeOut('slow');
-  }
 }
 
 // When the page is done loading, all the controls in the page can be bound.
 function bindControls() {
-  // Export window
-  $('#export button').click(function(e){
-    switch ($(this).attr('class')) {
-      case 'done':
-        toggleExport();
-        break;
-      case 'start':
-        $('textarea').val(gcRender());
-        break;
-    }
-  });
-
-  // Catch all keystrokes
-  $(document).keyup(function(e){
-    if (e.keyCode === 27) {
-      toggleExport(false);
-    }
-  });
-
   // Callback/event for when any menu item is clicked
   app.menuClick = function(menu) {
     switch (menu) {
@@ -256,6 +224,23 @@ function bindControls() {
   };
 }
 
+// Show/Hide the fosted glass overlay (disables non-overlay-wrapper controls)
+function toggleOverlay(doShow, callback) {
+  if (typeof doShow === 'undefined') {
+    doShow = !$('#overlay').is(':visible');
+  }
+
+  if (doShow) {
+    $('#overlay').fadeIn('slow');
+    paper.deselect();
+    updateFrosted(callback);
+  } else {
+    $('#overlay').fadeOut('slow');
+    if (callback) callback();
+  }
+}
+
+// Update the rendered HTML image and reblur it (when resizing the window)
 function updateFrosted(callback) {
   if ($('#overlay').is(':visible')) {
     html2canvas($("#non-overlay-wrapper")).then(function(canvas) {

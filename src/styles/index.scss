@@ -119,8 +119,7 @@ body {
   }
 }
 
-
-// Export "window" =============================================================
+// General usage overlay "window" ==============================================
 #non-overlay-wrapper {
   position: absolute;
   z-index: 1;
@@ -142,7 +141,7 @@ body {
   bottom: 0;
 }
 
-#export {
+div.overlay-window {
   display: none;
   position: absolute;
   z-index: 10;
