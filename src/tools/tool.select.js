@@ -240,5 +240,7 @@ module.exports = function(paper) {
 
     return item;
   }
+
+  return tool;
 };
 
