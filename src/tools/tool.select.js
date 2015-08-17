@@ -168,10 +168,21 @@ module.exports = function(paper) {
   };
 
   tool.onKeyDown = function (event) {
-    if ((event.key === 'delete' || event.key === 'backspace') && paper.selectRect) {
-      paper.selectRect.ppath.remove();
-      paper.selectRect.remove();
-      paper.selectRect = null;
+    if (paper.selectRect) {
+      // Delete a selected path
+      if (event.key === 'delete' || event.key === 'backspace') {
+        paper.selectRect.ppath.remove();
+        paper.selectRect.remove();
+        paper.selectRect = null;
+      }
+
+      // Deselect
+      if (event.key === 'escape') {
+        paper.selectRect.ppath.fullySelected = false;
+        paper.selectRect.remove();
+        paper.selectRect = null;
+      }
+
     }
   };
 
