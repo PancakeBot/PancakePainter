@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 436.1 234.9" enable-background="new 0 0 436.1 234.9" xml:space="preserve">
@@ -12,12 +13,34 @@
 	1,162.6 3.2,192.8 6.8,222.9 8.1,226.8 10,230 13.3,232.6 16.8,234.6 20.7,234.9 415.4,234.9 419.3,234.6 423.1,232.6 426.1,230 
 	428.3,226.8 429.3,222.9 432.9,192.8 435.1,162.6 436.1,132.5 436.1,102.4 435.1,72.3 432.9,42.1 429.3,12.3 428.3,8.4 426.1,4.9 
 	423.1,2.3 419.3,0.6 "/>
+<radialGradient id="SVGID_2_" cx="105.5467" cy="2.2853" r="326.9792" gradientUnits="userSpaceOnUse">
+	<stop  offset="0" style="stop-color:#1D221B"/>
+	<stop  offset="8.700246e-002" style="stop-color:#21251F"/>
+	<stop  offset="0.6352" style="stop-color:#363732"/>
+	<stop  offset="1" style="stop-color:#3D3D39"/>
+</radialGradient>
+<polygon fill="url(#SVGID_2_)" points="415.4,0 20.7,0 16.8,0.6 13.3,2.3 10,4.9 8.1,8.4 6.8,12.3 3.2,42.1 1,72.3 0,102.4 0,132.5 
+	1,162.6 3.2,192.8 6.8,222.9 8.1,226.8 10,230 13.3,232.6 16.8,234.6 20.7,234.9 415.4,234.9 419.3,234.6 423.1,232.6 426.1,230 
+	428.3,226.8 429.3,222.9 432.9,192.8 435.1,162.6 436.1,132.5 436.1,102.4 435.1,72.3 432.9,42.1 429.3,12.3 428.3,8.4 426.1,4.9 
+	423.1,2.3 419.3,0.6 "/>
 <g>
-	<radialGradient id="SVGID_2_" cx="16.5219" cy="12.3456" r="417.9003" gradientUnits="userSpaceOnUse">
-		<stop  offset="0" style="stop-color:#42383D"/>
-		<stop  offset="1" style="stop-color:#262922"/>
+	<radialGradient id="SVGID_3_" cx="218.0519" cy="117.4501" r="240.6617" gradientUnits="userSpaceOnUse">
+		<stop  offset="0.871" style="stop-color:#605E5F"/>
+		<stop  offset="0.9148" style="stop-color:#494749"/>
+		<stop  offset="0.9659" style="stop-color:#343235"/>
+		<stop  offset="1" style="stop-color:#2D2B2E"/>
 	</radialGradient>
-	<polygon fill="url(#SVGID_2_)" points="21,227.9 18.9,227.7 17.2,226.8 15.4,225.4 14.5,223.9 13.7,221.4 10.2,192.1 8,162.3 
+	<polygon fill="url(#SVGID_3_)" points="20.9,230.9 18,230.7 15.5,229.3 13.1,227.4 11.8,225.1 10.7,222 7.2,192.4 5,162.4 4,132.5 
+		4,102.4 5,72.5 7.2,42.5 10.7,13.2 11.8,10 13.2,7.5 15.4,5.7 18,4.5 21.1,4 415,4 418.1,4.5 421,5.7 423,7.5 424.6,10 425.4,13 
+		428.9,42.5 431.1,72.5 432.1,102.4 432.1,132.5 431.1,162.4 428.9,192.4 425.4,222.2 424.6,225.1 423.1,227.4 420.9,229.3 
+		418.2,230.7 415.2,230.9 	"/>
+</g>
+<g>
+	<radialGradient id="SVGID_4_" cx="209.0219" cy="107.8456" r="237.2005" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#535250"/>
+		<stop  offset="1" style="stop-color:#434341"/>
+	</radialGradient>
+	<polygon fill="url(#SVGID_4_)" points="21,227.9 18.9,227.7 17.2,226.8 15.4,225.4 14.5,223.9 13.7,221.4 10.2,192.1 8,162.3 
 		7,132.4 7,102.5 8,72.6 10.2,42.8 13.7,13.9 14.5,11.2 15.5,9.4 17,8.3 18.9,7.4 21.3,7 414.8,7 417.3,7.4 419.4,8.3 420.7,9.4 
 		421.8,11.2 422.4,13.6 425.9,42.8 428.1,72.6 429.1,102.5 429.1,132.4 428.1,162.3 425.9,192.1 422.4,221.6 421.9,223.8 
 		420.8,225.4 419.2,226.8 417.3,227.7 415.1,227.9 	"/>
@@ -27,4 +50,16 @@
 		429.1,132.4 428.1,162.3 425.9,192.1 422.4,221.6 421.9,223.8 420.8,225.4 419.2,226.8 417.3,227.7 415.1,227.9 	"/>
 </g>
 <rect x="25.3" y="22.7" fill="none" stroke="#FFFF00" stroke-width="0.72" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="390.1" height="184.7"/>
+<g>
+	
+		<linearGradient id="SVGID_5_" gradientUnits="userSpaceOnUse" x1="213.165" y1="210.6604" x2="213.165" y2="224.1485" gradientTransform="matrix(-1 0 0 -1 431.217 436.6689)">
+		<stop  offset="0" style="stop-color:#6D6B6C"/>
+		<stop  offset="0.2194" style="stop-color:#595757"/>
+		<stop  offset="0.5" style="stop-color:#434240"/>
+		<stop  offset="0.7999" style="stop-color:#312D2E"/>
+		<stop  offset="1" style="stop-color:#2A2627"/>
+	</linearGradient>
+	<ellipse fill="url(#SVGID_5_)" cx="218.1" cy="219.3" rx="15.5" ry="6.7"/>
+	<ellipse fill="#FFFFFF" stroke="#3D3D3D" stroke-width="0.7" stroke-miterlimit="10" cx="218.1" cy="219" rx="8.3" ry="4.3"/>
+</g>
 </svg>
