@@ -20,7 +20,7 @@ var i18n = require('i18next');
 function start() {
   // Process squirrel update/install command line.
   if (process.platform === 'win32') {
-    SquirrelUpdate = require('./squirrel-update');
+    var SquirrelUpdate = require('./squirrel-update');
     var squirrelCommand = process.argv[1];
     if (SquirrelUpdate.handleStartupEvent(app, squirrelCommand)) {
       // If we processed one, quit right after.
