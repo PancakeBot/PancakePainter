@@ -12,10 +12,10 @@ paper.mainLayer = new Layer(); // Everything is drawn on here by default now
 
 // Hold onto the base colors for the palette (also custom)
 paper.pancakeShades = [
-  '#f2e3bf',
-  '#d9a944',
-  '#bb792f',
-  '#875027'
+  '#ffea7e',
+  '#e2bc15',
+  '#a6720e',
+  '#714a00'
 ];
 
 // Handy translated color names
