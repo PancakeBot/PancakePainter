@@ -61,28 +61,38 @@ function initEditor() {
 
   $griddle.aspect = 0.5390;
   $editor.aspect = 0.4717;
-  $editor.pos = {
+  $editor.pos = { // Relative position of paper.js canvas within the griddle
     left: 27,
     top: 24,
     right: 48,
     bottom: 52
   };
 
-  var margin = [160, 100];
+  var margin = { // Margin around griddle to restrict sizing
+    l: 20, // Buffer
+    r: 20, // Buffer
+    t: 70, // Toolbar
+    b: 90  // Logo & buffer
+  };
 
-  // Set maximum work area render size
+  // Set maximum work area render size & manage dynamic sizing of elements not
+  // handled via CSS only.
   $(window).on('resize', function(e){
-    var win = [$(window).width(), $(window).height()];
+    // Window Size (less the appropriate margins)
+    var win = {
+      w: $(window).width() - (margin.l + margin.r),
+      h: $(window).height() - (margin.t + margin.b)
+    };
 
     // Assume size to width
-    $griddle.width(win[0] - margin[0]);
-    $griddle.height((win[0] - margin[0]) * $griddle.aspect);
+    $griddle.width(win.w);
+    $griddle.height(win.w * $griddle.aspect);
 
 
     // If too large, size to height
-    if ($griddle.height() > win[1] - margin[1]) {
-      $griddle.width((win[1] - margin[1]) / $griddle.aspect);
-      $griddle.height((win[1] - margin[1]));
+    if ($griddle.height() > win.h) {
+      $griddle.width(win.h / $griddle.aspect);
+      $griddle.height(win.h);
     }
 
     scale = {};

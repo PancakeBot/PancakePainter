@@ -4,6 +4,14 @@ body {
   font-family: sans-serif;
 }
 
+#logo {
+  height: 70px;
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
 
 // Editor ======================================================================
 #editor-wrapper {
