@@ -26,6 +26,7 @@ module.exports = function(paper) {
   // Tool identification (for building out tool palette)
   tool.name = 'tools.pen';
   tool.key = 'pen';
+  tool.cursorOffset = '1 31'; // Position for cursor point
 
   tool.onMouseDown = function(event) {
     // Continue drawing polygonal (ignores hitTest while on)

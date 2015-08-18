@@ -43,6 +43,7 @@ module.exports = function(paper) {
   // Tool identification (for building out tool palette)
   tool.name = 'tools.select';
   tool.key = 'select';
+  tool.cursorOffset = '1 1'; // Position for cursor point
 
   tool.onMouseDown = function(event) {
     segment = path = null;
@@ -51,9 +52,11 @@ module.exports = function(paper) {
 
     // Don't select image if not in trace mode
     if (hitResult && !paper.imageTraceMode) {
-      if (hitResult.item == paper.traceImage
-              || hitResult.item == paper.traceImage.img) {
-        hitResult = null; // Act like we didn't hit anything
+      if (paper.traceImage) {
+        if (hitResult.item == paper.traceImage
+                || hitResult.item == paper.traceImage.img) {
+          hitResult = null; // Act like we didn't hit anything
+        }
       }
     }
 
@@ -188,8 +191,10 @@ module.exports = function(paper) {
       return; // No hover events for imageTraceMode
     } else {
       // No hover events for the trace image
-      if (event.item == paper.traceImage) return;
-      if (event.item == paper.traceImage.img) return;
+      if (paper.traceImage) {
+        if (event.item == paper.traceImage) return;
+        if (event.item == paper.traceImage.img) return;
+      }
     }
 
 
@@ -279,8 +284,12 @@ module.exports = function(paper) {
 
     var item = null;
     _.each(items, function (i) {
-      if (i == paper.traceImage) return; // Don't select the trace image
-      if (i == paper.traceImage.img) return; // Don't select the trace image
+
+      if (paper.traceImage) {
+        if (i == paper.traceImage) return; // Don't select the trace image group
+        if (i == paper.traceImage.img) return; // Don't select the trace image
+      }
+
       if (i instanceof Path) {
         if (i.contains(point)) {
           item = i;

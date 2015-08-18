@@ -5,7 +5,7 @@ body {
 }
 
 #logo {
-  height: 70px;
+  height: 80px;
   position: absolute;
   bottom: 5px;
   left: 50%;
@@ -32,11 +32,9 @@ body {
 // Toolbar =====================================================================
 #tools {
   position: absolute;
-  left: 0;
-  width: 75px;
-  top: 50%;
-  transform: translate(0, -50%);
-  margin-left: 6px;
+  left: 50%;
+  top: 10px;
+  transform: translate(-50%, 0);
   z-index: 5; // Just in case anything off of tools needs to be above canvas.
 
   ul {
@@ -44,49 +42,42 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    float: left;
   }
 
   .tool {
-    border: 1px solid #fff; // Avoids border size change on hover
+    border: 3px solid #fff; // Avoids border size change on hover
     cursor: pointer;
-    margin: 4px 0;
+    margin-right: 15px;
     float: left;
     padding: 0.5em;
-
-    &:hover, &.active {
-      border: 1px solid #888;
-      border-radius: 8px;
-
-      img { opacity: 1; } // You can fully see the icon on hover or select
-    }
+    border-radius: 1em;
 
     &.active {
-      background-color: #00A000;
       border-color: red;
-    }
-
-    // Hack to fix height offset caused by crazy colorpicker overlay
-    &#import {
-      margin-top: -5em;
-      z-index: 5;
     }
   }
 
   img {
     width: 50px;
-    opacity: 0.5;
+  }
+
+  #import img {
+    width: 64px; // This one likes to be a bit bigger
   }
 }
 
 // Color Picker ================================================================
 #color {
-  position: relative;
-  border: 1px solid #888;
-  border-radius: 8px;
+  // Separation border and LOTS of distance from the other tools
+  border-left: 1px solid black;
+  padding-left: 40px;
+  margin-left: 15px;
+
+  float: left;
   width: 65px;
   height: 65px;
   overflow: visible;
-  margin-top: 5px;
   z-index: 6; // Needs to be above other tools
 
   &:hover #picker {
@@ -94,41 +85,22 @@ body {
   }
 
   #picker {
-    width: 160px;
-    height: 160px;
-    transform-origin: top left;
-    transform: scale(0.2);
-    transition-duration: 0.3s;
-    transition-property: transform;
+    width: 90px;
+    height: 64px;
+
     a {
-
-      &.color1 { transform: rotate(90deg); }
-      &.color2 { transform: rotate(-90deg); }
-      &.color3 { transform: rotate(180deg); }
-
-      &:hover {
-
-      }
-
-      &:hover:after, &.active {
-        content: ' ';
-
-        display: block;
-        width: 70px;
-        height: 70px;
-        border: 5px solid blue;
-      }
-
-      &.active:hover:after {
-        border: none; // Don't show a hover on active elements
-      }
-
+      box-sizing: border-box;
+      border: 1px solid white;
       content: ' ';
       display: block;
-      -webkit-clip-path: polygon(60% 0, 100% 0, 100% 100%, 0 100%, 0 60%);
-      width: 80px;
-      height: 80px;
+      width: 45px;
+      height: 32px;
       float: left;
+
+      &.active {
+        display: block;
+        border: 2px solid red;
+      }
     }
   }
 }

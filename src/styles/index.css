@@ -3,7 +3,7 @@ body {
   font-family: sans-serif; }
 
 #logo {
-  height: 70px;
+  height: 80px;
   position: absolute;
   bottom: 5px;
   left: 50%;
@@ -21,77 +21,55 @@ body {
 
 #tools {
   position: absolute;
-  left: 0;
-  width: 75px;
-  top: 50%;
-  transform: translate(0, -50%);
-  margin-left: 6px;
+  left: 50%;
+  top: 10px;
+  transform: translate(-50%, 0);
   z-index: 5; }
   #tools ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    overflow: hidden; }
+    overflow: hidden;
+    float: left; }
   #tools .tool {
-    border: 1px solid #fff;
+    border: 3px solid #fff;
     cursor: pointer;
-    margin: 4px 0;
+    margin-right: 15px;
     float: left;
-    padding: 0.5em; }
-    #tools .tool:hover, #tools .tool.active {
-      border: 1px solid #888;
-      border-radius: 8px; }
-      #tools .tool:hover img, #tools .tool.active img {
-        opacity: 1; }
+    padding: 0.5em;
+    border-radius: 1em; }
     #tools .tool.active {
-      background-color: #00A000;
       border-color: red; }
-    #tools .tool#import {
-      margin-top: -5em;
-      z-index: 5; }
   #tools img {
-    width: 50px;
-    opacity: 0.5; }
+    width: 50px; }
+  #tools #import img {
+    width: 64px; }
 
 #color {
-  position: relative;
-  border: 1px solid #888;
-  border-radius: 8px;
+  border-left: 1px solid black;
+  padding-left: 40px;
+  margin-left: 15px;
+  float: left;
   width: 65px;
   height: 65px;
   overflow: visible;
-  margin-top: 5px;
   z-index: 6; }
   #color:hover #picker {
     transform: scale(1); }
   #color #picker {
-    width: 160px;
-    height: 160px;
-    transform-origin: top left;
-    transform: scale(0.2);
-    transition-duration: 0.3s;
-    transition-property: transform; }
+    width: 90px;
+    height: 64px; }
     #color #picker a {
+      box-sizing: border-box;
+      border: 1px solid white;
       content: ' ';
       display: block;
-      -webkit-clip-path: polygon(60% 0, 100% 0, 100% 100%, 0 100%, 0 60%);
-      width: 80px;
-      height: 80px;
+      width: 45px;
+      height: 32px;
       float: left; }
-      #color #picker a.color1 {
-        transform: rotate(90deg); }
-      #color #picker a.color2 {
-        transform: rotate(-90deg); }
-      #color #picker a.color3 {
-        transform: rotate(180deg); }
-      #color #picker a:hover:after, #color #picker a.active {
-        content: ' ';
+      #color #picker a.active {
         display: block;
-        width: 70px;
-        height: 70px;
-        border: 5px solid blue; }
-      #color #picker a.active:hover:after {
-        border: none; }
+        border: 2px solid red; }
 
 #non-overlay-wrapper {
   position: absolute;

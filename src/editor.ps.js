@@ -34,12 +34,13 @@ var values = {
   maxRadius: 90
 };
 
+// TODO: Load all tools in folder based on weight
 var toolPen = require('./tools/tool.pen')(paper);
 var toolSelect = require('./tools/tool.select')(paper);
 
 var $editor = $('#editor');
 paper.setCursor = function(type) {
-  // TODO: We'll get back to this, if needed.
+  // TODO: Implement cursor change on hover of handles, objects, etc
   //if (!type) type = 'default';
   //$editor.css('cursor', type);
 }

@@ -69,10 +69,10 @@ function initEditor() {
   };
 
   var margin = { // Margin around griddle to restrict sizing
-    l: 20, // Buffer
-    r: 20, // Buffer
-    t: 70, // Toolbar
-    b: 90  // Logo & buffer
+    l: 20,  // Buffer
+    r: 20,  // Buffer
+    t: 100, // Toolbar
+    b: 90   // Logo & buffer
   };
 
   // Set maximum work area render size & manage dynamic sizing of elements not
@@ -135,8 +135,9 @@ function editorLoad() {
 function editorLoadedInit() {
   $(window).resize();
   buildToolbar();
-  buildColorPicker();
   buildImageImporter();
+  buildColorPicker();
+
   bindControls();
 
   // Load the renderer once paper is ready
@@ -153,6 +154,7 @@ function buildToolbar() {
         .addClass('tool')
         .attr('id', 'tool-' + tool.key)
         .data('cursor-key', tool.key)
+        .data('cursor-offset', tool.cursorOffset)
         .append(
         $('<img>').attr({
           src: 'images/icon-' + tool.key + '.png',
@@ -172,13 +174,21 @@ function buildToolbar() {
 
 // Assigns the "active" class to tool items and sets editor cursor, nothing more
 function activateToolItem(item) {
-  $('#tools .active').removeClass('active');
+  $('#tools .tool.active').removeClass('active');
   $(item).addClass('active');
-  $('#editor').css('cursor', 'url("images/cursor-' + $(item).data('cursor-key') + '.png"), move');
+
+  var cursor = 'url("images/cursor-' + $(item).data('cursor-key') + '.png")';
+
+  if ($(item).data('cursor-offset')) {
+    cursor+= ' ' + $(item).data('cursor-offset');
+  }
+
+  $('#editor').css('cursor', cursor + ', auto');
   paper.deselect();
   paper.view.update();
 }
 
+// Build the elements for the colorpicker non-tool item
 function buildColorPicker() {
   var $picker  = $('<div>').attr('id', 'picker');
   _.each(paper.pancakeShades, function(color, index) {
@@ -194,8 +204,6 @@ function buildColorPicker() {
 
   var $color = $('<div>')
     .attr('id', 'color')
-    .attr('title', i18n.t('color.title'))
-    .css('background-color', paper.pancakeShades[0])
     .append($picker);
 
   $('#tools').append($color);
@@ -206,7 +214,6 @@ function selectColor(index) {
   paper.pancakeCurrentShade = index;
   $('#picker a.active').removeClass('active');
   $('#picker a.color' + index).addClass('active');
-  $('#color').css('background-color', paper.pancakeShades[index]);
 
   if (paper.selectRect) {
     if (paper.selectRect.ppath) {
