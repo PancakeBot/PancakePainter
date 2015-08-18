@@ -126,6 +126,7 @@ function editorLoadedInit() {
   $(window).resize();
   buildToolbar();
   buildColorPicker();
+  buildImageImporter();
   bindControls();
 
   // Load the renderer once paper is ready
@@ -138,23 +139,34 @@ function buildToolbar() {
 
   _.each(paper.tools, function(tool, index){
     if (tool.key) {
-      $t.append($('<li>').append(
+      $t.append($('<li>')
+        .addClass('tool')
+        .attr('id', 'tool-' + tool.key)
+        .data('cursor-key', tool.key)
+        .append(
         $('<img>').attr({
           src: 'images/icon-' + tool.key + '.png',
           title: i18n.t(tool.name),
           draggable: 'false'
         })
       ).click(function(){
-        $('#tools li.active').removeClass('active');
-        $(this).addClass('active');
         tool.activate();
-        $('#editor').css('cursor', 'url("images/cursor-' + tool.key + '.png"), move');
+        activateToolItem(this);
       }));
     }
   });
 
   // Activate the first (default) tool.
   $t.find('li:first').click();
+}
+
+// Assigns the "active" class to tool items and sets editor cursor, nothing more
+function activateToolItem(item) {
+  $('#tools .active').removeClass('active');
+  $(item).addClass('active');
+  $('#editor').css('cursor', 'url("images/cursor-' + $(item).data('cursor-key') + '.png"), move');
+  paper.deselect();
+  paper.view.update();
 }
 
 function buildColorPicker() {
@@ -195,7 +207,21 @@ function selectColor(index) {
   }
 }
 
+// Build the fake tool placeholder for image import
+function buildImageImporter() {
+  var $importButton = $('<div>')
+    .addClass('tool')
+    .attr('id', 'import')
+    .data('cursor-key', 'select')
+    .attr('title', i18n.t('import.title'));
+  $importButton.append($('<img>').attr('src', 'images/icon-import.png'));
 
+  $importButton.click(function(){
+    activateToolItem($importButton);
+    paper.initImageImport();
+  });
+
+  $('#tools').append($importButton);
 }
 
 // When the page is done loading, all the controls in the page can be bound.

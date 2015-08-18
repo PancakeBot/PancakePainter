@@ -19,6 +19,7 @@ module.exports = function(paper) {
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
   var segment, path;
+  paper.imageTraceMode = false;
   var hitOptions = {
     segments: true,
     stroke: true,
@@ -28,8 +29,16 @@ module.exports = function(paper) {
 
   // Externalize deseletion
   paper.deselect = function() {
-    if (paper.selectRect) paper.selectRect.remove();
-  }
+    if (paper.selectRect) {
+      paper.selectRect.remove();
+      paper.selectRect = null;
+
+      // Complete imageTraceMode if we're deselecting.
+      if (paper.imageTraceMode) {
+        paper.finishImageImport();
+      }
+    }
+  };
 
   // Tool identification (for building out tool palette)
   tool.name = 'tools.select';
@@ -40,8 +49,22 @@ module.exports = function(paper) {
 
     var hitResult = project.hitTest(event.point, hitOptions);
 
+    // Don't select image if not in trace mode
+    if (hitResult && !paper.imageTraceMode) {
+      if (hitResult.item == paper.traceImage
+              || hitResult.item == paper.traceImage.img) {
+        hitResult = null; // Act like we didn't hit anything
+      }
+    }
+
     // If we didn't hit anything with hitTest...
     if (!hitResult) {
+      // Finish imageTraceMode
+      if (paper.imageTraceMode) {
+        paper.deselect();
+        return;
+      }
+
       // Find any items that are Paths (not layers) that contain the point
       var item = getBoundSelection(event.point);
 
@@ -54,8 +77,7 @@ module.exports = function(paper) {
       } else {
         // Deselect if nothing clicked (feels natural for deselection)
         if (paper.selectRect !== null) {
-          paper.selectRect.remove();
-          paper.selectRect = null;
+          paper.deselect();
         }
 
         return;
@@ -70,6 +92,21 @@ module.exports = function(paper) {
     }
 
     if (hitResult) {
+      if (paper.imageTraceMode) {
+
+        // Select the group, not the image
+        if (hitResult.item == paper.traceImage.img) {
+          hitResult.item = paper.traceImage;
+        }
+
+        //console.log('HITRESULT', hitResult.item);
+
+        // Don't select any other items if in image trace mode
+        if (hitResult.item != paper.selectRect && hitResult.item != paper.traceImage) {
+          return;
+        }
+      }
+
       path = hitResult.item;
 
       if (hitResult.type === 'segment') {
@@ -117,7 +154,7 @@ module.exports = function(paper) {
       return;
     }
 
-    if (segment) {
+    if (segment && !paper.imageTraceMode) {
       // Individual path segment position adjustment
       segment.point.x += event.delta.x;
       segment.point.y += event.delta.y;
@@ -134,16 +171,27 @@ module.exports = function(paper) {
         paper.selectRect.position.x += event.delta.x;
         paper.selectRect.position.y += event.delta.y;
       } else {
-        paper.selectRect.position.x += event.delta.x;
-        paper.selectRect.position.y += event.delta.y;
-        paper.selectRect.ppath.position.x += event.delta.x;
-        paper.selectRect.ppath.position.y += event.delta.y;
+        paper.selectRect.position = paper.selectRect.position.add(event.delta);
+        paper.selectRect.ppath.position = paper.selectRect.ppath.position.add(event.delta);
       }
     }
   };
 
   tool.onMouseMove = function(event) {
     project.activeLayer.selected = false;
+
+    if (paper.selectRect) {
+      paper.selectRect.selected = true;
+    }
+
+    if (paper.imageTraceMode) {
+      return; // No hover events for imageTraceMode
+    } else {
+      // No hover events for the trace image
+      if (event.item == paper.traceImage) return;
+      if (event.item == paper.traceImage.img) return;
+    }
+
 
     var boundItem = getBoundSelection(event.point);
 
@@ -155,10 +203,6 @@ module.exports = function(paper) {
       paper.setCursor('move');
     } else {
       paper.setCursor();
-    }
-
-    if (paper.selectRect) {
-      paper.selectRect.selected = true;
     }
   };
 
@@ -172,15 +216,14 @@ module.exports = function(paper) {
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
         paper.selectRect.ppath.remove();
-        paper.selectRect.remove();
-        paper.selectRect = null;
+        if (paper.imageTraceMode) paper.traceImage = null;
+        paper.deselect();
       }
 
       // Deselect
       if (event.key === 'escape') {
         paper.selectRect.ppath.fullySelected = false;
-        paper.selectRect.remove();
-        paper.selectRect = null;
+        paper.deselect();
       }
 
     }
@@ -188,7 +231,6 @@ module.exports = function(paper) {
 
   function initSelectionRectangle(path) {
     if (paper.selectRect !== null) paper.selectRect.remove();
-
     var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
     var bounds;
 
@@ -220,7 +262,13 @@ module.exports = function(paper) {
     paper.selectRect.name = "selection rectangle";
     paper.selectRect.selected = true;
     paper.selectRect.ppath = path;
-    paper.selectRect.ppath.pivot = paper.selectRect.pivot;
+
+    // Set pivot to 0,0 for raster "paths" during paper.imageTraceMode
+    //if (paper.imageTraceMode) {
+    //  paper.selectRect.ppath.pivot = path.globalToLocal(paper.selectRect.pivot);
+    //} else {
+      paper.selectRect.ppath.pivot = paper.selectRect.pivot;
+    //}
   }
 
   function getBoundSelection(point) {
@@ -231,6 +279,8 @@ module.exports = function(paper) {
 
     var item = null;
     _.each(items, function (i) {
+      if (i == paper.traceImage) return; // Don't select the trace image
+      if (i == paper.traceImage.img) return; // Don't select the trace image
       if (i instanceof Path) {
         if (i.contains(point)) {
           item = i;
@@ -241,6 +291,19 @@ module.exports = function(paper) {
     return item;
   }
 
+
+  // Change the select tool mode to/from image trace mode
+  tool.imageTraceMode = function(toggle) {
+    paper.imageTraceMode = toggle;
+
+    if (toggle) {
+      initSelectionRectangle(paper.traceImage);
+      tool.activate();
+    } else {
+      path = null;
+      paper.deselect();
+    }
+  }
+
   return tool;
 };
-

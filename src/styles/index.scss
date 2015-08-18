@@ -21,7 +21,7 @@ body {
   }
 }
 
-// Toolbar/sidebar =============================================================
+// Toolbar =====================================================================
 #tools {
   position: absolute;
   left: 0;
@@ -29,49 +29,57 @@ body {
   top: 50%;
   transform: translate(0, -50%);
   margin-left: 6px;
-  z-index: 10; // Just in case anything off of tools needs to be above canvas.
+  z-index: 5; // Just in case anything off of tools needs to be above canvas.
 
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
     overflow: hidden;
+  }
 
-    li {
-      border: 1px solid #fff; // Avoids border size change on hover
-      cursor: pointer;
-      margin: 4px 0;
-      float: left;
-      padding: 0.5em;
+  .tool {
+    border: 1px solid #fff; // Avoids border size change on hover
+    cursor: pointer;
+    margin: 4px 0;
+    float: left;
+    padding: 0.5em;
 
-      &:hover, &.active {
-        border: 1px solid #888;
-        border-radius: 8px;
+    &:hover, &.active {
+      border: 1px solid #888;
+      border-radius: 8px;
 
-        img { opacity: 1; } // You can fully see the icon on hover or select
-      }
-
-      &.active {
-        background-color: #00A000;
-        border-color: red;
-      }
+      img { opacity: 1; } // You can fully see the icon on hover or select
     }
 
-    img {
-      width: 50px;
-      opacity: 0.5;
+    &.active {
+      background-color: #00A000;
+      border-color: red;
     }
+
+    // Hack to fix height offset caused by crazy colorpicker overlay
+    &#import {
+      margin-top: -5em;
+      z-index: 5;
+    }
+  }
+
+  img {
+    width: 50px;
+    opacity: 0.5;
   }
 }
 
 // Color Picker ================================================================
 #color {
+  position: relative;
   border: 1px solid #888;
   border-radius: 8px;
   width: 65px;
   height: 65px;
   overflow: visible;
   margin-top: 5px;
+  z-index: 6; // Needs to be above other tools
 
   &:hover #picker {
     transform: scale(1);
@@ -101,8 +109,6 @@ body {
         width: 70px;
         height: 70px;
         border: 5px solid blue;
-        //-webkit-clip-path: polygon(60% 0, 100% 0, 100% 100%, 0 100%, 0 60%);
-        //-webkit-filter: blur(10px);
       }
 
       &.active:hover:after {

@@ -20,6 +20,10 @@
     "color2": "Medium dark",
     "color3": "Dark"
   },
+  "import": {
+    "title": "Import image for tracing",
+    "files": "Web format tracing image"
+  },
   "export": {
     "title": "Export creation for printing...",
     "start": "Export"
