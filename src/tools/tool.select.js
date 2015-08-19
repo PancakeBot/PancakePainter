@@ -267,13 +267,7 @@ module.exports = function(paper) {
     paper.selectRect.name = "selection rectangle";
     paper.selectRect.selected = true;
     paper.selectRect.ppath = path;
-
-    // Set pivot to 0,0 for raster "paths" during paper.imageTraceMode
-    //if (paper.imageTraceMode) {
-    //  paper.selectRect.ppath.pivot = path.globalToLocal(paper.selectRect.pivot);
-    //} else {
-      paper.selectRect.ppath.pivot = paper.selectRect.pivot;
-    //}
+    paper.selectRect.ppath.pivot = paper.selectRect.pivot;
   }
 
   function getBoundSelection(point) {
@@ -290,6 +284,7 @@ module.exports = function(paper) {
         if (i == paper.traceImage.img) return; // Don't select the trace image
       }
 
+      // TODO: Prioritize selection of paths completely inside of other paths
       if (i instanceof Path) {
         if (i.contains(point)) {
           item = i;
