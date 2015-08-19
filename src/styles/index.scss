@@ -12,6 +12,13 @@ body {
   transform: translate(-50%, 0);
 }
 
+img {
+  -webkit-user-drag: none; // Don't drag our poor little elements!
+}
+
+body * {
+  -webkit-user-select: none; // No selections! Period.
+}
 
 // Editor ======================================================================
 #editor-wrapper {

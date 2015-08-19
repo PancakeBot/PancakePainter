@@ -9,6 +9,12 @@ body {
   left: 50%;
   transform: translate(-50%, 0); }
 
+img {
+  -webkit-user-drag: none; }
+
+body * {
+  -webkit-user-select: none; }
+
 #editor-wrapper img {
   display: block;
   top: 50%;
