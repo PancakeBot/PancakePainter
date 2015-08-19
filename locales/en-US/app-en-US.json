@@ -22,7 +22,7 @@
     "type": "PancakeCreator Project File",
     "note": "Saved project file \"__file__\"",
     "new": "Empty project started",
-    "close": "Project closed, and empty project started",
+    "close": "Project closed, empty project started",
     "error": "Problem saving file! Try saving to a different file name or location.",
     "discarded": "File not saved, changes discarded",
     "confirm": {
