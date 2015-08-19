@@ -60,19 +60,6 @@ module.exports = function applyTemplate() {
           }
         }
       ]
-    },
-    {
-      label: 'Window',
-      submenu: [
-        {
-          label: 'Minimize',
-          accelerator: 'Control+M'
-        }
-      ]
-    },
-    {
-      label: 'Help',
-      submenu: []
     }
   ];
 

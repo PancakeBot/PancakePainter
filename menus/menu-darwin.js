@@ -125,10 +125,6 @@ module.exports = function applyTemplate() {
           selector: 'performClose:'
         }
       ]
-    },
-    {
-      label: 'Help',
-      submenu: []
     }
   ];
 
