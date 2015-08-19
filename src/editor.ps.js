@@ -45,9 +45,15 @@ paper.setCursor = function(type) {
   //$editor.css('cursor', type);
 }
 
+var lastCenter = view.center;
 function onResize(event) {
-  paper.mainLayer.position = view.center;
-  paper.imageLayer.position = view.center;
+  var vector = lastCenter - view.center;
+
+  paper.mainLayer.position-= vector;
+  paper.imageLayer.position-= vector;
+
+
+  lastCenter = view.center;
   view.zoom = scale/2.5;
 }
 
