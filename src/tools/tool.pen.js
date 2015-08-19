@@ -9,7 +9,7 @@ module.exports = function(paper) {
   var tool = new paper.Tool();
 
   // Constant tool tweaks
-  var endSnapDistance = 7;
+  var endSnapDistance = 5;
   var minLineLength = 8;
   var simplifyAmount = 3;
   var simplifyThreshold = 150; // Smallest shape that will be simplified
