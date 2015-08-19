@@ -62,10 +62,7 @@ module.exports = function applyTemplate() {
       submenu: [
         {
           key: 'file.new',
-          accelerator: 'Command+N',
-          click: function () {
-            // TODO: Add this
-          }
+          accelerator: 'Command+N'
         },
         {
           key: 'file.open',
