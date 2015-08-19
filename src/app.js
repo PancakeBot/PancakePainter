@@ -164,7 +164,7 @@ function buildToolbar() {
         .data('cursor-offset', tool.cursorOffset)
         .append(
         $('<img>').attr({
-          src: 'images/icon-' + tool.key + '.png',
+          src: 'images/icon-' + tool.key + '.svg',
           title: i18n.t(tool.name),
           draggable: 'false'
         })
@@ -238,7 +238,7 @@ function buildImageImporter() {
     .attr('id', 'import')
     .data('cursor-key', 'select')
     .attr('title', i18n.t('import.title'));
-  $importButton.append($('<img>').attr('src', 'images/icon-import.png'));
+  $importButton.append($('<img>').attr('src', 'images/icon-import.svg'));
 
   $importButton.click(function(){
     activateToolItem($importButton);
