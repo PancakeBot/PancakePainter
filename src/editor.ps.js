@@ -52,7 +52,6 @@ function onResize(event) {
   paper.mainLayer.position-= vector;
   paper.imageLayer.position-= vector;
 
-
   lastCenter = view.center;
   view.zoom = scale/2.5;
 }
@@ -66,15 +65,15 @@ paper.initImageImport = function() {
       filters: [
         { name: i18n.t('import.files'), extensions: ['jpg', 'jpeg', 'gif', 'png'] }
       ]
-    }, function(path){
-      if (!path) {  // Open cancelled
+    }, function(filePath){
+      if (!filePath) {  // Open cancelled
         paper.finishImageImport();
         return;
       }
 
       paper.imageLayer.activate(); // Draw the raster to the image layer
         var img = new Raster({
-          source: 'file://' + path,
+          source: dataURI(filePath[0]),
           position: view.center
         });
         // The raster MUST be in a group to alleviate coordinate & scaling issues.
@@ -117,6 +116,75 @@ paper.finishImageImport = function() {
   toolSelect.imageTraceMode(false);
 }
 
+
+// Clear the existing project workspace (no confirmation)
+paper.newPBP = function(noLayers) {
+  paper.deselect();
+
+  paper.imageLayer.remove();
+  paper.mainLayer.remove();
+  project.clear();
+
+  if (paper.traceImage) {
+    paper.traceImage.remove();
+    paper.traceImage = null;
+  }
+
+  if (!noLayers) {
+    paper.imageLayer = project.getActiveLayer(); // Creates the default layer
+    paper.mainLayer = new Layer(); // Everything is drawn on here by default now
+  }
+
+  view.update();
+
+  // Reset current file status (keeping previous file name, for kicks)
+  currentFile.name = "";
+  currentFile.changed = false;
+}
+
+// Render the text/SVG for the pancakebot project files
+paper.getPBP = function(){
+  paper.deselect(); // Don't export with something selected!
+
+  // Save this layer's known center so it can be adjusted for when loaded.
+  paper.mainLayer.data.viewCenter = view.center;
+  return project.exportJSON();
+}
+
+// Called whenever the file is changed from a tool
+paper.fileChanged = function() {
+  currentFile.changed = true;
+}
+
+// Load a given PBP filepath into the project workspace
+paper.loadPBP = function(filePath){
+  paper.newPBP(true);
+
+  currentFile.name = path.parse(filePath).base;
+  currentFile.path = filePath;
+  currentFile.changed = false;
+
+  project.importJSON(fs.readFileSync(filePath, "utf8"));
+
+  paper.imageLayer = project.layers[0];
+  paper.mainLayer = project.layers[1];
+
+  paper.mainLayer.activate();
+
+  // Adjust offset position based on difference between current view center and
+  // view center stored in the mainLayer data view center.
+  var vector = paper.mainLayer.data.viewCenter - view.center;
+  paper.mainLayer.position-= vector;
+  paper.imageLayer.position-= vector;
+
+  // Reinstate traceImage, if any.
+  if (paper.imageLayer.children.length) {
+    paper.traceImage = paper.imageLayer.children[0];
+    paper.traceImage.img = paper.traceImage.children[0];
+  }
+
+  toastr.info(i18n.t('file.opened', {file: currentFile.name}));
+}
 
 // Editor should be done loading, trigger loadInit
 editorLoadedInit();

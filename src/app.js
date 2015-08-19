@@ -22,6 +22,7 @@ $.i18n = window.i18n = remote.require('i18next');
 var app = remote.require('app');
 require('../menus/menu-init')(app); // Initialize the menus
 var fs = remote.require('fs-plus');
+var dataURI = require('datauri');
 
 // Bot specific configuration & state =====================---------------------
 var scale = {};
@@ -39,9 +40,17 @@ var renderConfig = {
   version: app.getVersion() // Application version written to GCODE header
 };
 
+// File management  =======================================---------------------
+var currentFile = {
+  name: "", // Name for the file (no path)
+  path: path.join(app.getPath('userDesktop'), i18n.t('file.default')),
+  changed: false // Can close app without making any changes
+}
+
 // Toastr notifications
 toastr.options.positionClass = "toast-bottom-right";
 toastr.options.preventDuplicates = true;
+toastr.options.newestOnTop = true;
 
 
 // Page loaded
@@ -227,6 +236,7 @@ function selectColor(index) {
       paper.selectRect.ppath.strokeColor = paper.pancakeShades[index];
       paper.selectRect.ppath.data.color = index;
       paper.view.update();
+      currentFile.changed = true;
     }
   }
 }
@@ -251,7 +261,7 @@ function buildImageImporter() {
 // When the page is done loading, all the controls in the page can be bound.
 function bindControls() {
   // Callback/event for when any menu item is clicked
-  app.menuClick = function(menu) {
+  app.menuClick = function(menu, callback) {
     switch (menu) {
       case 'file.export':
         mainWindow.dialog({
@@ -271,11 +281,104 @@ function bindControls() {
           toastr.success(i18n.t('export.note', {file: path.parse(filePath).base}));
         });
         break;
+      case 'file.saveas':
+        currentFile.name = "";
+      case 'file.save':
+        if (currentFile.name === "") {
+          mainWindow.dialog({
+            type: 'SaveDialog',
+            title: i18n.t(menu), // Same app namespace i18n key for title :)
+            defaultPath: currentFile.path,
+            filters: [
+              { name: i18n.t('file.type'), extensions: ['pbp'] }
+            ]
+          }, function(filePath){
+            if (!filePath) return; // Cancelled
+
+            // Verify file extension
+            if (filePath.split('.').pop().toLowerCase() !== 'pbp') filePath += '.pbp';
+            currentFile.path = filePath;
+            currentFile.name = path.parse(filePath).base;
+
+            try {
+              fs.writeFileSync(currentFile.path, paper.getPBP()); // Write file!
+              toastr.success(i18n.t('file.note', {file: currentFile.name}));
+              currentFile.changed = false;
+            } catch(e) {
+              toastr.error(i18n.t('file.error', {file: currentFile.name}));
+            }
+
+            if (callback) callback();
+          });
+        } else {
+          try {
+            fs.writeFileSync(currentFile.path, paper.getPBP()); // Write file!
+            toastr.success(i18n.t('file.note', {file: currentFile.name}));
+            currentFile.changed = false;
+          } catch(e) {
+            toastr.error(i18n.t('file.error', {file: currentFile.name}));
+          }
+        }
+
+        break;
+      case 'file.open':
+        if (!document.hasFocus()) return; // Triggered from devtools otherwise
+        mainWindow.dialog({
+          type: 'OpenDialog',
+          title: i18n.t(menu),
+          filters: [
+            { name: i18n.t('file.type'), extensions: ['pbp'] }
+          ]
+        }, function(filePath){
+          if (!filePath) return; // Cancelled
+          paper.loadPBP(filePath[0]);
+        });
+        break;
+      case 'file.new':
+      case 'file.close':
+        checkFileStatus(function(){
+          toastr.info(i18n.t(menu));
+          paper.newPBP();
+        });
+        break;
       default:
         console.log(menu);
     }
   };
 }
+
+window.onbeforeunload = function(e) {
+  return checkFileStatus();
+};
+
+// Check the current file status and alert the user what to do before continuing
+// This is pretty forceful and there's no way to back out.
+function checkFileStatus(callback) {
+  if (currentFile.changed) {
+    if (currentFile.name === "") { // New file or existing?
+      // Save new is asynch and needs to cancel the close and use a callback
+      if (confirm(i18n.t('file.confirm.savenew'))) {
+        app.menuClick('file.save', function(){
+          if (callback) callback();
+        });
+        return false;
+      } else {
+        toastr.warning(i18n.t('file.discarded'));
+      }
+    } else {
+      // Save in place is completely synchronus, so doesn't need to cancel close
+      if (confirm(i18n.t('file.confirm.save', {file: currentFile.name}))) {
+        app.menuClick('file.save');
+      } else {
+        toastr.warning(i18n.t('file.discarded'));
+      }
+    }
+  }
+
+  if (callback) callback();
+  return true;
+}
+
 
 // Show/Hide the fosted glass overlay (disables non-overlay-wrapper controls)
 function toggleOverlay(doShow, callback) {

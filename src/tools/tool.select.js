@@ -214,6 +214,9 @@ module.exports = function(paper) {
   tool.onMouseUp = function(event) {
     selectionRectangleScale = null;
     selectionRectangleRotation = null;
+
+    // If we have a mouse up with either of these, the file has changed!
+    if (path || segment) paper.fileChanged();
   };
 
   tool.onKeyDown = function (event) {

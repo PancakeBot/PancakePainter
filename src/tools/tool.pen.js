@@ -116,7 +116,10 @@ module.exports = function(paper) {
         // Select the drawPath, so we can see its segments:
         drawPath = null;
         clearEndSnap();
+
+        paper.fileChanged();
       }
+
     }
   };
 
@@ -141,6 +144,7 @@ module.exports = function(paper) {
         drawPath.remove();
       } else {
         drawPath.data.isPolygonal = true;
+        paper.fileChanged();
       }
 
       drawPath = null;
@@ -157,7 +161,7 @@ module.exports = function(paper) {
       strokeColor: paper.pancakeShades[paper.pancakeCurrentShade],
       strokeWidth: paper.strokeWidth,
       strokeCap: 'round',
-      miterLimit: 5,
+      miterLimit: 1,
       data: {color: paper.pancakeCurrentShade}
     });
   }

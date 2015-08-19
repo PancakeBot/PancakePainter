@@ -13,6 +13,23 @@
     "pen": "Batter line",
     "select": "Select"
   },
+  "file": {
+    "save": "Save PancakeCreator Project...",
+    "saveas": "Save PancakeCreator Project as...",
+    "open": "Open PancakeCreator project file...",
+    "opened": "Opened project \"__file__\"",
+    "default": "Pancake Project",
+    "type": "PancakeCreator Project File",
+    "note": "Saved project file \"__file__\"",
+    "new": "Empty project started",
+    "close": "Project closed, and empty project started",
+    "error": "Problem saving file! Try saving to a different file name or location.",
+    "discarded": "File not saved, changes discarded",
+    "confirm": {
+      "savenew": "Project is not saved! \n\n Save new project before continuing? \n\n Click cancel to continue without saving.",
+      "save": "Project has changed! \n\n Save changes to \"__file__\" before continuing? \n\n Click cancel to continue without saving."
+    }
+  },
   "color" : {
     "title": "Color selection",
     "color0": "Light",
