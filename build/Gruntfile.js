@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 
   var appInfo = grunt.file.readJSON('package.json');
   var version = appInfo.version;
-  var buildIgnore = './build';
+  var buildIgnore = 'build/dist|build/node_modules|build/tasks|build/package.json|build/Gruntfile.js';
 
   // Project configuration.
   grunt.initConfig({
