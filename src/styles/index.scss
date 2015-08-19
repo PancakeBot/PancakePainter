@@ -37,6 +37,10 @@ body {
   transform: translate(-50%, 0);
   z-index: 5; // Just in case anything off of tools needs to be above canvas.
 
+  // Normally this would auto-size fine, but there are wrapping issues that
+  // need to be addressed before we can handle more tools.
+  width: 426px;
+
   ul {
     list-style: none;
     margin: 0;

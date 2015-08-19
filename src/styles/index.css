@@ -24,7 +24,8 @@ body {
   left: 50%;
   top: 10px;
   transform: translate(-50%, 0);
-  z-index: 5; }
+  z-index: 5;
+  width: 426px; }
   #tools ul {
     list-style: none;
     margin: 0;
