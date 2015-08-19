@@ -323,15 +323,17 @@ function bindControls() {
         break;
       case 'file.open':
         if (!document.hasFocus()) return; // Triggered from devtools otherwise
-        mainWindow.dialog({
-          type: 'OpenDialog',
-          title: i18n.t(menu),
-          filters: [
-            { name: i18n.t('file.type'), extensions: ['pbp'] }
-          ]
-        }, function(filePath){
-          if (!filePath) return; // Cancelled
-          paper.loadPBP(filePath[0]);
+        checkFileStatus(function() {
+          mainWindow.dialog({
+            type: 'OpenDialog',
+            title: i18n.t(menu),
+            filters: [
+              { name: i18n.t('file.type'), extensions: ['pbp'] }
+            ]
+          }, function(filePath){
+            if (!filePath) return; // Cancelled
+            paper.loadPBP(filePath[0]);
+          });
         });
         break;
       case 'file.new':
