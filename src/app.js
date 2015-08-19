@@ -8,7 +8,9 @@
 // Libraries ==============================================---------------------
 // Must use require syntax for including these libs because of node duality.
 window.$ = window.jQuery = require('jquery');
+window.toastr = require('toastr');
 window._ = require('underscore');
+var path = require('path');
 // GCODE renderer (initialized after paper is setup)
 var gcRender = require('./gcode.js');
 
@@ -36,6 +38,11 @@ var renderConfig = {
   },
   version: app.getVersion() // Application version written to GCODE header
 };
+
+// Toastr notifications
+toastr.options.positionClass = "toast-bottom-right";
+toastr.options.preventDuplicates = true;
+
 
 // Page loaded
 $(function(){
@@ -253,12 +260,15 @@ function bindControls() {
           filters: [
             { name: 'PancakeBot GCODE', extensions: ['gcode'] }
           ]
-        }, function(path){
-          if (!path) return; // Cancelled
+        }, function(filePath){
+          if (!filePath) return; // Cancelled
 
           // Verify file extension
-          if (path.split('.').pop().toLowerCase() !== 'gcode') path += '.gcode';
-          fs.writeFileSync(path, gcRender()); // Write file!
+          if (filePath.split('.').pop().toLowerCase() !== 'gcode') filePath += '.gcode';
+          fs.writeFileSync(filePath, gcRender()); // Write file!
+
+          // Notify user
+          toastr.success(i18n.t('export.note', {file: path.parse(filePath).base}));
         });
         break;
       default:

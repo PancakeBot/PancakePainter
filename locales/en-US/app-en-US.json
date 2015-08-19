@@ -26,6 +26,7 @@
   },
   "export": {
     "title": "Export creation for printing...",
-    "start": "Export"
+    "start": "Export",
+    "note" : "Successfully exported \"__file__\" for printing"
   }
 }
