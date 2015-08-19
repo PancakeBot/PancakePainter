@@ -9,9 +9,10 @@ module.exports = function(paper) {
   var tool = new paper.Tool();
 
   // Constant tool tweaks
-  var endSnapDistance = 10;
+  var endSnapDistance = 7;
   var minLineLength = 8;
-  var simplifyAmount = 5;
+  var simplifyAmount = 3;
+  var simplifyThreshold = 150; // Smallest shape that will be simplified
 
   // Paper global extenders
   var Path = paper.Path;
@@ -97,19 +98,18 @@ module.exports = function(paper) {
 
       // Freehand pencil draw complete
       if (!polygonalDraw && pencilDraw) {
+        // When the mouse is released, simplify it (if it's not too small):
+        if (drawPath.length > simplifyThreshold) {
+          drawPath.simplify(simplifyAmount);
+        } else {
+          drawPath.simplify(1);
+        }
 
         // If the distance is right and we have end snap... make it closed!
         if (drawPath.length > endSnapDistance + 5 && checkEndSnap(drawPath.lastSegment.point)) {
           drawPath.lastSegment.remove();
           drawPath.closed = true;
         }
-
-        //drawPath.smooth();
-
-        // When the mouse is released, simplify it:
-        drawPath.simplify(simplifyAmount);
-
-        //drawPath.smooth();
 
         pencilDraw = false;
 
