@@ -25,10 +25,19 @@ body * {
   z-index: 1;
   position: absolute; }
 
+#toolback {
+  background-color: #3A3A3A;
+  height: 93px;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  box-shadow: 2px 6px 21px -4px rgba(0, 0, 0, 0.4); }
+
 #tools {
   position: absolute;
   left: 50%;
-  top: 10px;
+  top: 5px;
   transform: translate(-50%, 0);
   z-index: 5;
   width: 426px; }
@@ -40,6 +49,7 @@ body * {
     float: left; }
   #tools .tool {
     border: 3px solid #fff;
+    background-color: white;
     cursor: pointer;
     margin-right: 15px;
     float: left;
@@ -85,7 +95,7 @@ body * {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: white; }
+  background: radial-gradient(ellipse at center, white 0%, #e0e1e2 100%); }
 
 #overlay {
   display: none;
