@@ -106,7 +106,7 @@ paper.initImageImport = function() {
     toolSelect.imageTraceMode(true);
   }
 
-  paper.view.update();
+  view.update();
 }
 
 // Called when completing image import management
@@ -184,6 +184,7 @@ paper.loadPBP = function(filePath){
   }
 
   toastr.info(i18n.t('file.opened', {file: currentFile.name}));
+  view.update();
 }
 
 // Editor should be done loading, trigger loadInit
