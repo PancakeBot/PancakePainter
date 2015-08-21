@@ -112,9 +112,9 @@ module.exports = function(config) {
       gc('note', 'PancakeCreator v' + config.version + ' GCODE header start'),
       gc('workspace', config.printArea),
       gc('units'),
-      gc('rate', 6600),
+      gc('speed', 5600),
       gc('pumpoff'),
-      gc('wait', 1),
+      gc('wait', 1000),
       gc('off'),
       gc('home'),
       gc('note', 'PancakeCreator header complete'),
@@ -125,7 +125,7 @@ module.exports = function(config) {
   function getCodeFooter() {
     return [
       gc('note', 'PancakeCreator footer start'),
-      gc('wait', 1),
+      gc('wait', 1000),
       gc('home'),
       gc('off'),
       gc('note', 'PancakeCreator Footer Complete'),
@@ -136,11 +136,11 @@ module.exports = function(config) {
   function getCodeColorChange(id) {
     return [
       gc('note', 'Switching Color to: ' + paper.pancakeShadeNames[id]),
-      gc('wait', 1),
+      gc('wait', 1000),
       gc('home'),
       gc('off'),
       gc('change'),
-      gc('wait', 5),
+      gc('wait', 5000),
     ].join('');
   }
 
@@ -162,13 +162,13 @@ module.exports = function(config) {
       units: 'G21 ;Set units to MM',
       abs: 'G90 ;Use Absolute units',
       home: 'G28 ;Home All Axis',
-      move: 'G1 X%x Y%y',
-      rate: 'G1 F%% ;Set Feedrate',
+      move: 'G00 X%x Y%y',
+      speed: 'G1 F%% ;Set Speed',
       pumpon: 'M106 ;Pump on',
       pumpoff: 'M107 ;Pump off',
       change: 'M142 ;Bottle change', // TODO: This code is currently unknown!
       note: ';%%',
-      wait: 'M84 S%% ;Pause for %% second(s)',
+      wait: 'G4 P%% ;Pause for %% milliseconds',
       workspace: 'W1 X%x Y%y L%l T%t ;Define Workspace of this file', // Also made up
       off: 'M84 ;Motors off'
     };

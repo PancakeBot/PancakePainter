@@ -29,8 +29,8 @@ var scale = {};
 var renderConfig = {
   flattenResolution: 15, // Flatten curve value (smaller value = more points)
   lineEndPreShutoff: 35, // Remaining line length threshold for pump shutoff
-  startWait: 0.75, // Time to wait for batter flow
-  endWait: 0.65, // Time to wait for batter flow
+  startWait: 750, // Time to wait for batter flow begin
+  endWait: 650, // Time to wait for batter flow end
   printArea: { // Print area limitations (in MM)
     x: 42,
     y: 210,
