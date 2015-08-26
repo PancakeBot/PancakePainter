@@ -36,6 +36,7 @@ var values = {
 
 // TODO: Load all tools in folder based on weight
 var toolPen = require('./tools/tool.pen')(paper);
+var toolFill = require('./tools/tool.fill')(paper);
 var toolSelect = require('./tools/tool.select')(paper);
 
 var $editor = $('#editor');

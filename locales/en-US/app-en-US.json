@@ -11,7 +11,8 @@
   },
   "tools": {
     "pen": "Batter line",
-    "select": "Select"
+    "select": "Select",
+    "fill": "Batter fill"
   },
   "file": {
     "save": "Save PancakeCreator Project...",
