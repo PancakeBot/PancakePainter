@@ -12,7 +12,15 @@
   "tools": {
     "pen": "Batter line",
     "select": "Select",
-    "fill": "Batter fill"
+    "fill": "Batter fill",
+    "warnings": {
+      "fill": {
+        "notclosed": "Flood fill area not closed.",
+        "bounds": "Flood fill out of bounds.",
+        "path": "Can't flood fill on top of an existing line.",
+        "nopaths": "Can't flood fill without at least one closed line."
+      }
+    }
   },
   "file": {
     "save": "Save PancakeCreator Project...",
@@ -45,6 +53,6 @@
   "export": {
     "title": "Export creation for printing...",
     "start": "Export",
-    "note" : "Successfully exported \"__file__\" for printing"
+    "note" : "Successfully exported \"__file__\" for printing."
   }
 }
