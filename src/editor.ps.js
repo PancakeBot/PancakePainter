@@ -26,14 +26,6 @@ _.each(paper.pancakeShades, function(color, index){
 
 paper.pancakeCurrentShade = 0;
 
-var values = {
-  paths: 5,
-  minPoints: 5,
-  maxPoints: 15,
-  minRadius: 30,
-  maxRadius: 90
-};
-
 // TODO: Load all tools in folder based on weight
 var toolPen = require('./tools/tool.pen')(paper);
 var toolFill = require('./tools/tool.fill')(paper);
