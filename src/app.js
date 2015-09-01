@@ -233,7 +233,12 @@ function selectColor(index) {
 
   if (paper.selectRect) {
     if (paper.selectRect.ppath) {
-      paper.selectRect.ppath.strokeColor = paper.pancakeShades[index];
+      if (paper.selectRect.ppath.data.fill === true) {
+        paper.selectRect.ppath.fillColor = paper.pancakeShades[index];
+      } else {
+        paper.selectRect.ppath.strokeColor = paper.pancakeShades[index];
+      }
+
       paper.selectRect.ppath.data.color = index;
       paper.view.update();
       currentFile.changed = true;
