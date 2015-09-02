@@ -18,6 +18,8 @@ module.exports = function(paper) {
   tool.key = 'fill';
   tool.cursorOffset = '1 9'; // Position for cursor point
   tool.pathSimplifyAmt = 0.7; // How much to simplify pixel boundary paths
+  tool.islandThreshold = 10; // Max distance between fill boundary nodes
+  tool.alphaBitmapThreshold = 50; // 0-255, value that's considered visible
 
   // Tool vars
   var ndarray = require('ndarray');
@@ -71,8 +73,8 @@ module.exports = function(paper) {
 
     // Move through all RGBA pixel data to generate a 1bit map of visible pix.
     for (var p = 0; p < pix.length; p+= 4) {
-      // If the alpha is greater than 50, it's visible! Map a 1.
-      if (pix[p+3] > 100) {
+      // If the alpha is greater than threshold, it's visible! Map a 1.
+      if (pix[p+3] > tool.alphaBitmapThreshold) {
         grid.set((p / 4) % w, Math.floor((p / 4) / w), 1);
       }
     }
@@ -156,9 +158,9 @@ module.exports = function(paper) {
       var lastPoint = out[cGroup][out[cGroup].length-1];
       var nextPoint = closestPoint(lastPoint, points);
 
-      // If the distance is further away than normal, we must be jumping to a
-      // sub path. Increment the group
-      if (nextPoint.dist > 5) {
+      // If the distance is further away than "normal", we must be jumping to a
+      // sub path. Increment the group.
+      if (nextPoint.dist > tool.islandThreshold) {
         cGroup++;
         out[cGroup] = [];
       }
