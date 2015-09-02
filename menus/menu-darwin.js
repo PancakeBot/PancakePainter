@@ -83,6 +83,10 @@ module.exports = function applyTemplate() {
           accelerator: 'Command+E'
         },
         {
+          key: 'file.exportmirrored',
+          accelerator: 'Command+Shift+E'
+        },
+        {
           key: 'file.save',
           accelerator: 'Command+S'
         },

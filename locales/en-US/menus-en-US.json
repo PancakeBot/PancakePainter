@@ -11,6 +11,7 @@
     "open": "&Open Project",
     "close": "&Close Project",
     "export": "&Export for printing...",
+    "exportmirrored": "&Export mirrored for printing...",
     "save": "&Save Project",
     "saveas": "Save Project &as…"
   },

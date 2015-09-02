@@ -9,10 +9,11 @@ module.exports = function(config) {
   var returnRenderer = {}; // The function/object returned by this module
 
   // Create gcode from current project
-  returnRenderer = function generateGcode() {
+  returnRenderer = function generateGcode(noMirror) {
     var workLayer = paper.project.getActiveLayer().clone();
     var out = getCodeHeader();
     var numPaths = workLayer.children.length;
+    config.noMirror = noMirror;
 
     var colorGroups = [];
 
@@ -194,6 +195,13 @@ module.exports = function(config) {
     }
 
     var pa = config.printArea;
+    pa = {
+      x: config.noMirror ? pa.x : pa.l,
+      l: config.noMirror ? pa.l : pa.x,
+      y: pa.y,
+      t: pa.t
+    }
+
     var b = paper.view.bounds;
     return {
       x: Math.round(map(b.width - (p.x - b.x), 0, b.width, pa.x, pa.l) * 1000) / 1000,

@@ -269,6 +269,7 @@ function bindControls() {
   app.menuClick = function(menu, callback) {
     switch (menu) {
       case 'file.export':
+      case 'file.exportmirrored':
         mainWindow.dialog({
           type: 'SaveDialog',
           title: i18n.t('export.title'),
@@ -280,7 +281,7 @@ function bindControls() {
 
           // Verify file extension
           if (filePath.split('.').pop().toLowerCase() !== 'gcode') filePath += '.gcode';
-          fs.writeFileSync(filePath, gcRender()); // Write file!
+          fs.writeFileSync(filePath, gcRender(menu === 'file.exportmirrored')); // Write file!
 
           // Notify user
           toastr.success(i18n.t('export.note', {file: path.parse(filePath).base}));
