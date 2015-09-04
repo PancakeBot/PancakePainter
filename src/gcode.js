@@ -15,6 +15,20 @@ module.exports = function(config) {
     var numPaths = workLayer.children.length;
     config.noMirror = noMirror;
 
+    // Convert all fill paths in the work layer into fills.
+    // Must use a fillList because removing paths changes the children list
+    var fillList = [];
+    _.each(workLayer.children, function(path){
+      if (path.data.fill === true) {
+        fillList.push(path);
+      }
+    });
+
+    workLayer.activate();
+    _.each(fillList, function(path){
+      paper.fillTracePath(path, config);
+    });
+
     var colorGroups = [];
 
     // Move through each path on the worklayer, and group them in reverse order
@@ -69,10 +83,8 @@ module.exports = function(config) {
       gc('pumpoff')
     ].join('');
 
-
     // Render segment points to Gcode movements
     _.each(path.segments, function(segment, index){
-
       // If the remaining length of the line is less than the shutoff value,
       // throw in the early shutoff.
       if (path.length - path.getOffsetOf(segment.point) <= config.lineEndPreShutoff && !pumpOff) {

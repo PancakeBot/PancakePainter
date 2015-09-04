@@ -31,6 +31,9 @@ var renderConfig = {
   lineEndPreShutoff: 35, // Remaining line length threshold for pump shutoff
   startWait: 750, // Time to wait for batter flow begin
   endWait: 650, // Time to wait for batter flow end
+  fillSpacing: 9, // Space between each trace fill line
+  fillAngle: 23, // Angle of line for trace fill
+  fillGroupThreshold: 25, // Threshold to group zig zags
   printArea: { // Print area limitations (in MM)
     x: 42,
     y: 210,
