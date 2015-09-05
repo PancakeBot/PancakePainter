@@ -28,6 +28,7 @@ module.exports = function(paper) {
   tool.name = 'tools.pen';
   tool.key = 'pen';
   tool.cursorOffset = '1 31'; // Position for cursor point
+  tool.cursorColors = true; // Different icons/cursor for each color?
 
   tool.onMouseDown = function(event) {
     // Continue drawing polygonal (ignores hitTest while on)
@@ -200,4 +201,3 @@ module.exports = function(paper) {
 
   return tool;
 };
-

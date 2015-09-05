@@ -7,7 +7,8 @@
   },
   "common": {
     "done": "Done",
-    "complete": "Complete"
+    "complete": "Complete",
+    "drawnote": "The design above will resemble the actual pancake once it has been flipped."
   },
   "tools": {
     "pen": "Batter line",

@@ -18,7 +18,7 @@ var gcRender = require('./gcode.js');
 // Include global main process connector objects for the renderer (this window).
 var remote = require('remote');
 var mainWindow = remote.getCurrentWindow();
-$.i18n = window.i18n = remote.require('i18next');
+var i18n = remote.require('i18next');
 var app = remote.require('app');
 require('../menus/menu-init')(app); // Initialize the menus
 var fs = remote.require('fs-plus');
@@ -88,10 +88,10 @@ function initEditor() {
   };
 
   var margin = { // Margin around griddle to restrict sizing
-    l: 20,  // Buffer
-    r: 20,  // Buffer
-    t: 100, // Toolbar
-    b: 90   // Logo & buffer
+    l: 10,  // Buffer
+    r: 10,  // Buffer
+    t: 110, // Toolbar
+    b: 40   // Buffer & Text
   };
 
   // Set maximum work area render size & manage dynamic sizing of elements not
@@ -168,18 +168,23 @@ function buildToolbar() {
   var $t = $('<ul>').appendTo('#tools');
 
   _.each(paper.tools, function(tool, index){
+    var colorID = '';
+    if (tool.cursorColors === true) {
+      colorID = "-" + paper.pancakeCurrentShade;
+    }
+
     if (tool.key) {
       $t.append($('<li>')
-        .addClass('tool')
+        .addClass('tool' +  (tool.cursorColors === true ? ' color-change' : ''))
         .attr('id', 'tool-' + tool.key)
         .data('cursor-key', tool.key)
         .data('cursor-offset', tool.cursorOffset)
+        .data('cursor-colors', tool.cursorColors)
         .append(
-        $('<img>').attr({
-          src: 'images/icon-' + tool.key + '.svg',
+        $('<div>').attr({
           title: i18n.t(tool.name),
           draggable: 'false'
-        })
+        }).css('background-image', 'url(images/icon-' + tool.key + '.png)')
       ).click(function(){
         tool.activate();
         activateToolItem(this);
@@ -196,7 +201,12 @@ function activateToolItem(item) {
   $('#tools .tool.active').removeClass('active');
   $(item).addClass('active');
 
-  var cursor = 'url("images/cursor-' + $(item).data('cursor-key') + '.png")';
+  var cursor = '';
+  if ($(item).data('cursor-colors')) {
+    cursor = 'url("images/cursor-' + $(item).data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
+  } else {
+    cursor = 'url("images/cursor-' + $(item).data('cursor-key') + '.png")';
+  }
 
   if ($(item).data('cursor-offset')) {
     cursor+= ' ' + $(item).data('cursor-offset');
@@ -225,7 +235,7 @@ function buildColorPicker() {
     .attr('id', 'color')
     .append($picker);
 
-  $('#tools').append($color);
+  $('#tools #tool-fill').after($color);
 }
 
 // Do everything required when a new color is selected
@@ -233,7 +243,20 @@ function selectColor(index) {
   paper.pancakeCurrentShade = index;
   $('#picker a.active').removeClass('active');
   $('#picker a.color' + index).addClass('active');
+  $('#tools').attr('class', 'color-' + index);
 
+  // Swap out color cursor (if any)
+  var cursor = '';
+  var $item = $('#tools .active');
+  if ($item.data('cursor-colors')) {
+    cursor = 'url("images/cursor-' + $item.data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
+    if ($item.data('cursor-offset')) {
+      cursor+= ' ' + $item.data('cursor-offset');
+    }
+    $('#editor').css('cursor', cursor + ', auto');
+  }
+
+  // Change selected path's color
   if (paper.selectRect) {
     if (paper.selectRect.ppath) {
       if (paper.selectRect.ppath.data.fill === true) {
@@ -256,14 +279,14 @@ function buildImageImporter() {
     .attr('id', 'import')
     .data('cursor-key', 'select')
     .attr('title', i18n.t('import.title'));
-  $importButton.append($('<img>').attr('src', 'images/icon-import.svg'));
+  $importButton.append($('<div>').css('background-image', 'url(images/icon-import.png)'));
 
   $importButton.click(function(){
     activateToolItem($importButton);
     paper.initImageImport();
   });
 
-  $('#tools').append($importButton);
+  $('#tools #tool-select').before($importButton);
 }
 
 // When the page is done loading, all the controls in the page can be bound.

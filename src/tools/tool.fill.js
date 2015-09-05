@@ -16,6 +16,7 @@ module.exports = function(paper) {
   // Tool identification (for building out tool palette)
   tool.name = 'tools.fill';
   tool.key = 'fill';
+  tool.cursorColors = true; // Different icons/cursor for each color?
   tool.cursorOffset = '1 9'; // Position for cursor point
   tool.pathSimplifyAmt = 0.7; // How much to simplify pixel boundary paths
   tool.islandThreshold = 10; // Max distance between fill boundary nodes

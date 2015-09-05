@@ -102,7 +102,7 @@ function windowInit() {
     }, function(){
 
       var windowSettings = {
-        'min-width': 600,
+        'min-width': 680,
         'min-height': 420,
         width: app.settings.v.window.width,
         height: app.settings.v.window.height,

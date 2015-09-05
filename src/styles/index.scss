@@ -5,11 +5,18 @@ body {
 }
 
 #logo {
-  height: 80px;
+  height: 32px;
   position: absolute;
-  bottom: 5px;
+  top: 26px;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate(50%, 0);
+}
+
+span#drawnote {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  bottom: 10px;
 }
 
 img {
@@ -28,6 +35,11 @@ body * {
     left: 50%;
     position: absolute;
     transform: translate(-50%, -50%);
+
+    // An easy cheat to let CSS manage all centering, and still let the griddle
+    // be off-center vertically by an absolute pixel amount. Any work you can
+    // have the browser do for you is less code to maintain, and likely faster.
+    margin-top: 36px;
   }
 
   #editor {
@@ -51,12 +63,12 @@ body * {
   position: absolute;
   left: 50%;
   top: 5px;
-  transform: translate(-50%, 0);
+  transform: translate(-81%, 0);
   z-index: 5; // Just in case anything off of tools needs to be above canvas.
 
   // Normally this would auto-size fine, but there are wrapping issues that
   // need to be addressed before we can handle more tools.
-  width: 485px;
+  width: 400px;
 
   ul {
     list-style: none;
@@ -67,39 +79,64 @@ body * {
   }
 
   .tool {
-    border: 3px solid #fff; // Avoids border size change on hover
-    background-color: white;
     cursor: pointer;
-    margin-right: 15px;
     float: left;
     padding: 0.5em;
-    border-radius: 1em;
 
-    &.active {
-      border-color: red;
+    &.active div {
+      background-position-x: 100%;
     }
   }
 
-  img {
-    width: 50px;
+  // The individual tool button
+  div {
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    // Set the background size forced to be twice as wide as the element
+    // that way our two element wide sprite will always fit.
+    background-size: 200%;
+    width: 64px;
+    height: 64px;
+    overflow: hidden;
   }
 
-  #import img {
-    width: 64px; // This one likes to be a bit bigger
+  // For color change tools, change the background-position
+  &.color-1 .tool.color-change div {
+    // We're splitting the image into thirds (four pieces, not including the first)
+    background-position-y: 33.333%;
+  }
+
+  &.color-2 .tool.color-change div {
+    // This much precision is required to avoid sub-pixel rendering jumps.
+    background-position-y: 66.666%;
+  }
+
+  &.color-3 .tool.color-change div {
+    background-position-y: 100%;
+  }
+
+  #import {
+    padding: 0;
+    width: 85px;
+    height: 74px;
+    margin-left: 10px;
+    div {
+      height: 74px;
+      margin-top: -3px;
+      width: 85px; // This one likes to be a bit bigger
+    }
   }
 }
 
 // Color Picker ================================================================
 #color {
   // Separation border and LOTS of distance from the other tools
-  border-left: 1px solid black;
-  padding-left: 40px;
-  margin-left: 15px;
 
   float: left;
   width: 65px;
   height: 65px;
   overflow: visible;
+  margin-top: 10px;
   z-index: 6; // Needs to be above other tools
 
   &:hover #picker {
@@ -107,21 +144,24 @@ body * {
   }
 
   #picker {
-    width: 90px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
+    margin-top: 1px; // Yes, it matters ;)
+    margin-left: 5px;
 
     a {
+      border: 1px solid black;
       box-sizing: border-box;
-      border: 1px solid white;
       content: ' ';
       display: block;
-      width: 45px;
-      height: 32px;
+      width: 50%;
+      height: 50%;
+      border-radius: 50%;
       float: left;
 
       &.active {
         display: block;
-        border: 2px solid red;
+        border: 5px solid red;
       }
     }
   }

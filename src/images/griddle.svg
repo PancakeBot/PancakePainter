@@ -44,12 +44,12 @@
 		7,132.4 7,102.5 8,72.6 10.2,42.8 13.7,13.9 14.5,11.2 15.5,9.4 17,8.3 18.9,7.4 21.3,7 414.8,7 417.3,7.4 419.4,8.3 420.7,9.4 
 		421.8,11.2 422.4,13.6 425.9,42.8 428.1,72.6 429.1,102.5 429.1,132.4 428.1,162.3 425.9,192.1 422.4,221.6 421.9,223.8 
 		420.8,225.4 419.2,226.8 417.3,227.7 415.1,227.9 	"/>
-	<polygon fill="none" stroke="#FF00FF" stroke-miterlimit="10" stroke-dasharray="3.9999,2" points="21,227.9 18.9,227.7 
+	<polygon fill="none" stroke="#FF0000" stroke-miterlimit="10" stroke-dasharray="3.9999,2" points="21,227.9 18.9,227.7 
 		17.2,226.8 15.4,225.4 14.5,223.9 13.7,221.4 10.2,192.1 8,162.3 7,132.4 7,102.5 8,72.6 10.2,42.8 13.7,13.9 14.5,11.2 15.5,9.4 
 		17,8.3 18.9,7.4 21.3,7 414.8,7 417.3,7.4 419.4,8.3 420.7,9.4 421.8,11.2 422.4,13.6 425.9,42.8 428.1,72.6 429.1,102.5 
 		429.1,132.4 428.1,162.3 425.9,192.1 422.4,221.6 421.9,223.8 420.8,225.4 419.2,226.8 417.3,227.7 415.1,227.9 	"/>
 </g>
-<rect x="25.3" y="22.7" fill="none" stroke="#FFFF00" stroke-width="0.72" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="390.1" height="184.7"/>
+<rect x="25.3" y="22.7" fill="none" stroke="#A27500" stroke-width="0.72" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="390.1" height="184.7"/>
 <g>
 	
 		<linearGradient id="SVGID_5_" gradientUnits="userSpaceOnUse" x1="213.165" y1="210.6604" x2="213.165" y2="224.1485" gradientTransform="matrix(-1 0 0 -1 431.217 436.6689)">
@@ -60,6 +60,6 @@
 		<stop  offset="1" style="stop-color:#2A2627"/>
 	</linearGradient>
 	<ellipse fill="url(#SVGID_5_)" cx="218.1" cy="219.3" rx="15.5" ry="6.7"/>
-	<ellipse fill="#FFFFFF" stroke="#3D3D3D" stroke-width="0.7" stroke-miterlimit="10" cx="218.1" cy="219" rx="8.3" ry="4.3"/>
+	<ellipse fill="#E0E1E2" stroke="#3D3D3D" stroke-width="0.7" stroke-miterlimit="10" cx="218.1" cy="219" rx="8.3" ry="4.3"/>
 </g>
 </svg>
