@@ -19,8 +19,10 @@ module.exports = function(paper) {
   tool.cursorColors = true; // Different icons/cursor for each color?
   tool.cursorOffset = '1 9'; // Position for cursor point
   tool.pathSimplifyAmt = 0.7; // How much to simplify pixel boundary paths
+  tool.smallShapeArea = 200; // Minimum size to be considered a "small" shape
+  tool.smallShapeSimplify = 0.2; // Amount to simplify "small" fill shapes
   tool.islandThreshold = 10; // Max distance between fill boundary nodes
-  tool.alphaBitmapThreshold = 50; // 0-255, value that's considered visible
+  tool.alphaBitmapThreshold = 150; // 0-255, value that's considered visible
 
   // Tool vars
   var ndarray = require('ndarray');
@@ -143,7 +145,17 @@ module.exports = function(paper) {
         closed: true,
         segments: segments
       }));
-      out[out.length-1].simplify(tool.pathSimplifyAmt);
+      var idx = out.length-1;
+      var area = out[idx].bounds.width * out[idx].bounds.height;
+
+      // Cleanup based on area size
+      if (area === 0) {
+        out.pop().remove();
+      } else if (area <= tool.smallShapeArea) {
+        out[idx].simplify(tool.smallShapeSimplify);
+      } else {
+        out[idx].simplify(tool.pathSimplifyAmt);
+      }
     });
     return out;
   }
