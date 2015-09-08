@@ -150,7 +150,8 @@ module.exports = function(paper) {
 
   // Sort an array of Points by distance, grouped by distance threshold.
   function distanceSort(points) {
-    var out = [[points.shift()]]; // Start with the first one!
+    // Use an external function to find the most appropriate starting point.
+    var out = [[points.splice(getFillStartID(points), 1)[0]]];
     var cGroup = 0;
 
     // Loop through every point, adding the next closest point,
@@ -187,6 +188,20 @@ module.exports = function(paper) {
     return {id: closestID, dist: closest};
   }
 
+
+  // Find the most appropriate fill starting point given an array of points.
+  function getFillStartID(points) {
+    var bestID = 0;
+    var lowestY = points[0].y;
+    _.each(points, function(p, index){
+      if (p.y < lowestY) {
+        lowestY = p.y;
+        bestID = index;
+      }
+    });
+
+    return bestID;
+  }
 
   return tool;
 };
