@@ -212,8 +212,8 @@ module.exports = function(config) {
   // Convert an input Paper.js coordinate to an output bot mapped coordinate
   function reMap(p) {
     if (!p) {
-      return {x: 0, y:0};
       console.error('Null Point given for remap!');
+      return {x: 0, y:0};
     }
 
     var pa = config.printArea;
