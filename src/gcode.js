@@ -47,7 +47,7 @@ module.exports = function(config) {
       _.each(group, function(path){
         pathCount++;
         out += [
-          gc('note', 'Starting path #' + pathCount + '/' + numPaths + ' on color #' + (path.data.color + 1)),
+          gc('note', 'Starting path #' + pathCount + '/' + numPaths + ', segments: ' + path.segments.length + ', length: ' + Math.round(path.length) + ', color #' + (path.data.color + 1)),
           renderPath(path),
           gc('note', 'Completed path #' + pathCount + '/' + numPaths  + ' on color #' + (path.data.color + 1))
         ].join('');
