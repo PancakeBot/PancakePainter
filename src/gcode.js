@@ -12,7 +12,6 @@ module.exports = function(config) {
   returnRenderer = function generateGcode(noMirror) {
     var workLayer = paper.project.getActiveLayer().clone();
     var out = getCodeHeader();
-    var numPaths = workLayer.children.length;
     config.noMirror = noMirror;
 
     // Convert all fill paths in the work layer into fills.
@@ -29,6 +28,7 @@ module.exports = function(config) {
       paper.fillTracePath(path, config);
     });
 
+    var numPaths = workLayer.children.length;
     var colorGroups = [];
 
     // Move through each path on the worklayer, and group them in reverse order
