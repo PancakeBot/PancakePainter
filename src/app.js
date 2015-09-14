@@ -442,3 +442,14 @@ function updateFrosted(callback) {
     });
   }
 }
+
+
+// Prevent drag/dropping onto the window (it's really bad!)
+document.addEventListener('drop', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+});
+document.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+});
