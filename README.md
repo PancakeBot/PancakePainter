@@ -1,4 +1,4 @@
-# PancakeCreator!
+# PancakePainter!
 #### The super-simple drawing software for your PancakeBot.
 
 ### Download/Install
@@ -36,24 +36,24 @@ Official support will eventually be found @
 
 ## Problems?
 ***Stuck on something?*** Submit an issue! Click the
-[issues tab](https://github.com/PancakeBot/PancakeCreator/issues) and see if
+[issues tab](https://github.com/PancakeBot/PancakePainter/issues) and see if
 someone is covering your question or problem, if not, ask away! Someone will be
 around to help soon.
 
 ***Know how to fix a problem? Or want to add a new feature??*** Submit a pull
 request! Just fork the repo using the button on the
-[github homepage](https://github.com/PancakeBot/PancakeCreator), and
-this will give you your own version of PancakeCreator. Make your change in a few
+[github homepage](https://github.com/PancakeBot/PancakePainter), and
+this will give you your own version of PancakePainter. Make your change in a few
 commits to a new branch, then click the pull request button at the top! Talk
 about what changes you made and submit. A maintainer of the project will check
 your work, possibly ask you to fix a few more things, and then if all is well,
 your work will be merged into the project. It's that easy, really.
 
 ### Contributing to the Project
-PancakeCreator uses Github's [Electron application shell](http://electron.atom.io)
+PancakePainter uses Github's [Electron application shell](http://electron.atom.io)
 as a cross platform wrapper, and to create the application logic everything is
 written in plain JavaScript. If you know how to mess with websites, HTML, CSS or
-jQuery, you can bend PancakeCreator to your whim! Read on to get your own dev
+jQuery, you can bend PancakePainter to your whim! Read on to get your own dev
 environment setup to start hacking.
 
 ### Local Run Prerequisites
@@ -93,7 +93,7 @@ anything new for this at all.
 should run fine there. If there is call for support, it can be added (or submit
 a Pull Request!)
 
-#### Install PancakeCreator run resources
+#### Install PancakePainter run resources
 To get the local code running, be sure to run `npm install --force` from the
 repo root, this will give you the third party resources needed to run. The
 `--force` is unfortunately required to pass install of Paper.js as a node
@@ -101,7 +101,7 @@ module, even though we only use it as a clientside library, so we can ignore the
 errors. See the tracking [issue here](https://github.com/paperjs/paper.js/issues/739).
 
 ### Running from source
-* Once Electron prebuilt is installed, just run `electron path/to/pancakecreator`,
+* Once Electron prebuilt is installed, just run `electron path/to/pancakepainter`,
 or `electron ./` if you're working directory is the root of the repo.
 * Remember: Alt+Ctrl+I to open the debug console, Ctl+R will reload if the
 console is open, and a reload _only_ reloads the contents of the window, and

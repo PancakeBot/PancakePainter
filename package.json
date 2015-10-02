@@ -1,5 +1,5 @@
 {
-  "name": "PancakeCreator",
+  "name": "PancakePainter",
   "version": "0.9.6",
   "description": "A simple drawing application and GCODE generator for the PancakeBot",
   "main": "src/main.js",
@@ -21,6 +21,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/PancakeBot/PancakeCreator.git"
+    "url": "https://github.com/PancakeBot/PancakePainter.git"
   }
 }

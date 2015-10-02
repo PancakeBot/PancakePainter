@@ -1,5 +1,5 @@
 {
-  "name": "pancakecreator-build",
+  "name": "pancakepainter-build",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "author": "techninja",
@@ -13,10 +13,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/PancakeBot/PancakeCreator.git"
+    "url": "https://github.com/PancakeBot/PancakePainter.git"
   },
   "optionalDependencies": {
     "grunt-appdmg": "^0.3.1",
-    "grunt-electron-installer": "https://github.com/techninja/grunt-electron-installer/tarball/multi-build-config"
+    "grunt-electron-installer": "^1.0.4"
   }
 }

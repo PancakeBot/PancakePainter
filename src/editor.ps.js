@@ -1,5 +1,5 @@
 /*
- * @file This PaperScript file controls the main PancakeCreator SVG Editor and
+ * @file This PaperScript file controls the main PancakePainter SVG Editor and
  * all importing/exporting of its data.
  */
 

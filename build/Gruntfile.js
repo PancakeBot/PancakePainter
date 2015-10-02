@@ -36,8 +36,8 @@ module.exports = function(grunt) {
           'app-version': version,
           overwrite: true,
           prune: true,
-          'app-bundle-id': 'pancakecreator-main',
-          'helper-bundle-id': 'pancakecreator-helper'
+          'app-bundle-id': 'pancakepainter-main',
+          'helper-bundle-id': 'pancakepainter-helper'
         }
       },
       winbuild: {

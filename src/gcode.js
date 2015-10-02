@@ -132,7 +132,7 @@ module.exports = function(config) {
   // Generate Gcode Header
   function getCodeHeader() {
     return [
-      gc('note', 'PancakeCreator v' + config.version + ' GCODE header start'),
+      gc('note', 'PancakePainter v' + config.version + ' GCODE header start'),
       gc('workspace', config.printArea),
       gc('units'),
       gc('speed', 5600),
@@ -140,18 +140,18 @@ module.exports = function(config) {
       gc('wait', 1000),
       gc('off'),
       gc('home'),
-      gc('note', 'PancakeCreator header complete'),
+      gc('note', 'PancakePainter header complete'),
     ].join('');
   }
 
   // Generate Gcode footer
   function getCodeFooter() {
     return [
-      gc('note', 'PancakeCreator footer start'),
+      gc('note', 'PancakePainter footer start'),
       gc('wait', 1000),
       gc('home'),
       gc('off'),
-      gc('note', 'PancakeCreator Footer Complete'),
+      gc('note', 'PancakePainter Footer Complete'),
     ].join('');
   }
 

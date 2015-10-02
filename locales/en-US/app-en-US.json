@@ -24,12 +24,12 @@
     }
   },
   "file": {
-    "save": "Save PancakeCreator Project...",
-    "saveas": "Save PancakeCreator Project as...",
-    "open": "Open PancakeCreator project file...",
+    "save": "Save PancakePainter Project...",
+    "saveas": "Save PancakePainter Project as...",
+    "open": "Open PancakePainter project file...",
     "opened": "Opened project \"__file__\"",
     "default": "Pancake Project",
-    "type": "PancakeCreator Project File",
+    "type": "PancakePainter Project File",
     "note": "Saved project file \"__file__\"",
     "new": "Empty project started",
     "close": "Project closed, empty project started",

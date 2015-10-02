@@ -70,7 +70,7 @@ createShortcuts = function(callback) {
 updateShortcuts = function(callback) {
   var desktopShortcutPath, homeDirectory;
   if (homeDirectory = fs.getHomeDirectory()) {
-    desktopShortcutPath = path.join(homeDirectory, 'Desktop', 'PancakeCreator.lnk');
+    desktopShortcutPath = path.join(homeDirectory, 'Desktop', 'PancakePainter.lnk');
     return fs.exists(desktopShortcutPath, function(desktopShortcutExists) {
       return createShortcuts(function() {
         if (desktopShortcutExists) {

@@ -1,6 +1,6 @@
 /**
  * @file This is the central "main process" node-only window/update manager
- * script file for PacnackeCreator. This is loaded first and is always running
+ * script file for PacnackePainter. This is loaded first and is always running
  * as long as the application runs.
  **/
 "use strict";
@@ -108,7 +108,7 @@ function windowInit() {
         height: app.settings.v.window.height,
         resizable: true,
         icon: appPath + "resources/app.png",
-        title: "PancakeCreator"
+        title: "PancakePainter"
       };
 
       // Centered or fixed window position?
