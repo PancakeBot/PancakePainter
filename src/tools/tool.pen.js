@@ -178,7 +178,7 @@ module.exports = function(paper) {
       center: point,
       radius: endSnapDistance,
       strokeWidth: 0,
-      strokeColor: 'green'
+      strokeColor: '#00FF00'
     });
   }
 
