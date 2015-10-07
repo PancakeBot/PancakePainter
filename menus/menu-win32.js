@@ -50,6 +50,10 @@ module.exports = function applyTemplate() {
       label: 'View',
       submenu: [
         {
+          key: 'view.settings',
+          accelerator: 'Shift+Alt+S'
+        },
+        {
           label: 'Reload',
           accelerator: 'Control+R',
           click: function () {

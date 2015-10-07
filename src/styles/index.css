@@ -31,6 +31,8 @@ body * {
 #editor-wrapper #editor {
   z-index: 1;
   position: absolute; }
+  #editor-wrapper #editor.wait {
+    cursor: wait !important; }
 
 #toolback {
   background-color: #3A3A3A;
@@ -110,6 +112,35 @@ body * {
         display: block;
         border: 5px solid red; }
 
+#settings aside {
+  font-size: 0.8em;
+  margin-left: 1em; }
+#settings .settings-content {
+  overflow-y: auto;
+  height: 100%;
+  padding-top: 3.5em;
+  box-sizing: border-box; }
+#settings fieldset legend {
+  font-weight: bold;
+  font-size: 1.2em; }
+#settings fieldset > div {
+  margin-bottom: 1em; }
+  #settings fieldset > div label {
+    font-weight: bold; }
+#settings .overlay-title button {
+  float: right;
+  margin-top: 0.8em;
+  margin-right: 1em;
+  font-weight: bold;
+  font-size: 1.2em;
+  padding: 0.3em 0.5em; }
+#settings #reset {
+  background-color: transparent;
+  border: none;
+  color: red;
+  text-decoration: underline;
+  cursor: pointer; }
+
 #non-overlay-wrapper {
   position: absolute;
   z-index: 1;
@@ -135,14 +166,20 @@ div.overlay-window {
   top: 50%;
   left: 50%;
   width: 65%;
-  height: 300px;
+  height: 50%;
   transform: translate(-50%, -50%);
-  padding: 1em;
+  padding: 1.5em;
   background-color: #eee;
   border-radius: 1em;
   box-shadow: 6px 9px 28px 1px rgba(0, 0, 0, 0.75); }
-  div.overlay-window textarea {
+  div.overlay-window > .overlay-title {
+    border-radius: 1em;
+    background: linear-gradient(to bottom, #eeeeee 0%, #eeeeee 80%, rgba(238, 238, 238, 0) 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 10em; }
+    padding: 0 1.5em;
+    box-sizing: border-box; }
 
 /*# sourceMappingURL=index.css.map */

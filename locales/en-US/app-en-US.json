@@ -55,5 +55,29 @@
     "title": "Export creation for printing...",
     "start": "Export",
     "note" : "Successfully exported \"__file__\" for printing."
+  },
+  "settings": {
+    "done": "Done",
+    "title": "Advanced Settings",
+    "resetconfirm": "Reset to factory default settings? This cannot be undone.",
+    "gcode": {
+      "title": "Print Export Options",
+      "flatten": "Flatten resolution:",
+      "flatteninfo": "The resolution limit when converting curves into polygons for GCODE coordinates. Lower value creates more points and higher resolution, higher value creates fewer points and lower resolution approximation.",
+      "shutoff": "Line end pre-shutoff distance:",
+      "shutoffinfo": "The distance of travel before the end of a line that the pump should turn off ahead of, prevents line end drip increase. Larger distance means pump will shut off sooner.",
+      "startwait": "Line start pump ON wait time:",
+      "startwaitinfo": "The number of milliseconds to wait before we start moving at the beggining of a line once the pump has turned on. Correct value depends on batter viscosity and pump pressure.",
+      "endwait": "Line end pump OFF wait time:",
+      "endwaitinfo": "The number of milliseconds to wait at the end of a line. Pump should have already shutoff early, this should ensure a clean line end. Correct value depends on batter viscosity and pump pressure.",
+      "changewait": "Seconds between bottle/shade changes:",
+      "changewaitinfo": "Amount of time the bot will wait between shade/color changes. Bot will remain parked during this time to allow cooking or bottle change.",
+      "fillspacing": "Fill line spacing:",
+      "fillspacinginfo": "The amount of space between fill lines. Smaller values are closer together and more of them, larger values create fewer lines spaced further apart.",
+      "fillangle": "Fill angle (in degrees):",
+      "fillangleinfo": "Angle of the automatic fill lines, defaults at 23, and be -180 to 180.",
+      "fillthresh": "Fill grouping threshold:",
+      "fillthreshinfo": "Minimum threshold for grouping dynamic line endings together into connected groups. Large value connects more groups, 0 will ensure no groups are made."
+    }
   }
 }

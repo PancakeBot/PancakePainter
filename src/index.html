@@ -23,6 +23,67 @@
       <span id="drawnote" data-i18n>common.drawnote</span>
     </div>
 
-    <div id="overlay"> </div>
+    <div id="overlay">
+      <div id="settings" class="overlay-window">
+        <div class="overlay-title">
+          <button id="done" data-i18n>settings.done</button>
+          <button id="reset" data-i18n>settings.reset</button>
+          <h2 data-i18n>settings.title</h2>
+        </div>
+        <div class="settings-content">
+          <fieldset>
+            <legend data-i18n>settings.gcode.title</legend>
+
+            <div>
+              <label for="flatten" data-i18n>settings.gcode.flatten</label>
+              <input id="flatten" class="managed" type="number" min="2" max="50" step="1">
+              <aside data-i18n>settings.gcode.flatteninfo</aside>
+            </div>
+
+            <div>
+              <label for="shutoff" data-i18n>settings.gcode.shutoff</label>
+              <input id="shutoff" class="managed" type="number" min="0" max="200" step="1">
+              <aside data-i18n>settings.gcode.shutoffinfo</aside>
+            </div>
+
+            <div>
+              <label for="startwait" data-i18n>settings.gcode.startwait</label>
+              <input id="startwait" class="managed" type="number" min="0" max="2000" step="1">
+              <aside data-i18n>settings.gcode.startwaitinfo</aside>
+            </div>
+
+            <div>
+              <label for="endwait" data-i18n>settings.gcode.endwait</label>
+              <input id="endwait" class="managed" type="number" min="0" max="2000" step="1">
+              <aside data-i18n>settings.gcode.endwaitinfo</aside>
+            </div>
+
+            <div>
+              <label for="changewait" data-i18n>settings.gcode.changewait</label>
+              <input id="changewait" class="managed" type="number" min="0" max="200" step="1">
+              <aside data-i18n>settings.gcode.changewaitinfo</aside>
+            </div>
+
+            <div>
+              <label for="fillspacing" data-i18n>settings.gcode.fillspacing</label>
+              <input id="fillspacing" class="managed" type="number" min="2" max="30" step="1">
+              <aside data-i18n>settings.gcode.fillspacinginfo</aside>
+            </div>
+
+            <div>
+              <label for="fillangle" data-i18n>settings.gcode.fillangle</label>
+              <input id="fillangle" class="managed" type="number" min="-180" max="180" step="1">
+              <aside data-i18n>settings.gcode.fillangleinfo</aside>
+            </div>
+
+            <div>
+              <label for="fillthresh" data-i18n>settings.gcode.fillthresh</label>
+              <input id="fillthresh" class="managed" type="number" min="0" max="100" step="1">
+              <aside data-i18n>settings.gcode.fillthreshinfo</aside>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

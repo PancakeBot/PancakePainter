@@ -147,7 +147,7 @@ module.exports = function(config) {
   // Generate Gcode footer
   function getCodeFooter() {
     return [
-      gc('note', 'PancakePainter footer start'),
+      gc('note', 'PancakePainter Footer Start'),
       gc('wait', 1000),
       gc('home'),
       gc('off'),
@@ -163,7 +163,7 @@ module.exports = function(config) {
       gc('home'),
       gc('off'),
       gc('change'),
-      gc('wait', 5000),
+      gc('wait', config.shadeChangeWait * 1000),
     ].join('');
   }
 

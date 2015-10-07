@@ -15,6 +15,9 @@
     "save": "&Save Project",
     "saveas": "Save Project &as…"
   },
+  "view" : {
+    "settings": "Advanced Settings"
+  },
   "mac": {
     "about": "About __name__",
     "hide": "Hide __name__",

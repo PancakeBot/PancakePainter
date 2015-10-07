@@ -44,18 +44,20 @@ var printableArea = {
 };
 
 var renderConfig = {
-  flattenResolution: 15, // Flatten curve value (smaller value = more points)
-  lineEndPreShutoff: 35, // Remaining line length threshold for pump shutoff
-  startWait: 750, // Time to wait for batter flow begin
-  endWait: 650, // Time to wait for batter flow end
-  fillSpacing: 9, // Space between each trace fill line
-  fillAngle: 23, // Angle of line for trace fill
-  fillGroupThreshold: 25, // Threshold to group zig zags
-  printArea: { // Print area limitations (in MM)
-    x: 42,
-    y: 210,
-    l: 485,
+  // @see: main.js settings init default for explanations and default values.
+  flattenResolution: app.settings.v.flatten,
+  lineEndPreShutoff: app.settings.v.shutoff,
+  startWait: app.settings.v.startwait,
+  endWait: app.settings.v.endwait,
+  shadeChangeWait: app.settings.v.changewait,
+  fillSpacing: app.settings.v.fillspacing,
+  fillAngle: app.settings.v.fillangle,
+  fillGroupThreshold: app.settings.v.fillthresh,
+  printArea: { // Print area limitations (in 0.5 MM increments)
+    x: printableArea.offset.right * 2,
     t: 0,
+    l: (printableArea.width + printableArea.offset.right) * 2,
+    y: printableArea.height * 2
   },
   version: app.getVersion() // Application version written to GCODE header
 };
@@ -388,10 +390,62 @@ function bindControls() {
           paper.newPBP();
         });
         break;
+      case 'view.settings':
+        toggleOverlay(true, function(){
+          $('#settings').fadeIn('slow');
+        });
+        break;
       default:
         console.log(menu);
     }
   };
+
+  // Settings form fields management & done/reset
+  $(window).keydown(function(e){
+    if (e.keyCode === 27) { // Global escape key exit settings
+      $('#done').click();
+    }
+  });
+
+  $('#settings button').click(function(){
+    if (this.id === 'done') {
+      $('#settings').fadeOut('slow');
+      toggleOverlay(false);
+    } else if (this.id === 'reset') {
+      var doReset = confirm(i18n.t('settings.resetconfirm'));
+      if (doReset) {
+        // Clear the file, reload settings, push to elements.
+        app.settings.clear();
+        app.settings.load();
+        $('#settings .managed').each(function(){
+          $(this).val(app.settings.v[this.id]);
+        })
+      }
+    }
+  });
+
+  // Complete Settings management
+  $('#settings .managed').each(function(){
+    var key = this.id; // IDs required!
+    var v = app.settings.v;
+
+    // Set loaded value (if any)
+    if (typeof v[key] !== 'undefined') $(this).val(v[key]);
+
+    // Prevent text entry
+    $(this).keypress(function(e){
+      if (e.charCode > 31 && (e.charCode < 48 || e.charCode > 57)) {
+        return false;
+      }
+    });
+
+    // Bind to catch change
+    $(this).change(function(){
+      app.settings.v[key] = parseInt(this.value);
+      app.settings.save();
+    }).change();
+
+  });
 }
 
 window.onbeforeunload = function(e) {
