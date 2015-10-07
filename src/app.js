@@ -446,7 +446,9 @@ function toggleOverlay(doShow, callback) {
 // Update the rendered HTML image and reblur it (when resizing the window)
 function updateFrosted(callback) {
   if ($('#overlay').is(':visible')) {
-    html2canvas($("#non-overlay-wrapper")).then(function(canvas) {
+    html2canvas($("#non-overlay-wrapper"), {
+      background: '#E0E1E2'
+    }).then(function(canvas) {
       $("#frosted").remove();
       $("#overlay").append(canvas);
       $("#overlay canvas").attr('id', 'frosted');
