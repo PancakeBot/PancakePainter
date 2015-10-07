@@ -6,6 +6,7 @@
 
 module.exports = function(config) {
   var paper = config.paper;
+  var Point = paper.Point;
   var returnRenderer = {}; // The function/object returned by this module
 
   // Create gcode from current project
@@ -30,6 +31,9 @@ module.exports = function(config) {
 
     var numPaths = workLayer.children.length;
     var colorGroups = [];
+
+    // Travel sort the work layer to get everything in the right order.
+    travelSortLayer(workLayer);
 
     // Move through each path on the worklayer, and group them in reverse order
     // by color shade, 0-3, darker first (indicated in the path data.color).
@@ -234,6 +238,98 @@ module.exports = function(config) {
   // Map a value in a given range to a new range
   function map(x, inMin, inMax, outMin, outMax) {
     return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+  }
+
+  // Order a layers children by top left travel path from tip to tail, reversing
+  // path order where needed, grouped by data.color. Only works with paths,
+  // not groups or compound paths as it needs everything on an even playing
+  // field to be reordered.
+  function travelSortLayer(layer) {
+    var a = layer;
+
+    if (a.children.count <= 1) return; // This doesn't need to be run
+
+    // 1. Move through all paths, group into colors
+    // 2. Move through each group, convert list of paths into sets of first and
+    //    last segment points, ensure groups are sorted.
+    // 3. Find the point closest to the top left corner. If it's an end, reverse
+    //    the path associated, make the first point the next one to check, remove
+    //    the points from the group.
+    // 4. Rinse and repeat!
+
+    // Prep the colorGroups, darkest to lightest.
+    var sortedColors = ['color3', 'color2', 'color1', 'color0'];
+    var colorGroups = {};
+    _.each(sortedColors, function(colorName) {
+      colorGroups[colorName] = [];
+    })
+
+    // Put each path in the sorted colorGroups, with its first and last point
+    _.each(a.children, function(path){
+      colorGroups['color' + path.data.color].push({
+        path: path,
+        points: [path.firstSegment.point, path.lastSegment.point]
+      });
+    });
+
+    // Move through each color group, then each point set for distance
+    var drawIndex = 0; // Track the path index to insert paths into on the layer
+    _.each(colorGroups, function(group){
+      var lastPoint = new Point(0, 0); // Last point, start at the corner
+      var lastPath = null; // The last path worked on for joining 0 dist paths
+
+      while(group.length) {
+        var c = closestPointInGroup(lastPoint, group);
+
+        // First segment, or last segment?
+        if (c.closestPointIndex === 0) { // First
+          // Set last point to the end of the path
+          lastPoint = group[c.id].points[1];
+        } else { // last
+          // Reverse the path direction, so its first point is now the last
+           group[c.id].path.reverse();
+
+          // Set last point to the start of the path (now the end)
+          lastPoint = group[c.id].points[0];
+        }
+
+        // If the distance between the lastPoint and the next closest point is
+        // below a usable threshold, and our lastPoint is on a path,
+        // we can make this more efficient by joining the two paths.
+        if (c.dist < 7 && lastPath) {
+          // Combine lastPath with this path (remove the remainder)
+          lastPath.join(group[c.id].path);
+        } else { // Non-zero distance, add as separate path
+          // Insert the path to the next spot in the action layer.
+          a.insertChild(drawIndex, group[c.id].path);
+          lastPath = group[c.id].path;
+        }
+
+        group.splice(c.id, 1); // Remove it from the list of paths
+
+        drawIndex++;
+      }
+    });
+  }
+
+  // Find the closest point to a given source point from an array of point groups.
+  function closestPointInGroup(srcPoint, pathGroup) {
+    var closestID = 0;
+    var closestPointIndex = 0;
+    var closest = srcPoint.getDistance(pathGroup[0].points[0]);
+
+    _.each(pathGroup, function(p, index){
+      _.each(p.points, function(destPoint, pointIndex){
+        var dist = srcPoint.getDistance(destPoint);
+        if (dist < closest) {
+          closest = dist;
+          closestID = index;
+          closestPointIndex = pointIndex;
+        }
+      })
+    });
+
+    return {id: closestID, closestPointIndex: closestPointIndex, dist: closest};
   }
 
   return returnRenderer;
