@@ -142,6 +142,20 @@ paper.fileChanged = function() {
   currentFile.changed = true;
 }
 
+// Stopgap till https://github.com/paperjs/paper.js/issues/801 is resolved.
+// Clean a path of duplicated segment points, triggered on change/create
+paper.cleanPath = function(path){
+  _.each(path.segments, function(seg, index){
+    if (index > 0 && typeof path.segments[index-1] !== 'undefined') {
+      var lastP = path.segments[index-1].point;
+      if (lastP.x === seg.point.x && lastP.y === seg.point.y) {
+        // Duplicate point found, remove it.
+        seg.remove();
+      }
+    }
+  });
+}
+
 // Load a given PBP filepath into the project workspace
 paper.loadPBP = function(filePath){
   paper.newPBP(true);

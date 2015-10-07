@@ -216,7 +216,10 @@ module.exports = function(paper) {
     selectionRectangleRotation = null;
 
     // If we have a mouse up with either of these, the file has changed!
-    if (path || segment) paper.fileChanged();
+    if (path || segment) {
+      paper.cleanPath(path);
+      paper.fileChanged();
+    }
   };
 
   tool.onKeyDown = function (event) {

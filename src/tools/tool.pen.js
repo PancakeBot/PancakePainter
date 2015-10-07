@@ -146,6 +146,7 @@ module.exports = function(paper) {
       } else {
         drawPath.data.isPolygonal = true;
         paper.fileChanged();
+        paper.cleanPath(drawPath);
       }
 
       drawPath = null;
