@@ -12,6 +12,7 @@ module.exports = function(paper) {
   var Rectangle = paper.Rectangle;
   var project = paper.project;
   var CompoundPath = paper.CompoundPath;
+  var view = paper.view;
 
   // Tool identification (for building out tool palette)
   tool.name = 'tools.fill';
@@ -28,13 +29,28 @@ module.exports = function(paper) {
   var ndarray = require('ndarray');
   var flood = require('n-dimensional-flood-fill');
 
+  var filling = false;
   tool.onMouseDown = function(event) {
-    var fillPath = floodFill(event.point);
-    if (fillPath !== false) {
-      fillPath.fillColor = paper.pancakeShades[paper.pancakeCurrentShade]
-      fillPath.data.color = paper.pancakeCurrentShade;
-      paper.fileChanged();
-    }
+    if (filling) return;
+
+    $('#editor').toggleClass('wait', true);
+    filling = true;
+
+    // Run the fill in a timeout to allow the previous code to run first.
+    setTimeout(function() {
+      var fillPath = floodFill(event.point);
+
+      if (fillPath !== false) {
+        fillPath.fillColor = paper.pancakeShades[paper.pancakeCurrentShade]
+        fillPath.data.color = paper.pancakeCurrentShade;
+        paper.fileChanged();
+      }
+
+      $('#editor').toggleClass('wait', false);
+      view.update(true);
+      filling = false;
+    }, 200);
+
   };
 
 
@@ -68,28 +84,35 @@ module.exports = function(paper) {
       }
     }
 
-    var rast = cLayer.rasterize(50);
-    var w = rast.width; var h = rast.height;
-    var pix = rast.getImageData(new Rectangle(0, 0, w, h)).data;
-    var grid = ndarray(new Int8Array(pix.length/4), [w-1, h-1]);
-    var boundaryPoints = [];
+    try {
+      var rast = cLayer.rasterize(35);
+      var w = rast.width; var h = rast.height;
+      var pix = rast.getImageData(new Rectangle(0, 0, w, h)).data;
+      var grid = ndarray(new Int8Array(pix.length/4), [w-1, h-1]);
+      var boundaryPoints = [];
 
-    // Move through all RGBA pixel data to generate a 1bit map of visible pix.
-    for (var p = 0; p < pix.length; p+= 4) {
-      // If the alpha is greater than threshold, it's visible! Map a 1.
-      if (pix[p+3] > tool.alphaBitmapThreshold) {
-        grid.set((p / 4) % w, Math.floor((p / 4) / w), 1);
+      // Move through all RGBA pixel data to generate a 1bit map of visible pix.
+      for (var p = 0; p < pix.length; p+= 4) {
+        // If the alpha is greater than threshold, it's visible! Map a 1.
+        if (pix[p+3] > tool.alphaBitmapThreshold) {
+          grid.set((p / 4) % w, Math.floor((p / 4) / w), 1);
+        }
       }
-    }
 
-    var rastPt = rast.globalToLocal(point);
-    // Offset for centered matrix position and trunc floats.
-    rastPt.x = parseInt(rastPt.x + w/2);
-    rastPt.y = parseInt(rastPt.y + h/2);
+      var rastPt = rast.globalToLocal(point);
+      // Offset for centered matrix position and trunc floats.
+      rastPt.x = parseInt(rastPt.x + w/2);
+      rastPt.y = parseInt(rastPt.y + h/2);
 
-    // Outside the bounds of the layer data!
-    if (rastPt.x > w || rastPt.x < 0 || rastPt.y > h || rastPt.y < 0) {
-      toastr.warning(i18n.t("tools.warnings.fill.bounds"));
+      // Outside the bounds of the layer data!
+      if (rastPt.x > w || rastPt.x < 0 || rastPt.y > h || rastPt.y < 0) {
+        toastr.warning(i18n.t("tools.warnings.fill.bounds"));
+        rast.remove();
+        return false;
+      }
+    } catch(e) {
+      toastr.error(i18n.t("tools.error.fill"));
+      console.error(e);
       rast.remove();
       return false;
     }

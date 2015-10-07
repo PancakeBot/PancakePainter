@@ -14,6 +14,9 @@
     "pen": "Batter line",
     "select": "Select",
     "fill": "Batter fill",
+    "error": {
+      "fill": "Error creating fill! Something may be wrong with the draw layer, check the console for more info."
+    },
     "warnings": {
       "fill": {
         "notclosed": "Flood fill area not closed.",
@@ -58,6 +61,7 @@
   },
   "settings": {
     "done": "Done",
+    "reset": "Reset",
     "title": "Advanced Settings",
     "resetconfirm": "Reset to factory default settings? This cannot be undone.",
     "gcode": {
