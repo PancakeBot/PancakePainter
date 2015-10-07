@@ -33,10 +33,11 @@ module.exports = function(paper) {
   tool.onMouseDown = function(event) {
     // Continue drawing polygonal (ignores hitTest while on)
     if (drawPath && polygonalDraw) {
-      drawPath.add(event.point);
+      if (event.event.button === 0) drawPath.add(event.point);
 
-      // Shortcut single click end polygon draw shape via path closing
-      if (drawPath.segments.length > 2 && checkEndSnap(event.point)) {
+      // Shortcut single click end polygon draw shape via path closing, or
+      // right click
+      if (drawPath.segments.length > 2 && checkEndSnap(event.point) || event.event.button === 2) {
         polygonDrawComplete();
         return;
       }
@@ -47,11 +48,14 @@ module.exports = function(paper) {
     }
 
     // Create a new drawPath and set its stroke color
-    pencilDraw = true;
-    drawPath = newBatterPath(event.point);
+    if (event.event.button === 0) {
+      pencilDraw = true;
+      drawPath = newBatterPath(event.point);
 
-    // Set position of endSnap notifier
-    initEndSnap(event.point);
+      // Set position of endSnap notifier
+      initEndSnap(event.point);
+    }
+
   };
 
   tool.onMouseDrag = function(event) {
@@ -74,7 +78,7 @@ module.exports = function(paper) {
 
   tool.onMouseUp = function(event) {
     if (drawPath) {
-      if (drawPath.length <= minLineLength) {
+      if (drawPath.length <= minLineLength && event.event.button === 0) {
         // Restart the path
         drawPath.remove()
         drawPath = newBatterPath(event.point);
@@ -88,7 +92,7 @@ module.exports = function(paper) {
           dashArray: [10, 4]
         });
 
-        bandLine.onDoubleClick = function(){
+        drawPath.onDoubleClick = function(){
           // Remove the last segment (from the first click of the double)
           drawPath.segments.pop();
           polygonDrawComplete();
@@ -98,7 +102,7 @@ module.exports = function(paper) {
 
 
       // Freehand pencil draw complete
-      if (!polygonalDraw && pencilDraw) {
+      if (!polygonalDraw && pencilDraw && event.event.button === 0) {
         // When the mouse is released, simplify it (if it's not too small):
         if (drawPath.length > simplifyThreshold) {
           drawPath.simplify(simplifyAmount);
