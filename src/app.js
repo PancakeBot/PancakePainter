@@ -26,6 +26,23 @@ var dataURI = require('datauri');
 
 // Bot specific configuration & state =====================---------------------
 var scale = {};
+// Real world measurement of the griddle maximum dimensions in MM
+var griddleSize = {
+  width: 507.5,
+  height: 267.7
+};
+
+// Define the printable/drawable area in MM from furthest griddle edge
+var printableArea = {
+  offset: {
+    left: 36.22,
+    top: 34.77,
+    right: 42 // Used exclusively for GCODE X offset
+  },
+  width: 443,
+  height: 210
+};
+
 var renderConfig = {
   flattenResolution: 15, // Flatten curve value (smaller value = more points)
   lineEndPreShutoff: 35, // Remaining line length threshold for pump shutoff
@@ -78,16 +95,10 @@ function initEditor() {
   var $griddle = $('#editor-wrapper img');
   var $editor = $('#editor');
 
-  $griddle.aspect = 0.5390;
-  $editor.aspect = 0.4717;
-  $editor.pos = { // Relative position of paper.js canvas within the griddle
-    left: 27,
-    top: 24,
-    right: 48,
-    bottom: 52
-  };
+  $griddle.aspect = griddleSize.height / griddleSize.width;
+  $editor.aspect = printableArea.height / printableArea.width;
 
-  var margin = { // Margin around griddle to restrict sizing
+  var margin = { // Margin around griddle in absolute pixels to restrict sizing
     l: 10,  // Buffer
     r: 10,  // Buffer
     t: 110, // Toolbar
@@ -120,12 +131,14 @@ function initEditor() {
 
     scale = (scale.x < scale.y ? scale.x : scale.y);
 
+    var mmPerPX = $griddle.width() / griddleSize.width;
+
     var off = $griddle.offset();
     $editor.css({
-      top: off.top + (scale * $editor.pos.top),
-      left: off.left + (scale * $editor.pos.left),
-      width: $griddle.width() - ($editor.pos.right * scale),
-      height: $griddle.height() - ($editor.pos.bottom * scale)
+      top: off.top + (mmPerPX * printableArea.offset.top),
+      left: off.left + (mmPerPX * printableArea.offset.left),
+      width: printableArea.width * mmPerPX,
+      height: printableArea.height * mmPerPX
     });
 
     editorLoad(); // Load the editor (if it hasn't already been loaded)
