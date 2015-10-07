@@ -134,9 +134,6 @@ paper.newPBP = function(noLayers) {
 // Render the text/SVG for the pancakebot project files
 paper.getPBP = function(){
   paper.deselect(); // Don't export with something selected!
-
-  // Save this layer's known center so it can be adjusted for when loaded.
-  paper.mainLayer.data.viewCenter = view.center;
   return project.exportJSON();
 }
 
