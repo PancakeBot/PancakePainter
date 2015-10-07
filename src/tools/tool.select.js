@@ -254,7 +254,7 @@ module.exports = function(paper) {
       bounds = path.pInitialBounds;
     }
 
-    var b = bounds.clone().expand(10, 10);
+    var b = bounds.clone().expand(25, 25);
 
     paper.selectRect = new Path.Rectangle(b);
     paper.selectRect.pivot = paper.selectRect.position;
