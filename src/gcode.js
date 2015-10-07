@@ -184,7 +184,7 @@ module.exports = function(config) {
     var cmds = {
       units: 'G21 ;Set units to MM',
       abs: 'G90 ;Use Absolute units',
-      home: 'G28 ;Home All Axis',
+      home: 'G28 X0 Y0 ;Home All Axis',
       move: 'G00 X%x Y%y',
       speed: 'G1 F%% ;Set Speed',
       pumpon: 'M106 ;Pump on',
