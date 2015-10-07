@@ -92,7 +92,7 @@ function windowInit() {
   app.on('ready', function() {
     i18n.init({
       ns: {
-        namespaces: ['app', 'menus', 'buttons'],
+        namespaces: ['app', 'menus'],
         defaultNs: 'app'
       },
       resGetPath: appPath + 'locales/__lng__/__ns__-__lng__.json', // Path to find file
