@@ -85,7 +85,7 @@ module.exports = function(paper) {
     }
 
     try {
-      var rast = cLayer.rasterize(35);
+      var rast = cLayer.rasterize(50);
       var w = rast.width; var h = rast.height;
       var pix = rast.getImageData(new Rectangle(0, 0, w, h)).data;
       var grid = ndarray(new Int8Array(pix.length/4), [w-1, h-1]);
