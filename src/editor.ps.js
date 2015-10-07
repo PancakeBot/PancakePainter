@@ -38,15 +38,11 @@ paper.setCursor = function(type) {
   //$editor.css('cursor', type);
 }
 
-var lastCenter = view.center;
 function onResize(event) {
-  var vector = lastCenter - view.center;
-
-  paper.mainLayer.position-= vector;
-  paper.imageLayer.position-= vector;
-
-  lastCenter = view.center;
-  view.zoom = scale/2.5;
+  // Ensure paper project view retains correct scaling and position.
+  view.zoom = scale;
+  var corner = view.viewToProject(new Point(0,0));
+  view.scrollBy(new Point(0,0).subtract(corner));
 }
 
 // Initialize (or edit) an image import for tracing on top of
@@ -163,12 +159,6 @@ paper.loadPBP = function(filePath){
   paper.mainLayer = project.layers[1];
 
   paper.mainLayer.activate();
-
-  // Adjust offset position based on difference between current view center and
-  // view center stored in the mainLayer data view center.
-  var vector = paper.mainLayer.data.viewCenter - view.center;
-  paper.mainLayer.position-= vector;
-  paper.imageLayer.position-= vector;
 
   // Reinstate traceImage, if any.
   if (paper.imageLayer.children.length) {
