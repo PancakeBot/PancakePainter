@@ -69,6 +69,7 @@
   "export": {
     "title": "Export creation for printing…",
     "start": "Export",
+    "wait": "Exporting, please wait…",
     "note" : "Successfully exported \"__file__\" for printing."
   },
   "settings": {

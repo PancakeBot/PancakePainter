@@ -218,6 +218,20 @@ body * {
   }
 }
 
+// Export wait message =========================================================
+#exporting {
+  display: none;
+  font-style: italic;
+  position: absolute;
+  background: linear-gradient(to bottom, rgba(224,225,226,0) 0%,rgba(224,225,226,1) 15%,rgba(224,225,226,1) 50%,rgba(224,225,226,1) 85%,rgba(224,225,226,0.04) 99%,rgba(224,225,226,0) 100%);
+  font-size: 3em;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  padding: 0.5em;
+  margin-top: -1em;
+}
+
 // General usage overlay "window" ==============================================
 #non-overlay-wrapper {
   position: absolute;

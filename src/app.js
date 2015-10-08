@@ -330,10 +330,21 @@ function bindControls() {
 
           // Verify file extension
           if (filePath.split('.').pop().toLowerCase() !== 'gcode') filePath += '.gcode';
-          fs.writeFileSync(filePath, gcRender(menu === 'file.exportmirrored')); // Write file!
 
-          // Notify user
-          toastr.success(i18n.t('export.note', {file: path.parse(filePath).base}));
+          // Throw up the overlay and activate the exporting note.
+          toggleOverlay(true, function(){
+            $('#exporting').fadeIn('slow', function(){
+              // Run in a timeout to allow the previous code to run first.
+              setTimeout(function() {
+                fs.writeFileSync(filePath, gcRender(menu === 'file.exportmirrored')); // Write file!
+                toggleOverlay(false);
+                $('#exporting').fadeOut('slow',function(){
+                  // Notify user
+                  toastr.success(i18n.t('export.note', {file: path.parse(filePath).base}));
+                });
+              }, 200);
+            })
+          })
         });
         break;
       case 'file.saveas':
