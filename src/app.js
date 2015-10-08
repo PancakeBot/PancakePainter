@@ -44,15 +44,6 @@ var printableArea = {
 };
 
 var renderConfig = {
-  // @see: main.js settings init default for explanations and default values.
-  flattenResolution: app.settings.v.flatten,
-  lineEndPreShutoff: app.settings.v.shutoff,
-  startWait: app.settings.v.startwait,
-  endWait: app.settings.v.endwait,
-  shadeChangeWait: app.settings.v.changewait,
-  fillSpacing: app.settings.v.fillspacing,
-  fillAngle: app.settings.v.fillangle,
-  fillGroupThreshold: app.settings.v.fillthresh,
   printArea: { // Print area limitations (in 0.5 MM increments)
     x: printableArea.offset.right * 2,
     t: 0,
@@ -61,6 +52,8 @@ var renderConfig = {
   },
   version: app.getVersion() // Application version written to GCODE header
 };
+setRenderSettings(); // Map saved settings to renderConfig init object
+
 
 // File management  =======================================---------------------
 var currentFile = {
@@ -74,6 +67,19 @@ toastr.options.positionClass = "toast-bottom-right";
 toastr.options.preventDuplicates = true;
 toastr.options.newestOnTop = true;
 
+
+// Map the settings to the renderConfig object.
+// @see: main.js settings init default for explanations and default values.
+function setRenderSettings() {
+  renderConfig.flattenResolution = app.settings.v.flatten;
+  renderConfig.lineEndPreShutoff = app.settings.v.shutoff;
+  renderConfig.startWait = app.settings.v.startwait;
+  renderConfig.endWait = app.settings.v.endwait;
+  renderConfig.shadeChangeWait = app.settings.v.changewait;
+  renderConfig.fillSpacing = app.settings.v.fillspacing;
+  renderConfig.fillAngle = app.settings.v.fillangle;
+  renderConfig.fillGroupThreshold = app.settings.v.fillthresh;
+}
 
 // Page loaded
 $(function(){
@@ -445,6 +451,7 @@ function bindControls() {
     $(this).change(function(){
       app.settings.v[key] = parseInt(this.value);
       app.settings.save();
+      setRenderSettings();
     }).change();
 
   });
