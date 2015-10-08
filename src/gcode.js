@@ -266,6 +266,13 @@ module.exports = function(config) {
 
     // Put each path in the sorted colorGroups, with its first and last point
     _.each(a.children, function(path){
+      // TODO: Not sure why or when this happens, but it has been seen. All
+      // paths that make it to this point should have color data assigned.
+      if (typeof path.data.color === 'undefined') {
+        // Default a non-colored path to 0.
+        path.data.color = 0;
+      }
+
       colorGroups['color' + path.data.color].push({
         path: path,
         points: [path.firstSegment.point, path.lastSegment.point]
