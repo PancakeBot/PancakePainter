@@ -159,7 +159,8 @@ body * {
   width: 100%;
   text-align: center;
   padding: 0.5em;
-  margin-top: -1em; }
+  margin-top: -1em;
+  cursor: wait; }
 
 #non-overlay-wrapper {
   position: absolute;
