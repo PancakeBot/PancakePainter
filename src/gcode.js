@@ -90,6 +90,17 @@ module.exports = function(config) {
 
     // Render segment points to Gcode movements
     _.each(path.segments, function(segment, index){
+
+      // If we're on the last segment of a path (here before we've moved to that
+      // point), and we're beyond the standard pre-shutoff, run that
+      if (index === path.segments.length -1) {
+        if (path.length - path.getOffsetOf(segment.point) <= config.lineEndPreShutoff && !pumpOff) {
+          pumpOff = true;
+          out+= gcPreShutoff;
+        }
+      }
+
+
       out+= gc('move', reMap(segment.point)); // Start by moving to this path segment
 
       if (index === 0) { // First path segment
