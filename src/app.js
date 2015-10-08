@@ -315,6 +315,7 @@ function bindControls() {
         mainWindow.dialog({
           type: 'SaveDialog',
           title: i18n.t('export.title'),
+          defaultPath: path.join(app.getPath('userDesktop'), currentFile.name.split('.')[0]),
           filters: [
             { name: 'PancakeBot GCODE', extensions: ['gcode'] }
           ]
