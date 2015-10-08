@@ -4,14 +4,6 @@ body {
   font-family: sans-serif;
 }
 
-#logo {
-  height: 32px;
-  position: absolute;
-  top: 26px;
-  left: 50%;
-  transform: translate(50%, 0);
-}
-
 span#drawnote {
   position: absolute;
   width: 100%;
@@ -61,6 +53,25 @@ body * {
   top: 0;
   left: 0;
   box-shadow: 2px 6px 21px -4px rgba(0,0,0,0.4);
+
+  #logo {
+    height: 32px;
+    position: absolute;
+    top: 26px;
+    left: 50%;
+    transform: translate(50%, 0);
+    transition-duration: 0.5s;
+  }
+
+  .ver { // Version text
+    font-size: 0.8em;
+    color: red;
+    position: absolute;
+    top: 46px;
+    left: 50%;
+    transform: translate(410px, 0);
+    transition-duration: 0.5s;
+  }
 }
 
 #tools {

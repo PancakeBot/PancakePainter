@@ -54,7 +54,6 @@ var renderConfig = {
 };
 setRenderSettings(); // Map saved settings to renderConfig init object
 
-
 // File management  =======================================---------------------
 var currentFile = {
   name: "", // Name for the file (no path)
@@ -83,6 +82,9 @@ function setRenderSettings() {
 
 // Page loaded
 $(function(){
+  // Set app version text
+  $('#toolback .ver').text('v' + app.getVersion());
+
    // After page load, wait for the griddle image to finish before initializing.
   $('#griddle').load(initEditor);
 
