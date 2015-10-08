@@ -420,8 +420,14 @@ function bindControls() {
       $('#settings').fadeOut('slow');
       toggleOverlay(false);
     } else if (this.id === 'reset') {
-      var doReset = confirm(i18n.t('settings.resetconfirm'));
-      if (doReset) {
+      var doReset = mainWindow.dialog({
+        t: 'MessageBox',
+        type: 'question',
+        message: i18n.t('settings.resetconfirm'),
+        detail: i18n.t('settings.resetconfirmdetail'),
+        buttons: [i18n.t('common.button.cancel'), i18n.t('settings.button.reset')]
+      });
+      if (doReset !== 0) {
         // Clear the file, reload settings, push to elements.
         app.settings.clear();
         app.settings.load();
@@ -465,9 +471,18 @@ window.onbeforeunload = function(e) {
 // This is pretty forceful and there's no way to back out.
 function checkFileStatus(callback) {
   if (currentFile.changed) {
+    var doSave = 0;
     if (currentFile.name === "") { // New file or existing?
-      // Save new is asynch and needs to cancel the close and use a callback
-      if (confirm(i18n.t('file.confirm.savenew'))) {
+      // Save new is async and needs to cancel the close and use a callback
+      doSave = mainWindow.dialog({
+        t: 'MessageBox',
+        type: 'warning',
+        message: i18n.t('file.confirm.notsaved'),
+        detail: i18n.t('file.confirm.savenew'),
+        buttons:[i18n.t('file.button.discard'), i18n.t('file.button.savenew')]
+      });
+
+      if (doSave) {
         app.menuClick('file.save', function(){
           if (callback) callback();
         });
@@ -475,10 +490,26 @@ function checkFileStatus(callback) {
       } else {
         toastr.warning(i18n.t('file.discarded'));
       }
+
     } else {
-      // Save in place is completely synchronus, so doesn't need to cancel close
-      if (confirm(i18n.t('file.confirm.save', {file: currentFile.name}))) {
-        app.menuClick('file.save');
+      doSave = mainWindow.dialog({
+        t: 'MessageBox',
+        type: 'warning',
+        message: i18n.t('file.confirm.changed'),
+        detail: i18n.t('file.confirm.save', {file: currentFile.name}),
+        buttons:[i18n.t('file.button.discard'), i18n.t('file.button.save'), i18n.t('file.button.savenew')]
+      });
+
+      if (doSave) {
+        if (doSave === 1) { // Save current file
+          // Save in place is sync, so doesn't need to cancel close
+          app.menuClick('file.save');
+        } else { // Save new file
+          app.menuClick('file.saveas', function(){
+            if (callback) callback();
+          });
+          return false;
+        }
       } else {
         toastr.warning(i18n.t('file.discarded'));
       }

@@ -8,7 +8,12 @@
   "common": {
     "done": "Done",
     "complete": "Complete",
-    "drawnote": "The design above will resemble the actual pancake once it has been flipped."
+    "drawnote": "The design above will resemble the actual pancake once it has been flipped.",
+    "button": {
+      "cancel": "Cancel",
+      "yes": "Yes",
+      "no": "No"
+    }
   },
   "tools": {
     "pen": "Batter line",
@@ -39,11 +44,15 @@
     "error": "Problem saving file! Try saving to a different file name or location.",
     "discarded": "File not saved, changes discarded",
     "confirm": {
-      "savenew": "Project is not saved! \n\n Save new project before continuing? \n\n Click cancel to continue without saving.",
-      "save": "Project has changed! \n\n Save changes to \"__file__\" before continuing? \n\n Click cancel to continue without saving."
+      "notsaved": "Project file has not been saved!",
+      "changed": "Project has changed since last save!",
+      "savenew": "Save new project before continuing?",
+      "save": "Save changes to \"__file__\" before continuing?"
     },
     "button": {
-
+      "discard": "Discard changes",
+      "savenew": "Save as a new file",
+      "save": "Save current file"
     }
   },
   "color" : {
@@ -66,7 +75,11 @@
     "done": "Done",
     "reset": "Reset",
     "title": "Advanced Settings",
-    "resetconfirm": "Reset to factory default settings? This cannot be undone.",
+    "resetconfirm": "Reset to factory default settings?",
+    "resetconfirmdetail": "This will revert all settings on this page to default. This cannot be undone.",
+    "button": {
+      "reset": "Revert All Settings"
+    },
     "gcode": {
       "title": "Print Export Options",
       "flatten": "Flatten resolution:",
