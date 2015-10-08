@@ -228,6 +228,7 @@ function activateToolItem(item) {
   }
 
   $('#editor').css('cursor', cursor + ', auto');
+  paper.project.activeLayer.selected = false;
   paper.deselect();
   paper.view.update();
 }
