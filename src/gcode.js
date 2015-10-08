@@ -57,8 +57,9 @@ module.exports = function(config) {
         ].join('');
       });
 
-      // Trigger color change
-      if (colorGroups[groupIndex+1]) {
+      // Trigger color change if we had paths previously, and the next color
+      // group has paths to be rendered.
+      if (colorGroups[groupIndex+1] && pathCount !== 0) {
         out += getCodeColorChange(colorGroups[groupIndex+1][0].data.color);
       }
     });
