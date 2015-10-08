@@ -86,7 +86,7 @@ module.exports = function(config) {
     // off, before the next move occurs to ensure correct drip timing.
     var offset = Math.max(0, Math.min(path.length, path.length - config.lineEndPreShutoff));
     var gcPreShutoff = [
-      gc('note', 'Nearing path end, moving to preshutoff'),
+      gc('note', 'Nearing path end, moving to preshutoff position'),
       gc('move', reMap(path.getPointAt(offset))),
       gc('pumpoff')
     ].join('');
@@ -139,6 +139,18 @@ module.exports = function(config) {
   function getCodeHeader() {
     return [
       gc('note', 'PancakePainter v' + config.version + ' GCODE header start'),
+      gc('note', 'Originally generated @ ' + new Date().toString()),
+      gc('note', 'Settings used to generate this file:'),
+      gc('note', '----------------------------------------'),
+      gc('note', 'flattenResolution: ' + config.flattenResolution),
+      gc('note', 'lineEndPreShutoff: ' + config.lineEndPreShutoff),
+      gc('note', 'startWait: ' + config.startWait),
+      gc('note', 'endWait: ' + config.endWait),
+      gc('note', 'shadeChangeWait: ' + config.shadeChangeWait),
+      gc('note', 'fillSpacing: ' + config.fillSpacing),
+      gc('note', 'fillAngle: ' + config.fillAngle),
+      gc('note', 'fillGroupThreshold: ' + config.fillGroupThreshold),
+      gc('note', '----------------------------------------'),
       gc('workspace', config.printArea),
       gc('units'),
       gc('speed', 5600),
