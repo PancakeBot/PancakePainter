@@ -32,6 +32,9 @@ module.exports = function(config) {
     var numPaths = workLayer.children.length;
     var colorGroups = [];
 
+    // Clean up remaining drawn closed paths to be easier to manage
+    convertAllClosedPaths(workLayer);
+
     // Travel sort the work layer to get everything in the right order.
     travelSortLayer(workLayer);
 
@@ -107,19 +110,6 @@ module.exports = function(config) {
         // After we've moved to the point, start the pump and wait for it to warm up
         out+= [gc('pumpon'), gc('wait', config.startWait), ''].join('');
       } else if (index === path.segments.length-1) { // Last path segment
-        // When the path is closed, we're actually missing the last point,
-        // so we need to add it manually
-        if (path.closed) {
-          // If we haven't shut off the pump yet, we need to do that
-          if (!pumpOff) {
-            pumpOff = true;
-            out+= gcPreShutoff;
-          }
-
-          // Move to last position on the path
-          out+= gc('move', reMap(path.getPointAt(path.length)));
-        }
-
         // Last segment/movement, dwell on the last point
         out+= gc('wait', config.endWait);
       } else { // Not the first or last path segment.
@@ -223,6 +213,17 @@ module.exports = function(config) {
     }
 
     return out + "\n";
+  }
+
+  // Convert all closed paths in a layer to open, with a duplicate start
+  // segement at the end (must be done after fill conversion is done).
+  function convertAllClosedPaths(layer) {
+    _.each(layer.children, function(path){
+      if (path.closed) {
+        path.closed = false;
+        path.add(path.firstSegment.point);
+      }
+    });
   }
 
   // Convert an input Paper.js coordinate to an output bot mapped coordinate
