@@ -27,9 +27,9 @@
     }
   },
   "file": {
-    "save": "Save PancakePainter Project...",
-    "saveas": "Save PancakePainter Project as...",
-    "open": "Open PancakePainter project file...",
+    "save": "Save PancakePainter Project…",
+    "saveas": "Save PancakePainter Project as…",
+    "open": "Open PancakePainter project file…",
     "opened": "Opened project \"__file__\"",
     "default": "Pancake Project",
     "type": "PancakePainter Project File",
@@ -41,6 +41,9 @@
     "confirm": {
       "savenew": "Project is not saved! \n\n Save new project before continuing? \n\n Click cancel to continue without saving.",
       "save": "Project has changed! \n\n Save changes to \"__file__\" before continuing? \n\n Click cancel to continue without saving."
+    },
+    "button": {
+
     }
   },
   "color" : {
@@ -51,11 +54,11 @@
     "color3": "Dark"
   },
   "import": {
-    "title": "Import image for tracing",
+    "title": "Import image for tracing…",
     "files": "Web format tracing image"
   },
   "export": {
-    "title": "Export creation for printing...",
+    "title": "Export creation for printing…",
     "start": "Export",
     "note" : "Successfully exported \"__file__\" for printing."
   },
