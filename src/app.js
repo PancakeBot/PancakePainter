@@ -446,7 +446,8 @@ function bindControls() {
         app.settings.load();
         $('#settings .managed').each(function(){
           $(this).val(app.settings.v[this.id]);
-        })
+        });
+        setRenderSettings();
       }
     }
   });
