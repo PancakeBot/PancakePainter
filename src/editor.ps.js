@@ -49,7 +49,7 @@ function onResize(event) {
 paper.initImageImport = function() {
   if (!paper.traceImage) {
     mainWindow.dialog({
-      type: 'OpenDialog',
+      t: 'OpenDialog',
       title: i18n.t('import.title'),
       filters: [
         { name: i18n.t('import.files'), extensions: ['jpg', 'jpeg', 'gif', 'png'] }

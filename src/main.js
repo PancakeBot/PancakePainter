@@ -135,7 +135,7 @@ function windowInit() {
 
       // Window wrapper for dialog (can't include module outside of this) :P
       mainWindow.dialog = function(options, callback) {
-        dialog['show' + options.type](mainWindow, options, callback);
+        dialog['show' + options.t](mainWindow, options, callback);
       };
 
       // and load the index.html of the app.

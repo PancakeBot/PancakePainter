@@ -319,7 +319,7 @@ function bindControls() {
       case 'file.export':
       case 'file.exportmirrored':
         mainWindow.dialog({
-          type: 'SaveDialog',
+          t: 'SaveDialog',
           title: i18n.t('export.title'),
           defaultPath: path.join(app.getPath('userDesktop'), currentFile.name.split('.')[0]),
           filters: [
@@ -341,7 +341,7 @@ function bindControls() {
       case 'file.save':
         if (currentFile.name === "") {
           mainWindow.dialog({
-            type: 'SaveDialog',
+            t: 'SaveDialog',
             title: i18n.t(menu), // Same app namespace i18n key for title :)
             defaultPath: currentFile.path,
             filters: [
@@ -380,7 +380,7 @@ function bindControls() {
         if (!document.hasFocus()) return; // Triggered from devtools otherwise
         checkFileStatus(function() {
           mainWindow.dialog({
-            type: 'OpenDialog',
+            t: 'OpenDialog',
             title: i18n.t(menu),
             filters: [
               { name: i18n.t('file.type'), extensions: ['pbp'] }
