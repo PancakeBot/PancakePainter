@@ -289,3 +289,19 @@ div.overlay-window {
     box-sizing: border-box;
   }
 }
+
+
+// Below 910 width, adjust layout ==============================================
+@media (max-width: 909px) {
+  #toolback {
+    #logo {
+      height: 23px;
+      top: 30px;
+    }
+
+    .ver {
+      top: 41px;
+      transform: translate(296px, 0);
+    }
+  }
+}
