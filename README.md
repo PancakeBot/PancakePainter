@@ -8,11 +8,11 @@ through the issue queue and the milestones page._ ****
 
 
 ### User Documentation
- 0. Using the drawing tool:
+ 0. **Using the drawing tool:**
    * Click and drag to draw pancake lines freehand
-   * Click single points to draw polygonal shapes, double-click or press
-ESC/Enter to complete drawing.
- 0. Using the selection tool:
+   * Click single points to draw polygonal shapes, press right click or
+   ESC/Enter to complete drawing.
+ 0. **Using the selection tool:**
    * Click the center or near a line to select it.
    * Once selected, click and drag the corner handles to scale the object, or
 the top rotation handle to rotate it.
@@ -20,16 +20,34 @@ the top rotation handle to rotate it.
 click an area on the line without any points to add a new point.
    * Click and drag the selected object anywhere else to move it to a new
 position.
- 0. Export your drawing for printing:
-   * Your PancakeBot uses a almost readable text format for input called GCODE
-unique to each drawing and setup that tells your bot how to move and when to
-extrude batter to make your drawing.
+ 0. **Using the trace image import tool:**
+   * To import an image to trace by hand, click the image import icon, select
+   your image (in any standard web format, GIF, JPG, PNG), and it will be placed
+   on the canvas.
+   * Once imported, you can move the image around and scale/rotate it as needed.
+   * When done, click outside the image, press ESC, or select the drawing
+   tool.
+   * To adjust the image position, just click the image import button again. To
+   choose a new image, press the Delete key when in edit mode then click import
+   again.
+ 0. **Using the fill tool:**
+   * The fill tool is used to visually fill an area with a specific shade, which
+   will then be used to create a zig-zag fill pattern used by the PancakeBot.
+   * Click inside an empty area enclosed on all sides by drawn lines to fill
+   that space. Large or complex fills may take some time.
+   * Only drawn lines define what can be filled, not imported images or the
+   drawable boundary.
+   * If the algorithm cannot fill what you've drawn, you will be notified with a
+   reason why.
+   * If a complex fill ends up with triangles across it or doesn't look right,
+   select and delete it, then adjust the surrounding shapes and try again.
+ 0. **Export your drawing for printing:**
+   * Your PancakeBot uses a readable text format for input called GCODE to
+   create your pancake art. Unique to each drawing and configuration, they tell
+   your bot how to move and when to extrude batter to make your drawing.
    * To generate the file you need, use the menu "File > Export for printing..."
 and select a location to save the file. You can then place this on your bot's
 SD card and print at your leisure.
-
-
-_More details coming soon!_
 
 Official support will eventually be found @
 [PancakeBot.com](http://www.pancakebot.com)
@@ -49,7 +67,7 @@ about what changes you made and submit. A maintainer of the project will check
 your work, possibly ask you to fix a few more things, and then if all is well,
 your work will be merged into the project. It's that easy, really.
 
-### Contributing to the Project
+## Contributing to the Project
 PancakePainter uses Github's [Electron application shell](http://electron.atom.io)
 as a cross platform wrapper, and to create the application logic everything is
 written in plain JavaScript. If you know how to mess with websites, HTML, CSS or
@@ -58,16 +76,16 @@ environment setup to start hacking.
 
 ### Local Run Prerequisites
 
-#### Io.js (2.4.x+) for node & npm
-Required for automated builds and node module install. Electron uses Node.js'
-little brother fork, io.js. See [iojs.org](http://iojs.org) for installation for
-your operating system. `npm` is installed along with it. If you already have
-node installed, you can probably go without switching to io.js as electron
-provides its own io.js implementation built in.
+#### Node.js (4.x+) & npm
+Required for automated builds and node module install. Electron uses Node.js
+and npm to manage running and packages. See [nodejs.org](http://iojs.org) for
+installation for your operating system. `npm` is installed along with it. If you
+already have node installed, you can probably go without upgrading as Electron
+provides its own node.js implementation built in.
 
 #### Electron (v0.30.x)
 Though the `src/index.html` may somewhat render in a regular browser, you're
-going to need to run it inside of Electron before it all works. After node/io.js
+going to need to run it inside of Electron before it all works. After node
 is installed, just run from your terminal/console
 `npm install -g electron-prebuilt` to install Electron on your path. When
 complete, just run `electron -v` to see the installed app version.
