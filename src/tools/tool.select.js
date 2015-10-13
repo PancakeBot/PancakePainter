@@ -125,9 +125,11 @@ module.exports = function(paper) {
           segment = hitResult.segment;
         }
       } else if (hitResult.type === 'stroke' && path !== paper.selectRect) {
-        var location = hitResult.location;
-        segment = path.insert(location.index + 1, event.point);
-        //path.smooth();
+        if (paper.selectRect && paper.selectRect.ppath === path) {
+          // Add new segment node to the path (if it's already selected)
+          var location = hitResult.location;
+          segment = path.insert(location.index + 1, event.point);
+        }
       }
 
       if ((paper.selectRect === null || paper.selectRect.ppath !== path) && paper.selectRect !== path) {
