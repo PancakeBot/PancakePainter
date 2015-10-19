@@ -38,6 +38,7 @@ module.exports = function(paper) {
 
     // Run the fill in a timeout to allow the previous code to run first.
     setTimeout(function() {
+      cleanAllPaths(); // Clean paths of any duplicate points.
       var fillPath = floodFill(event.point);
 
       if (fillPath !== false) {
@@ -53,6 +54,14 @@ module.exports = function(paper) {
 
   };
 
+  // TEMPORARY path cleaning function to ensure we can always fill with the
+  // paperjs/paper.js#801 issue still around.
+  function cleanAllPaths() {
+    var cLayer = project.getActiveLayer();
+    _.each(cLayer.children, function(path) {
+      paper.cleanPath(path);
+    });
+  }
 
   // Attempt to flood fill at the given point, on the current layer.
   // Will return false if clicked out of bounds or floods to boundary.
