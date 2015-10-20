@@ -84,53 +84,50 @@ module.exports = function(config) {
 
     // Create an artificial move to the exact point where the pump should turn
     // off, before the next move occurs to ensure correct drip timing.
-    var offset = Math.max(0, Math.min(path.length, path.length - config.lineEndPreShutoff));
-    var gcPreShutoff = [
-      gc('note', 'Nearing path end, moving to preshutoff position'),
-      gc('move', reMap(path.getPointAt(offset))),
-      gc('pumpoff')
-    ].join('');
+    var shutdownOffset = Math.max(0, Math.min(path.length, path.length - config.lineEndPreShutoff));
+    var gcPreShutoff = [];
+    if (shutdownOffset > 0) {
+      gcPreShutoff = [
+        gc('note', 'Nearing path end, moving to preshutoff position'),
+        gc('move', reMap(path.getPointAt(shutdownOffset))),
+        gc('pumpoff')
+      ].join('');
+    }
 
     // Render segment points to Gcode movements
     _.each(path.segments, function(segment, index){
+      var segOffset = segment.location.offset;
 
-      // If we're on the last segment of a path (here before we've moved to that
-      // point), and we're beyond the standard pre-shutoff, run that
-      if (index === path.segments.length -1) {
-        if (path.length - path.getOffsetOf(segment.point) <= config.lineEndPreShutoff && !pumpOff) {
+      // If we're on anything but the first segment before we've moved, but this
+      // segment offset is beyond the shutdown offset make sure to insert it.
+      if (index > 0) {
+        if (segOffset > shutdownOffset && !pumpOff) {
           pumpOff = true;
           out+= gcPreShutoff;
         }
       }
 
-
-      out+= gc('move', reMap(segment.point)); // Start by moving to this path segment
+      // Move to this path segments point.
+      out+= gc('move', reMap(segment.point));
 
       if (index === 0) { // First path segment
         // After we've moved to the point, start the pump and wait for it to warm up
         out+= [gc('pumpon'), gc('wait', config.startWait), ''].join('');
+
+        // AFTER a first segment move/pump on, if the total path length is less
+        // than our shutoff distance, we need to shutoff early. shutdownOffset
+        // will be 0 here, but the logic below makes a little more sense.
+        if (path.length <= config.lineEndPreShutoff && !pumpOff) {
+          pumpOff = true;
+          out+=[
+            gc('note', 'Very short path, early shutoff without move'),
+            gc('pumpoff')
+          ].join('');
+        }
       } else if (index === path.segments.length-1) { // Last path segment
         // Last segment/movement, dwell on the last point
         out+= gc('wait', config.endWait);
-      } else { // Not the first or last path segment.
-        // If the remaining length of the line is less than the shutoff value,
-        // throw in the early shutoff. Must happen AFTER initial pumpOn above.
-        if (path.length - path.getOffsetOf(segment.point) <= config.lineEndPreShutoff && !pumpOff) {
-          pumpOff = true;
-          out+= gcPreShutoff;
-        }
       }
-
-      // If the remaining length of the line is less than the shutoff value,
-      // throw in the early shutoff. Must happen AFTER initial pumpOn above.
-      if (path.length - path.getOffsetOf(segment.point) <= config.lineEndPreShutoff && !pumpOff) {
-        pumpOff = true;
-        out+=[
-          gc('note', 'Very short path, early shutoff without move'),
-          gc('pumpoff')
-        ].join('');
-      }
-
     });
     return out;
   }
