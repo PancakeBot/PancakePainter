@@ -156,7 +156,9 @@ function initEditor() {
     // have the correct dimensions for Paper to size to.
     $(mainWindow).trigger('move');
 
-    updateFrosted();
+    if ($('#overlay').is(':visible')) {
+      updateFrosted();
+    }
   }).resize();
 }
 
