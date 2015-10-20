@@ -52,12 +52,12 @@ module.exports = function(grunt) {
     grunt.task.run('electron:macbuild');
 
     // If we're on Mac, go ahead and run appdmg
-    if (process.platform === 'darwin') {
+    /*if (process.platform === 'darwin') {
       if (fsp.existsSync(conf('appdmg.target.dest'))) {
         fs.rm(conf('appdmg.target.dest'));
       }
 
       grunt.task.run('appdmg');
-    }
+    }*/
   });
 };

@@ -6,7 +6,7 @@ module.exports = function(grunt) {
   // Load the plugins...
   grunt.loadNpmTasks('grunt-electron');
   if (process.platform === 'win32') grunt.loadNpmTasks('grunt-electron-installer');
-  if (process.platform === 'darwin') grunt.loadNpmTasks('grunt-appdmg');
+  //if (process.platform === 'darwin') grunt.loadNpmTasks('grunt-appdmg');
 
   // Load the tasks in '/tasks'
   grunt.loadTasks('tasks');
