@@ -16,6 +16,7 @@ module.exports = function(grunt) {
 
   var appInfo = grunt.file.readJSON('package.json');
   var version = appInfo.version;
+  var numericVersion = appInfo.version.split('-')[0];
   var buildIgnore = 'build/dist|build/node_modules|build/tasks|build/package.json|build/Gruntfile.js';
 
   // Project configuration.
@@ -65,7 +66,25 @@ module.exports = function(grunt) {
           }
         }
       }
-    }
+    },
+    'create-windows-installer': {
+      64: {
+        iconUrl: "http://raw.githubusercontent.com/PancakeBot/PancakePainter/master/resources/win32/app.ico",
+        appDirectory: 'build/dist/PancakePainter-win32-x64',
+        outputDirectory: 'build/dist/winstall64/',
+        loadingGif: 'resources/win32/install_anim.gif',
+        version: numericVersion,
+        authors: 'PancakeBot Inc.'
+      },
+      32: {
+        iconUrl: "http://raw.githubusercontent.com/PancakeBot/PancakePainter/master/resources/win32/app.ico",
+        appDirectory: 'build/dist/PancakePainter-win32-ia32',
+        outputDirectory: 'build/dist/winstall32/',
+        loadingGif: 'resources/win32/install_anim.gif',
+        version: numericVersion,
+        authors: 'PancakeBot Inc.'
+      }
+    },
   });
 
 
