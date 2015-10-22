@@ -203,12 +203,18 @@ div.overlay-window {
     padding: 0 1.5em;
     box-sizing: border-box; }
 
-@media (max-width: 909px) {
+@media (max-width: 975px) {
   #toolback #logo {
     height: 23px;
     top: 30px; }
   #toolback .ver {
     top: 41px;
     transform: translate(296px, 0); } }
+@media (max-width: 755px) {
+  #toolback #logo {
+    height: 20px;
+    top: 33px; }
+  #toolback .ver {
+    transform: translate(258px, 0); } }
 
 /*# sourceMappingURL=index.css.map */

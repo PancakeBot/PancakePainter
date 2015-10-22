@@ -292,8 +292,8 @@ div.overlay-window {
 }
 
 
-// Below 910 width, adjust layout ==============================================
-@media (max-width: 909px) {
+// Below certain widths, adjust layout ==============================================
+@media (max-width: 975px) {
   #toolback {
     #logo {
       height: 23px;
@@ -303,6 +303,19 @@ div.overlay-window {
     .ver {
       top: 41px;
       transform: translate(296px, 0);
+    }
+  }
+}
+
+@media (max-width: 755px) {
+  #toolback {
+    #logo {
+      height: 20px;
+      top: 33px;
+    }
+
+    .ver {
+      transform: translate(258px, 0);
     }
   }
 }
