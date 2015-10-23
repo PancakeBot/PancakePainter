@@ -2,9 +2,11 @@
 #### The super-simple drawing software for your PancakeBot.
 
 ### Download/Install
-**** _We're currently in the Alpha phase and have no official releases yet. Check
-back soon for updates. If you're a hardcore tester, you can follow the roadmap
-through the issue queue and the milestones page._ ****
+ * *Windows 7-10* ➤ [32bit](https://github.com/PancakeBot/PancakePainter/releases/download/v1.0.0-Beta1/Install_PancakePainter_Win_v1.0.0-Beta1.exe)
+ * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.0.0-Beta1/PancakePainter_Mac_v1.0.0-Beta1.zip)
+ * *Linux:* No build supported yet,  can run from source. Vote here: #39
+
+#### Check the [latest release page](https://github.com/PancakeBot/PancakePainter/releases/latest) for feature notes, known issues, and other details.
 
 
 ### User Documentation
