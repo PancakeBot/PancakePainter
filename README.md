@@ -6,7 +6,7 @@
 ### Download/Install
  * *Windows 7-10* ➤ [32bit](https://github.com/PancakeBot/PancakePainter/releases/download/v1.0.0-Beta1/Install_PancakePainter_Win_v1.0.0-Beta1.exe)
  * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.0.0-Beta1/PancakePainter_Mac_v1.0.0-Beta1.zip)
- * *Linux:* No build supported yet,  can run from source. Vote here: #39
+ * *Linux:* No build supported yet,  can run from source. [Vote here @ #39](https://github.com/PancakeBot/PancakePainter/issues/39)
 
 #### Check the [latest release page](https://github.com/PancakeBot/PancakePainter/releases/latest) for feature notes, known issues, and other details.
 
