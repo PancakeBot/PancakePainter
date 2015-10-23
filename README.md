@@ -136,4 +136,8 @@ This open source project has been built with love by
 from [Storebound](http://storebound.com),
 [PancakeBot](https://github.com/PancakeBot), and Kickstarter Backers like _you_!
 
+[Windows installation GIF](https://github.com/PancakeBot/PancakePainter/blob/master/resources/win32/install_anim.gif)
+made with permission from animation work done by
+the incredible [Orbo](https://www.reddit.com/r/orbo).
+
 All code licensed under Apache v2.0
