@@ -47,7 +47,7 @@ var renderConfig = {
   printArea: { // Print area limitations (in 1 MM increments)
     x: printableArea.offset.right,
     t: 0,
-    l: (printableArea.width + printableArea.offset.right) * 2,
+    l: printableArea.width + printableArea.offset.right,
     y: printableArea.height
   },
   version: app.getVersion() // Application version written to GCODE header
