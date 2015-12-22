@@ -63,7 +63,7 @@
     "color3": "Dark"
   },
   "import": {
-    "title": "Import image for tracing…",
+    "title": "Import image for tracing or SVG for editing…",
     "files": "Web format tracing image"
   },
   "export": {
