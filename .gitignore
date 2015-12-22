@@ -34,3 +34,6 @@ settings.json
 
 # Compiled resource cache (though this is sent out with production versions)
 .sass-cache
+
+# WebStorm project files
+/.idea
