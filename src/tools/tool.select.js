@@ -317,5 +317,10 @@ module.exports = function(paper) {
     }
   }
 
+  tool.selectNewSvg = function(item) {
+    initSelectionRectangle(item);
+    tool.activate();
+  };
+
   return tool;
 };

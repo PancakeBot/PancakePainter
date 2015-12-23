@@ -52,7 +52,7 @@ paper.initImageImport = function() {
       t: 'OpenDialog',
       title: i18n.t('import.title'),
       filters: [
-        { name: i18n.t('import.files'), extensions: ['jpg', 'jpeg', 'gif', 'png'] }
+        { name: i18n.t('import.files'), extensions: ['jpg', 'jpeg', 'gif', 'png', 'svg'] }
       ]
     }, function(filePath){
       if (!filePath) {  // Open cancelled
@@ -60,34 +60,12 @@ paper.initImageImport = function() {
         return;
       }
 
-      paper.imageLayer.activate(); // Draw the raster to the image layer
-        var img = new Raster({
-          source: dataURI(filePath[0]),
-          position: view.center
-        });
-        // The raster MUST be in a group to alleviate coordinate & scaling issues.
-        paper.traceImage = new Group([img]);
-        paper.traceImage.img = img;
-      paper.mainLayer.activate(); // We're done with the image layer for now
-
-      // TODO: Bad images never trigger onload
-      img.onLoad = function() {
-        // Size the image down
-        var scale = {
-          x: (view.bounds.width * 0.8) / this.width,
-          y: (view.bounds.height * 0.8) / this.height
-        }
-
-        paper.traceImage.pInitialBounds = this.bounds;
-
-        // Use the smallest scale
-        scale = (scale.x < scale.y ? scale.x : scale.y);
-        paper.traceImage.scale(scale);
-
-        paper.traceImage.opacity = 0.5;
-
-        // Select the thing and disable other selections
-        toolSelect.imageTraceMode(true);
+      var path = filePath[0];
+      // check the file type
+      if((/\.svg$/i).test(path)) {
+        paper.importSvg(path);
+      } else {
+        paper.importImage(path);
       }
     });
   } else {
@@ -105,6 +83,68 @@ paper.finishImageImport = function() {
   toolSelect.imageTraceMode(false);
 }
 
+// actually does the image importing
+paper.importImage = function(filePath) {
+  paper.imageLayer.activate(); // Draw the raster to the image layer
+  var img = new Raster({
+    source: dataURI(filePath),
+    position: view.center
+  });
+  // The raster MUST be in a group to alleviate coordinate & scaling issues.
+  paper.traceImage = new Group([img]);
+  paper.traceImage.img = img;
+  paper.mainLayer.activate(); // We're done with the image layer for now
+
+  // TODO: Bad images never trigger onload
+  img.onLoad = function() {
+    // Size the image down
+    var scale = {
+      x: (view.bounds.width * 0.8) / this.width,
+      y: (view.bounds.height * 0.8) / this.height
+    }
+
+    paper.traceImage.pInitialBounds = this.bounds;
+
+    // Use the smallest scale
+    scale = (scale.x < scale.y ? scale.x : scale.y);
+    paper.traceImage.scale(scale);
+
+    paper.traceImage.opacity = 0.5;
+
+    // Select the thing and disable other selections
+    toolSelect.imageTraceMode(true);
+  }
+};
+
+// actually does the SVG importing
+paper.importSvg = function(filePath) {
+  var contents = fs.readFileSync(filePath, 'utf8');
+  var svg = project.importSVG(contents, {expandShapes: false, applyMatrix: false});
+  var bounds = svg.bounds;
+  var colorIndex = paper.pancakeShades.length - 1;
+  var initColor = paper.pancakeShades[colorIndex];
+  // set initial SVG color
+  selectColor(colorIndex);
+  var group = new Group({
+    children: [svg],
+    // Use darkest color
+    strokeColor: initColor,
+    fillColor: initColor,
+    // Move the group to the center of the view:
+    position: view.center
+  });
+  // Size the SVG down
+  var scale = {
+    x: (view.bounds.width * 0.8) / bounds.width,
+    y: (view.bounds.height * 0.8) / bounds.height
+  };
+  group.pInitialBounds = group.bounds;
+  // Use the smallest scale
+  scale = (scale.x < scale.y ? scale.x : scale.y);
+  group.scale(scale);
+  // Select the new SVG and disable other selections
+  toolSelect.selectNewSvg(group);
+};
 
 // Clear the existing project workspace (no confirmation)
 paper.newPBP = function(noLayers) {
@@ -146,7 +186,7 @@ paper.fileChanged = function() {
 // Clean a path of duplicated segment points, triggered on change/create
 paper.cleanPath = function(path){
   _.each(path.segments, function(seg, index){
-    if (index > 0 && typeof path.segments[index-1] !== 'undefined') {
+    if (index > 0 && typeof path.segments[index-1] !== 'undefined' && seg) {
       var lastP = path.segments[index-1].point;
       if (lastP.x === seg.point.x && lastP.y === seg.point.y) {
         // Duplicate point found, remove it.
