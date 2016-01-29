@@ -1,7 +1,7 @@
 var path = require('path');
 
 module.exports = function(grunt) {
-  var electronVer = '0.34.0'; // Electron build version
+  var electronVer = '0.36.5'; // Electron build version
 
   // Load the plugins...
   grunt.loadNpmTasks('grunt-electron');
