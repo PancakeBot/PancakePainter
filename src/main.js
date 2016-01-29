@@ -51,14 +51,14 @@ function settingsInit() {
         x: 'center'
       },
       lastFile: '',
-      flatten: 15, // Flatten curve value (smaller value = more points)
-      shutoff: 20, // Remaining line length threshold for pump shutoff
+      flatten: 15,     // Flatten curve value (smaller value = more points)
+      shutoff: 20,     // Remaining line length threshold for pump shutoff
       startwait: 450,  // Time to wait for batter flow begin
-      endwait: 250, // Time to wait for batter flow at end of line
-      changewait: 35, // Number of seconds to wait between shade changes.
+      endwait: 250,    // Time to wait for batter flow at end of line
+      changewait: 35,  // Number of seconds to wait between shade changes.
       fillspacing: 15, // Space between each trace fill line
-      fillangle: 23, // Angle of line for trace fill
-      fillthresh: 27 // Threshold to group zig zags
+      fillangle: 23,   // Angle of line for trace fill
+      fillthresh: 27   // Threshold to group zig zags,
     },
     clear: function() {
       fs.removeSync(settingsFile);
