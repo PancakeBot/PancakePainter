@@ -150,7 +150,7 @@ module.exports = function(config) {
       gc('note', '----------------------------------------'),
       gc('workspace', config.printArea),
       gc('units'),
-      gc('speed', 5600),
+      gc('speed', config.botSpeed),
       gc('pumpoff'),
       gc('wait', 1000),
       gc('off'),

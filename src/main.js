@@ -56,9 +56,10 @@ function settingsInit() {
       startwait: 450,  // Time to wait for batter flow begin
       endwait: 250,    // Time to wait for batter flow at end of line
       changewait: 35,  // Number of seconds to wait between shade changes.
+      botspeed: 70,    // Locked stepper speed percentage written to GCODE
       fillspacing: 15, // Space between each trace fill line
       fillangle: 23,   // Angle of line for trace fill
-      fillthresh: 27   // Threshold to group zig zags,
+      fillthresh: 27   // Threshold to group zig zags
     },
     clear: function() {
       fs.removeSync(settingsFile);
@@ -139,7 +140,7 @@ function windowInit() {
       };
 
       // and load the index.html of the app.
-      mainWindow.loadUrl('file://' + __dirname + '/index.html');
+      mainWindow.loadURL('file://' + __dirname + '/index.html');
 
 
       // Save Move/Resize back to file

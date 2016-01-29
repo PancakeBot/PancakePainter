@@ -36,6 +36,11 @@
             <legend data-i18n>settings.gcode.title</legend>
 
             <div>
+              <label for="botspeed" data-i18n>settings.gcode.botspeed</label>
+              <input id="botspeed" class="managed" type="number" min="25" default="70" max="100" step="1">
+              <aside data-i18n>settings.gcode.botspeedinfo</aside>
+            </div>
+
             <div>
               <label for="flatten" data-i18n>settings.gcode.flatten</label>
               <input id="flatten" class="managed" type="number" min="2" default="15" max="50" step="1">

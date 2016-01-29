@@ -32,6 +32,9 @@ var griddleSize = {
   height: 267.7
 };
 
+// Real world PancakeBot speed maximum.
+var botSpeedMax = 6600;
+
 // Define the printable/drawable area in MM from furthest griddle edge
 var printableArea = {
   offset: {
@@ -78,6 +81,7 @@ function setRenderSettings() {
   renderConfig.fillSpacing = app.settings.v.fillspacing;
   renderConfig.fillAngle = app.settings.v.fillangle;
   renderConfig.fillGroupThreshold = app.settings.v.fillthresh;
+  renderConfig.botSpeed = parseInt((app.settings.v.botspeed / 100) * botSpeedMax, 10);
 }
 
 // Page loaded
