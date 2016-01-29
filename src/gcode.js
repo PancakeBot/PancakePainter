@@ -139,6 +139,7 @@ module.exports = function(config) {
       gc('note', 'Originally generated @ ' + new Date().toString()),
       gc('note', 'Settings used to generate this file:'),
       gc('note', '----------------------------------------'),
+      gc('note', 'botSpeed: ' + config.botSpeed),
       gc('note', 'flattenResolution: ' + config.flattenResolution),
       gc('note', 'lineEndPreShutoff: ' + config.lineEndPreShutoff),
       gc('note', 'startWait: ' + config.startWait),
