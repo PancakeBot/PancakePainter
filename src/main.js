@@ -139,7 +139,7 @@ function windowInit() {
       };
 
       // and load the index.html of the app.
-      mainWindow.loadURL('file://' + __dirname + '/index.html');
+      mainWindow.loadUrl('file://' + __dirname + '/index.html');
 
 
       // Save Move/Resize back to file

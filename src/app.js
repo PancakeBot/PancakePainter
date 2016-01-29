@@ -476,6 +476,13 @@ function bindControls() {
       setRenderSettings();
     }).change();
 
+    // Force default value on blur invalidation.
+    $(this).blur(function(){
+      if (!this.checkValidity()) {
+        this.value = $(this).attr('default');
+        $(this).change();
+      }
+    })
   });
 }
 
