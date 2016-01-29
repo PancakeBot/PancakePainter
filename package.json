@@ -1,6 +1,6 @@
 {
   "name": "PancakePainter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple drawing application and GCODE generator for the PancakeBot",
   "main": "src/main.js",
   "author": "techninja",
