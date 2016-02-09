@@ -309,6 +309,10 @@ module.exports = function(paper) {
       }
     }
 
+    // Select All
+    if (event.key === 'a' && !event.event.shiftKey && (event.event.ctrlKey || event.event.metaKey)) {
+      initSelectionRectangle(project.activeLayer.getItems({ class: Path }));
+    }
   };
 
   function initSelectionRectangle(paths) {
