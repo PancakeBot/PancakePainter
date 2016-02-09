@@ -26,6 +26,7 @@ module.exports = function(paper) {
     fill: true,
     tolerance: 5
   };
+  var pasteBuffer = [];
 
   // Externalize deseletion
   paper.deselect = function() {
@@ -224,13 +225,38 @@ module.exports = function(paper) {
     }
   };
 
+  function deleteSelection() {
+    paper.selectRect.ppath.remove();
+    if (paper.imageTraceMode) paper.traceImage = null;
+    paper.deselect();
+  }
+
+  function copySelectionToBuffer() {
+    pasteBuffer = [];
+    var itemsToCopy = [ paper.selectRect.ppath ];
+    _.each(itemsToCopy, function (copyItem) {
+      pasteBuffer.push(copyItem.exportJSON({ asString: false }));
+    });
+  }
+
+  function pasteFromBuffer() {
+    var addedItems = [];
+    _.each(pasteBuffer, function (pasteItem) {
+      if (pasteItem[0] === 'Path') {
+        var newPath = new Path();
+        newPath.importJSON(JSON.stringify(pasteItem));
+        addedItems.push(newPath);
+      }
+    });
+
+    initSelectionRectangle(addedItems[0]);
+  }
+
   tool.onKeyDown = function (event) {
     if (paper.selectRect) {
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
-        paper.selectRect.ppath.remove();
-        if (paper.imageTraceMode) paper.traceImage = null;
-        paper.deselect();
+        deleteSelection();
       }
 
       // Deselect
@@ -239,7 +265,25 @@ module.exports = function(paper) {
         paper.deselect();
       }
 
+      // Copy
+      if (event.key === 'c' && !event.event.shiftKey && (event.event.ctrlKey || event.event.metaKey)) {
+        copySelectionToBuffer();
+      }
+
+      // Cut
+      if (event.key === 'x' && !event.event.shiftKey && (event.event.ctrlKey || event.event.metaKey)) {
+        copySelectionToBuffer();
+        deleteSelection();
+      }
     }
+
+    if (pasteBuffer.length > 0) {
+      // Paste
+      if (event.key === 'v' && !event.event.shiftKey && (event.event.ctrlKey || event.event.metaKey)) {
+        pasteFromBuffer();   
+      }
+    }
+
   };
 
   function initSelectionRectangle(path) {
