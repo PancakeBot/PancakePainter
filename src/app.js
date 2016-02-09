@@ -288,17 +288,17 @@ function selectColor(index) {
 
   // Change selected path's color
   if (paper.selectRect) {
-    if (paper.selectRect.ppath) {
-      if (paper.selectRect.ppath.data.fill === true) {
-        paper.selectRect.ppath.fillColor = paper.pancakeShades[index];
+    _.each(paper.selectRect.paths, function (selectedPath) {
+      if (selectedPath.data.fill === true) {
+        selectedPath.fillColor = paper.pancakeShades[index];
       } else {
-        paper.selectRect.ppath.strokeColor = paper.pancakeShades[index];
+        selectedPath.strokeColor = paper.pancakeShades[index];
       }
 
-      paper.selectRect.ppath.data.color = index;
+      selectedPath.data.color = index;
       paper.view.update();
       currentFile.changed = true;
-    }
+    });
   }
 }
 
