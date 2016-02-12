@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "creator": "techninja、Jun Wakaya",
+    "target": "ja-JP",
+    "langname": "Japanese",
+    "release": "0.1.0"
+  },
+  "file": {
+    "title": "ファイル(&F)",
+    "new": "新規作成(&N)",
+    "open": "開く(&O)",
+    "close": "閉じる(&C)",
+    "export": "プリント用に書き出し...(&E)",
+    "exportmirrored": "プリント用に鏡像を書き出し(&E)...",
+    "save": "保存(&S)",
+    "saveas": "名前をつけて保存(&a)..."
+  },
+  "view" : {
+    "title": "ビュー(&V)",
+    "settings": "拡張設定",
+	"reload": "リロード",
+	"toggle": "DevToolsとトグル"
+  },
+  "mac": {
+    "about": "__name__ について",
+    "hide": "__name__ を隠す",
+    "services": "サービス",
+    "hideothers": "他を隠す",
+    "show": "すべて表示",
+    "quit": "終了"
+  },
+  "window": {
+    "title": "ウィンドウ",
+	"minimize": "最小化",
+	"close": "閉じる"
+  }
+}
