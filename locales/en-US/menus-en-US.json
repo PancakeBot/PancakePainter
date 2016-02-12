@@ -16,7 +16,10 @@
     "saveas": "Save Project &as…"
   },
   "view" : {
-    "settings": "Advanced Settings"
+    "title": "&View",
+    "settings": "Advanced Settings",
+	"reload": "Reload",
+	"toggle": "Toggle DevTools"
   },
   "mac": {
     "about": "About __name__",
@@ -25,5 +28,10 @@
     "hideothers": "Hide Others",
     "show": "Show All",
     "quit": "Quit"
+  },
+  "window": {
+    "title": "Window",
+	"minimize": "Minimize",
+	"close": "Close"
   }
 }

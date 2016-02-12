@@ -97,21 +97,21 @@ module.exports = function applyTemplate() {
       ]
     },
     {
-      label: 'View',
+      key: 'view.title',
       submenu: [
         {
           key: 'view.settings',
           accelerator: 'Shift+Alt+S'
         },
         {
-          label: 'Reload',
+          key: 'view.reload',
           accelerator: 'Command+R',
           click: function () {
             BrowserWindow.getFocusedWindow().reloadIgnoringCache();
           }
         },
         {
-          label: 'Toggle DevTools',
+          key: 'view.toggle',
           accelerator: 'Alt+Command+I',
           click: function () {
             BrowserWindow.getFocusedWindow().toggleDevTools();
@@ -120,15 +120,15 @@ module.exports = function applyTemplate() {
       ]
     },
     {
-      label: 'Window',
+	  key: 'window.title',
       submenu: [
         {
-          label: 'Minimize',
-          accelerator: 'Command+M',
+          key: 'window.minimize',
+		  accelerator: 'Command+M',
           selector: 'performMiniaturize:'
         },
         {
-          label: 'Close',
+          key: 'window.close',
           accelerator: 'Command+W',
           selector: 'performClose:'
         }
