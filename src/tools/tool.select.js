@@ -373,6 +373,9 @@ module.exports = function(paper) {
     paper.selectRect.paths = paths;
 
     _.each(paths, function (selectedPath) {
+      // Apply previous rotation to segments before moving pivot
+      selectedPath.applyMatrix = true;
+      selectedPath.applyMatrix = false;
       selectedPath.pivot = paper.selectRect.pivot;
     });
   }
