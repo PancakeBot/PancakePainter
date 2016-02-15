@@ -27,6 +27,8 @@ module.exports = function(paper) {
     tolerance: 5
   };
   var pasteBuffer = [];
+  var rubberBandStartPoint = null;
+  var rubberBandPath = null;
 
   // Externalize deseletion
   paper.deselect = function() {
@@ -83,6 +85,7 @@ module.exports = function(paper) {
         if (paper.selectRect !== null) {
           paper.deselect();
         }
+        rubberBandStartPoint = event.point;
 
         return;
       }
@@ -189,6 +192,12 @@ module.exports = function(paper) {
         selectedPath.position = selectedPath.position.add(event.delta);
       });
       paper.selectRect.position = paper.selectRect.position.add(event.delta);
+    } else {
+      if (rubberBandPath) { rubberBandPath.remove(); }
+      rubberBandPath = Path.Rectangle(rubberBandStartPoint, event.point);
+      rubberBandPath.dashArray = [12, 6];
+      rubberBandPath.strokeWidth = 2;
+      rubberBandPath.strokeColor = 'cyan';
     }
   };
 
@@ -226,6 +235,19 @@ module.exports = function(paper) {
   tool.onMouseUp = function(event) {
     selectionRectangleScale = null;
     selectionRectangleRotation = null;
+
+    if (rubberBandPath !== null) {
+      var rbRect = rubberBandPath.bounds;
+      rubberBandPath.remove();
+      rubberBandPath = null;
+
+      var rbItems = project.activeLayer.getItems({
+        inside: rbRect,
+        class: Path
+      });
+
+      initSelectionRectangle(rbItems);
+    }
 
     // If we have a mouse up with either of these, the file has changed!
     if (path || segment) {
