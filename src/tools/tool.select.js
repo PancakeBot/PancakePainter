@@ -269,7 +269,7 @@ module.exports = function(paper) {
     paper.deselect();
   }
 
-  function deleteSelection() {
+  tool.deleteSelection = function() {
     if (paper.selectRect !== null) {
       _.each(paper.selectRect.paths, function (selectedPath) {
         selectedPath.remove();
@@ -279,7 +279,7 @@ module.exports = function(paper) {
     paper.deselect();
   }
 
-  function copySelectionToBuffer() {
+  tool.copySelectionToBuffer = function() {
     pasteBuffer = [];
     if (paper.selectRect !== null) {
       var itemsToCopy = paper.selectRect.paths;
@@ -289,7 +289,7 @@ module.exports = function(paper) {
     }
   }
 
-  function pasteFromBuffer() {
+  tool.pasteFromBuffer = function() {
     var addedItems = [];
     _.each(pasteBuffer, function (pasteItem) {
       if (pasteItem[0] === 'Path') {
@@ -304,40 +304,16 @@ module.exports = function(paper) {
     }
   }
 
+  tool.selectAll = function() {
+    initSelectionRectangle(project.activeLayer.getItems({ class: Path }));
+  }
+
   tool.onKeyDown = function (event) {
     if (paper.selectRect) {
-      // Delete a selected path
-      if (event.key === 'delete' || event.key === 'backspace') {
-        deleteSelection();
-      }
-
       // Deselect
       if (event.key === 'escape') {
         cancelSelection();
       }
-
-      // Copy
-      if (event.key === 'c' && !event.event.shiftKey && (event.event.ctrlKey || event.event.metaKey)) {
-        copySelectionToBuffer();
-      }
-
-      // Cut
-      if (event.key === 'x' && !event.event.shiftKey && (event.event.ctrlKey || event.event.metaKey)) {
-        copySelectionToBuffer();
-        deleteSelection();
-      }
-    }
-
-    if (pasteBuffer.length > 0) {
-      // Paste
-      if (event.key === 'v' && !event.event.shiftKey && (event.event.ctrlKey || event.event.metaKey)) {
-        pasteFromBuffer();   
-      }
-    }
-
-    // Select All
-    if (event.key === 'a' && !event.event.shiftKey && (event.event.ctrlKey || event.event.metaKey)) {
-      initSelectionRectangle(project.activeLayer.getItems({ class: Path }));
     }
   };
 

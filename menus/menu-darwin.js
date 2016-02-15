@@ -97,6 +97,31 @@ module.exports = function applyTemplate() {
       ]
     },
     {
+      label: 'Edit ', // space prevents OS X from adding Dictation/Emoji menu items
+      submenu: [
+        {
+          key: 'edit.cut',
+          accelerator: 'Command+X'
+        },
+        {
+          key: 'edit.copy',
+          accelerator: 'Command+C'
+        },
+        {
+          key: 'edit.paste',
+          accelerator: 'Command+V'
+        },
+        {
+          key: 'edit.delete',
+          accelerator: 'Backspace'
+        },
+        {
+          key: 'edit.selectall',
+          accelerator: 'Command+A'
+        }
+      ]
+    },
+    {
       label: 'View',
       submenu: [
         {

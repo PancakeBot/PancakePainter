@@ -47,6 +47,31 @@ module.exports = function applyTemplate() {
       ]
     },
     {
+      label: 'Edit',
+      submenu: [
+        {
+          key: 'edit.cut',
+          accelerator: 'Control+X'
+        },
+        {
+          key: 'edit.copy',
+          accelerator: 'Control+C'
+        },
+        {
+          key: 'edit.paste',
+          accelerator: 'Control+V'
+        },
+        {
+          key: 'edit.delete',
+          accelerator: 'Delete'
+        },
+        {
+          key: 'edit.selectall',
+          accelerator: 'Control+A'
+        }
+      ]
+    },
+    {
       label: 'View',
       submenu: [
         {
