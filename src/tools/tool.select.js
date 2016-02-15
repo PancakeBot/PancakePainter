@@ -135,19 +135,23 @@ module.exports = function(paper) {
         }
       }
 
+      // Selection
+      var isMultiSelect = event.modifiers.command || event.modifiers.control;
       if ((paper.selectRect === null || !_.contains(paper.selectRect.paths, path)) && paper.selectRect !== path) {
-        if (!event.modifiers.shift || paper.selectRect === null) {
+        if (!isMultiSelect || paper.selectRect === null) {
+          // Start a new selection with this path
           initSelectionRectangle([path]);
         } else {
+          // Multiselect key held, add this path to the existing selection
           var newSelection = paper.selectRect.paths;
           newSelection.push(path);
           initSelectionRectangle(newSelection);
         }
-      } else if (paper.selectRect !== null && _.contains(paper.selectRect.paths, path)) {
-        if (event.modifiers.shift) {
-          var newSelection = _.filter(paper.selectRect.paths, function (p) { return p !== path });
-          initSelectionRectangle(newSelection);
-        }
+      }
+      // When multiselect key is held and path is already selected, remove it from selection
+      else if (isMultiSelect && paper.selectRect !== null && _.contains(paper.selectRect.paths, path)) {
+        var newSelection = _.filter(paper.selectRect.paths, function (p) { return p !== path });
+        initSelectionRectangle(newSelection);
       }
     }
 
