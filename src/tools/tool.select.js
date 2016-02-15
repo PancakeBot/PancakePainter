@@ -169,6 +169,7 @@ module.exports = function(paper) {
       paper.selectRect.scaling = scaling;
       _.each(paper.selectRect.paths, function (selectedPath) {
         selectedPath.scaling = scaling;
+        selectedPath.strokeWidth = 4 / ratio;
       });
       return;
     } else if (selectionRectangleRotation !== null) {
@@ -193,6 +194,9 @@ module.exports = function(paper) {
     } else if (paper.selectRect !== null && paper.selectRect.paths.length > 0) {
       // Path translate position adjustment
       _.each(paper.selectRect.paths, function (selectedPath) {
+        selectedPath.applyMatrix = true;
+        selectedPath.applyMatrix = false;
+        selectedPath.strokeWidth = 4;
         selectedPath.position = selectedPath.position.add(event.delta);
       });
       paper.selectRect.position = paper.selectRect.position.add(event.delta);
@@ -355,6 +359,7 @@ module.exports = function(paper) {
       // Apply previous rotation to segments before moving pivot
       selectedPath.applyMatrix = true;
       selectedPath.applyMatrix = false;
+      selectedPath.strokeWidth = 4;
       selectedPath.pivot = paper.selectRect.pivot;
     });
   }
