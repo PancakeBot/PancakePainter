@@ -295,6 +295,8 @@ module.exports = function(paper) {
       if (pasteItem[0] === 'Path') {
         var newPath = new Path();
         newPath.importJSON(JSON.stringify(pasteItem));
+        newPath.position.x += 15;
+        newPath.position.y += 15;
         addedItems.push(newPath);
       }
     });
@@ -318,6 +320,7 @@ module.exports = function(paper) {
   };
 
   function initSelectionRectangle(paths) {
+    paths = _.filter(paths, function(p) { return p !== paper.selectRect });
     cancelSelection();
 
     if (paths.length <= 0) {
