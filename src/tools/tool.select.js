@@ -26,6 +26,9 @@ module.exports = function(paper) {
     fill: true,
     tolerance: 5
   };
+  var pasteBuffer = [];
+  var rubberBandStartPoint = null;
+  var rubberBandPath = null;
 
   // Externalize deseletion
   paper.deselect = function() {
@@ -82,6 +85,7 @@ module.exports = function(paper) {
         if (paper.selectRect !== null) {
           paper.deselect();
         }
+        rubberBandStartPoint = event.point;
 
         return;
       }
@@ -91,7 +95,6 @@ module.exports = function(paper) {
       if (hitResult.type === 'segment') {
         hitResult.segment.remove();
       }
-      return;
     }
 
     if (hitResult) {
@@ -125,15 +128,30 @@ module.exports = function(paper) {
           segment = hitResult.segment;
         }
       } else if (hitResult.type === 'stroke' && path !== paper.selectRect) {
-        if (paper.selectRect && paper.selectRect.ppath === path) {
+        if (!event.modifiers.shift && paper.selectRect && _.contains(paper.selectRect.paths, path)) {
           // Add new segment node to the path (if it's already selected)
           var location = hitResult.location;
           segment = path.insert(location.index + 1, event.point);
         }
       }
 
-      if ((paper.selectRect === null || paper.selectRect.ppath !== path) && paper.selectRect !== path) {
-        initSelectionRectangle(path);
+      // Selection
+      var isMultiSelect = event.modifiers.command || event.modifiers.control;
+      if ((paper.selectRect === null || !_.contains(paper.selectRect.paths, path)) && paper.selectRect !== path) {
+        if (!isMultiSelect || paper.selectRect === null) {
+          // Start a new selection with this path
+          initSelectionRectangle([path]);
+        } else {
+          // Multiselect key held, add this path to the existing selection
+          var newSelection = paper.selectRect.paths;
+          newSelection.push(path);
+          initSelectionRectangle(newSelection);
+        }
+      }
+      // When multiselect key is held and path is already selected, remove it from selection
+      else if (isMultiSelect && paper.selectRect !== null && _.contains(paper.selectRect.paths, path)) {
+        var newSelection = _.filter(paper.selectRect.paths, function (p) { return p !== path });
+        initSelectionRectangle(newSelection);
       }
     }
 
@@ -149,12 +167,17 @@ module.exports = function(paper) {
       var ratio = event.point.subtract(paper.selectRect.bounds.center).length / selectionRectangleScale;
       var scaling = new Point(ratio, ratio);
       paper.selectRect.scaling = scaling;
-      paper.selectRect.ppath.scaling = scaling;
+      _.each(paper.selectRect.paths, function (selectedPath) {
+        selectedPath.scaling = scaling;
+        selectedPath.strokeWidth = 4 / ratio;
+      });
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
       var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
-      paper.selectRect.ppath.rotation = rotation;
+      _.each(paper.selectRect.paths, function (selectedPath) {
+        selectedPath.rotation = rotation;
+      });
       paper.selectRect.rotation = rotation;
       return;
     }
@@ -167,18 +190,22 @@ module.exports = function(paper) {
       // Smooth -only- non-polygonal paths
       //if (!path.data.isPolygonal) path.smooth();
 
-      initSelectionRectangle(path);
-    } else if (path) {
+      initSelectionRectangle([path]);
+    } else if (paper.selectRect !== null && paper.selectRect.paths.length > 0) {
       // Path translate position adjustment
-      if (path !== paper.selectRect) {
-        path.position.x += event.delta.x;
-        path.position.y += event.delta.y;
-        paper.selectRect.position.x += event.delta.x;
-        paper.selectRect.position.y += event.delta.y;
-      } else {
-        paper.selectRect.position = paper.selectRect.position.add(event.delta);
-        paper.selectRect.ppath.position = paper.selectRect.ppath.position.add(event.delta);
-      }
+      _.each(paper.selectRect.paths, function (selectedPath) {
+        selectedPath.applyMatrix = true;
+        selectedPath.applyMatrix = false;
+        selectedPath.strokeWidth = 4;
+        selectedPath.position = selectedPath.position.add(event.delta);
+      });
+      paper.selectRect.position = paper.selectRect.position.add(event.delta);
+    } else {
+      if (rubberBandPath) { rubberBandPath.remove(); }
+      rubberBandPath = Path.Rectangle(rubberBandStartPoint, event.point);
+      rubberBandPath.dashArray = [12, 6];
+      rubberBandPath.strokeWidth = 2;
+      rubberBandPath.strokeColor = 'cyan';
     }
   };
 
@@ -217,6 +244,19 @@ module.exports = function(paper) {
     selectionRectangleScale = null;
     selectionRectangleRotation = null;
 
+    if (rubberBandPath !== null) {
+      var rbRect = rubberBandPath.bounds;
+      rubberBandPath.remove();
+      rubberBandPath = null;
+
+      var rbItems = project.activeLayer.getItems({
+        inside: rbRect,
+        class: Path
+      });
+
+      initSelectionRectangle(rbItems);
+    }
+
     // If we have a mouse up with either of these, the file has changed!
     if (path || segment) {
       paper.cleanPath(path);
@@ -224,37 +264,82 @@ module.exports = function(paper) {
     }
   };
 
+  function cancelSelection() {
+    if (paper.selectRect !== null) {
+      _.each(paper.selectRect.paths, function (selectedPath) {
+        selectedPath.fullySelected = false;
+      });
+    }
+    paper.deselect();
+  }
+
+  tool.deleteSelection = function() {
+    if (paper.selectRect !== null) {
+      _.each(paper.selectRect.paths, function (selectedPath) {
+        selectedPath.remove();
+      });
+    }
+    if (paper.imageTraceMode) paper.traceImage = null;
+    paper.deselect();
+  }
+
+  tool.copySelectionToBuffer = function() {
+    pasteBuffer = [];
+    if (paper.selectRect !== null) {
+      var itemsToCopy = paper.selectRect.paths;
+      _.each(itemsToCopy, function (copyItem) {
+        pasteBuffer.push(copyItem.exportJSON({ asString: false }));
+      });
+    }
+  }
+
+  tool.pasteFromBuffer = function() {
+    var addedItems = [];
+    _.each(pasteBuffer, function (pasteItem) {
+      if (pasteItem[0] === 'Path') {
+        var newPath = new Path();
+        newPath.importJSON(JSON.stringify(pasteItem));
+        newPath.position.x += 15;
+        newPath.position.y += 15;
+        addedItems.push(newPath);
+      }
+    });
+
+    if (addedItems.length > 0) {
+      initSelectionRectangle(addedItems);
+    }
+  }
+
+  tool.selectAll = function() {
+    initSelectionRectangle(project.activeLayer.getItems({ class: Path }));
+  }
+
   tool.onKeyDown = function (event) {
     if (paper.selectRect) {
-      // Delete a selected path
-      if (event.key === 'delete' || event.key === 'backspace') {
-        paper.selectRect.ppath.remove();
-        if (paper.imageTraceMode) paper.traceImage = null;
-        paper.deselect();
-      }
-
       // Deselect
       if (event.key === 'escape') {
-        paper.selectRect.ppath.fullySelected = false;
-        paper.deselect();
+        cancelSelection();
       }
-
     }
   };
 
-  function initSelectionRectangle(path) {
-    if (paper.selectRect !== null) paper.selectRect.remove();
-    var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
-    var bounds;
+  function initSelectionRectangle(paths) {
+    paths = _.filter(paths, function(p) { return p !== paper.selectRect });
+    cancelSelection();
 
-    if (reset) {
-      // Actually reset bounding box
-      bounds = path.bounds;
-      path.pInitialBounds = path.bounds;
-    } else {
-      // No bounding box reset
-      bounds = path.pInitialBounds;
+    if (paths.length <= 0) {
+      return;
     }
+
+    var bounds = undefined;
+
+    _.each(paths, function (selectedPath) {
+      if (bounds) {
+        bounds = bounds.unite(selectedPath.bounds);
+      } else {
+        bounds = selectedPath.bounds;
+      }
+    });
 
     var b = bounds.clone().expand(25, 25);
 
@@ -264,18 +349,19 @@ module.exports = function(paper) {
     paper.selectRect.insert(2, new Point(b.center.x, b.top - 25));
     paper.selectRect.insert(2, new Point(b.center.x, b.top));
 
-    if (!reset) {
-      paper.selectRect.position = path.bounds.center;
-      paper.selectRect.rotation = path.rotation;
-      paper.selectRect.scaling = path.scaling;
-    }
-
     paper.selectRect.strokeWidth = 2;
     paper.selectRect.strokeColor = 'blue';
     paper.selectRect.name = "selection rectangle";
     paper.selectRect.selected = true;
-    paper.selectRect.ppath = path;
-    paper.selectRect.ppath.pivot = paper.selectRect.pivot;
+    paper.selectRect.paths = paths;
+
+    _.each(paths, function (selectedPath) {
+      // Apply previous rotation to segments before moving pivot
+      selectedPath.applyMatrix = true;
+      selectedPath.applyMatrix = false;
+      selectedPath.strokeWidth = 4;
+      selectedPath.pivot = paper.selectRect.pivot;
+    });
   }
 
   function getBoundSelection(point) {
@@ -309,7 +395,7 @@ module.exports = function(paper) {
     paper.imageTraceMode = toggle;
 
     if (toggle) {
-      initSelectionRectangle(paper.traceImage);
+      initSelectionRectangle([paper.traceImage]);
       tool.activate();
     } else {
       path = null;

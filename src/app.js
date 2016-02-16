@@ -247,6 +247,14 @@ function activateToolItem(item) {
   paper.view.update();
 }
 
+function switchToSelectTool() {
+  var selectTool = _.findWhere(paper.tools, { key: 'select'});
+  if (selectTool) {
+    selectTool.activate();
+    activateToolItem($("#tool-select"));
+  }
+}
+
 // Build the elements for the colorpicker non-tool item
 function buildColorPicker() {
   var $picker  = $('<div>').attr('id', 'picker');
@@ -288,17 +296,17 @@ function selectColor(index) {
 
   // Change selected path's color
   if (paper.selectRect) {
-    if (paper.selectRect.ppath) {
-      if (paper.selectRect.ppath.data.fill === true) {
-        paper.selectRect.ppath.fillColor = paper.pancakeShades[index];
+    _.each(paper.selectRect.paths, function (selectedPath) {
+      if (selectedPath.data.fill === true) {
+        selectedPath.fillColor = paper.pancakeShades[index];
       } else {
-        paper.selectRect.ppath.strokeColor = paper.pancakeShades[index];
+        selectedPath.strokeColor = paper.pancakeShades[index];
       }
 
-      paper.selectRect.ppath.data.color = index;
+      selectedPath.data.color = index;
       paper.view.update();
       currentFile.changed = true;
-    }
+    });
   }
 }
 
@@ -416,6 +424,41 @@ function bindControls() {
           toastr.info(i18n.t(menu));
           paper.newPBP();
         });
+        break;
+      case 'edit.cut':
+        if (paper.tool.key === 'select') {
+          paper.tool.copySelectionToBuffer();
+          paper.tool.deleteSelection();
+          currentFile.changed = true;
+          paper.view.update();
+        }
+        break;
+      case 'edit.copy':
+        if (paper.tool.key === 'select') {
+          paper.tool.copySelectionToBuffer();
+        }
+        break;
+      case 'edit.paste':
+        if (paper.tool.key !== 'select') {
+          switchToSelectTool();
+        }
+        paper.tool.pasteFromBuffer();
+        currentFile.changed = true;
+        paper.view.update();
+        break;
+      case 'edit.delete':
+        if (paper.tool.key === 'select') {
+          paper.tool.deleteSelection();
+          currentFile.changed = true;
+          paper.view.update();
+        }
+        break;
+      case 'edit.selectall':
+        if (paper.tool.key !== 'select') {
+          switchToSelectTool();
+        }
+        paper.tool.selectAll();
+        paper.view.update();
         break;
       case 'view.settings':
         toggleOverlay(true, function(){

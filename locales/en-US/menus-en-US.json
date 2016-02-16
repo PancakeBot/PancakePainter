@@ -15,6 +15,13 @@
     "save": "&Save Project",
     "saveas": "Save Project &as…"
   },
+  "edit" : {
+    "cut": "Cut",
+    "copy": "&Copy",
+    "paste": "Paste",
+    "delete": "Delete",
+    "selectall": "Select &All"
+  },
   "view" : {
     "settings": "Advanced Settings"
   },
