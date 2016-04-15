@@ -9,7 +9,9 @@ var app = require('app');  // Module to control application life.
 var appPath = app.getAppPath() + '/';
 var fs = require('fs-plus');
 var _ = require('underscore');
-var BrowserWindow = require('browser-window');  // Module to create native browser window.
+
+// Module to create native browser window.
+var BrowserWindow = require('browser-window');
 var dialog = require('dialog');
 var i18n = require('i18next');
 
@@ -107,8 +109,10 @@ function windowInit() {
         namespaces: ['app', 'menus'],
         defaultNs: 'app'
       },
-      resGetPath: appPath + 'locales/__lng__/__ns__-__lng__.json', // Path to find file
-      resSetPath: appPath + 'locales/__lng__/__ns__-__lng__.json', // Path to store file
+      // Path to find file
+      resGetPath: appPath + 'locales/__lng__/__ns__-__lng__.json',
+      // Path to store file
+      resSetPath: appPath + 'locales/__lng__/__ns__-__lng__.json',
       sendMissingTo: 'fallback|current|all', // Send missing values to
       lng: 'en-US'
     }, function(){
