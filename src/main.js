@@ -114,8 +114,8 @@ function windowInit() {
     }, function(){
 
       var windowSettings = {
-        'min-width': 680,
-        'min-height': 420,
+        minWidth: 680,
+        minHeight: 420,
         width: app.settings.v.window.width,
         height: app.settings.v.window.height,
         resizable: true,
