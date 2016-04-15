@@ -1,6 +1,7 @@
 /**
  * @file Tool definition for the PC super-crazy visual flood fill tool.
  **/
+/*globals $, _, toastr, i18n */
 "use strict";
 
 module.exports = function(paper) {
@@ -42,7 +43,7 @@ module.exports = function(paper) {
       var fillPath = floodFill(event.point);
 
       if (fillPath !== false) {
-        fillPath.fillColor = paper.pancakeShades[paper.pancakeCurrentShade]
+        fillPath.fillColor = paper.pancakeShades[paper.pancakeCurrentShade];
         fillPath.data.color = paper.pancakeCurrentShade;
         paper.fileChanged();
       }

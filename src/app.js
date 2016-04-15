@@ -3,6 +3,9 @@
  * This is the central render process main window JS, and has access to
  * the DOM and all node abilities.
  **/
+/*globals
+  document, window, $, _, toastr, paper, html2canvas, stackBlurCanvasRGB
+*/
 "use strict";
 
 // Libraries ==============================================---------------------
@@ -62,7 +65,7 @@ var currentFile = {
   name: "", // Name for the file (no path)
   path: path.join(app.getPath('userDesktop'), i18n.t('file.default')),
   changed: false // Can close app without making any changes
-}
+};
 
 // Toastr notifications
 toastr.options.positionClass = "toast-bottom-right";
@@ -81,7 +84,10 @@ function setRenderSettings() {
   renderConfig.fillSpacing = app.settings.v.fillspacing;
   renderConfig.fillAngle = app.settings.v.fillangle;
   renderConfig.fillGroupThreshold = app.settings.v.fillthresh;
-  renderConfig.botSpeed = parseInt((app.settings.v.botspeed / 100) * botSpeedMax, 10);
+  renderConfig.botSpeed = parseInt(
+    (app.settings.v.botspeed / 100) * botSpeedMax,
+    10
+  );
 }
 
 // Page loaded
@@ -96,7 +102,7 @@ $(function(){
   $('[data-i18n=""]').each(function() {
     var $node = $(this);
 
-    if ($node.text().indexOf('.') > -1 && $node.attr('data-i18n') == "") {
+    if ($node.text().indexOf('.') > -1 && $node.attr('data-i18n') === "") {
       var key = $node.text();
       $node.attr('data-i18n', key);
       $node.text(i18n.t(key));
@@ -121,7 +127,7 @@ function initEditor() {
 
   // Set maximum work area render size & manage dynamic sizing of elements not
   // handled via CSS only.
-  $(window).on('resize', function(e){
+  $(window).on('resize', function() {
     // Window Size (less the appropriate margins)
     var win = {
       w: $(window).width() - (margin.l + margin.r),
@@ -156,8 +162,8 @@ function initEditor() {
     });
 
     editorLoad(); // Load the editor (if it hasn't already been loaded)
-    // This must happen after the very first resize, otherwise the canvas doesn't
-    // have the correct dimensions for Paper to size to.
+    // This must happen after the very first resize, otherwise the canvas
+    // doesn't have the correct dimensions for Paper to size to.
     $(mainWindow).trigger('move');
 
     if ($('#overlay').is(':visible')) {
@@ -196,7 +202,7 @@ function editorLoadedInit() {
 function buildToolbar() {
   var $t = $('<ul>').appendTo('#tools');
 
-  _.each(paper.tools, function(tool, index){
+  _.each(paper.tools, function(tool){
     var colorID = '';
     if (tool.cursorColors === true) {
       colorID = "-" + paper.pancakeCurrentShade;
@@ -232,7 +238,8 @@ function activateToolItem(item) {
 
   var cursor = '';
   if ($(item).data('cursor-colors')) {
-    cursor = 'url("images/cursor-' + $(item).data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
+    cursor = 'url("images/cursor-' +
+      $(item).data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
   } else {
     cursor = 'url("images/cursor-' + $(item).data('cursor-key') + '.png")';
   }
@@ -279,7 +286,8 @@ function selectColor(index) {
   var cursor = '';
   var $item = $('#tools .active');
   if ($item.data('cursor-colors')) {
-    cursor = 'url("images/cursor-' + $item.data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
+    cursor = 'url("images/cursor-' +
+      $item.data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
     if ($item.data('cursor-offset')) {
       cursor+= ' ' + $item.data('cursor-offset');
     }
@@ -309,7 +317,9 @@ function buildImageImporter() {
     .attr('id', 'import')
     .data('cursor-key', 'select')
     .attr('title', i18n.t('import.title'));
-  $importButton.append($('<div>').css('background-image', 'url(images/icon-import.png)'));
+  $importButton.append(
+    $('<div>').css('background-image', 'url(images/icon-import.png)')
+  );
 
   $importButton.click(function(){
     activateToolItem($importButton);
@@ -329,7 +339,10 @@ function bindControls() {
         mainWindow.dialog({
           t: 'SaveDialog',
           title: i18n.t('export.title'),
-          defaultPath: path.join(app.getPath('userDesktop'), currentFile.name.split('.')[0]),
+          defaultPath: path.join(
+            app.getPath('userDesktop'),
+            currentFile.name.split('.')[0]
+          ),
           filters: [
             { name: 'PancakeBot GCODE', extensions: ['gcode'] }
           ]
@@ -337,26 +350,34 @@ function bindControls() {
           if (!filePath) return; // Cancelled
 
           // Verify file extension
-          if (filePath.split('.').pop().toLowerCase() !== 'gcode') filePath += '.gcode';
+          if (filePath.split('.').pop().toLowerCase() !== 'gcode') {
+            filePath += '.gcode';
+          }
 
           // Throw up the overlay and activate the exporting note.
           toggleOverlay(true, function(){
             $('#exporting').fadeIn('slow', function(){
               // Run in a timeout to allow the previous code to run first.
               setTimeout(function() {
-                fs.writeFileSync(filePath, gcRender(menu === 'file.exportmirrored')); // Write file!
+                fs.writeFileSync(
+                  filePath,
+                  gcRender(menu === 'file.exportmirrored')
+                ); // Write file!
                 toggleOverlay(false);
                 $('#exporting').fadeOut('slow',function(){
                   // Notify user
-                  toastr.success(i18n.t('export.note', {file: path.parse(filePath).base}));
+                  toastr.success(
+                    i18n.t('export.note', {file: path.parse(filePath).base})
+                  );
                 });
               }, 200);
-            })
-          })
+            });
+          });
         });
         break;
       case 'file.saveas':
         currentFile.name = "";
+        /* falls through */
       case 'file.save':
         if (currentFile.name === "") {
           mainWindow.dialog({
@@ -370,7 +391,9 @@ function bindControls() {
             if (!filePath) return; // Cancelled
 
             // Verify file extension
-            if (filePath.split('.').pop().toLowerCase() !== 'pbp') filePath += '.pbp';
+            if (filePath.split('.').pop().toLowerCase() !== 'pbp') {
+              filePath += '.pbp';
+            }
             currentFile.path = filePath;
             currentFile.name = path.parse(filePath).base;
 
@@ -444,7 +467,10 @@ function bindControls() {
         type: 'question',
         message: i18n.t('settings.resetconfirm'),
         detail: i18n.t('settings.resetconfirmdetail'),
-        buttons: [i18n.t('common.button.cancel'), i18n.t('settings.button.reset')]
+        buttons: [
+          i18n.t('common.button.cancel'),
+          i18n.t('settings.button.reset')
+        ]
       });
       if (doReset !== 0) {
         // Clear the file, reload settings, push to elements.
@@ -486,11 +512,11 @@ function bindControls() {
         this.value = $(this).attr('default');
         $(this).change();
       }
-    })
+    });
   });
 }
 
-window.onbeforeunload = function(e) {
+window.onbeforeunload = function() {
   return checkFileStatus();
 };
 
@@ -524,7 +550,11 @@ function checkFileStatus(callback) {
         type: 'warning',
         message: i18n.t('file.confirm.changed'),
         detail: i18n.t('file.confirm.save', {file: currentFile.name}),
-        buttons:[i18n.t('file.button.discard'), i18n.t('file.button.save'), i18n.t('file.button.savenew')]
+        buttons:[
+          i18n.t('file.button.discard'),
+          i18n.t('file.button.save'),
+          i18n.t('file.button.savenew')
+        ]
       });
 
       if (doSave) {
@@ -573,7 +603,14 @@ function updateFrosted(callback) {
       $("#frosted").remove();
       $("#overlay").append(canvas);
       $("#overlay canvas").attr('id', 'frosted');
-      stackBlurCanvasRGB('frosted', 0, 0, $("#frosted").width(), $("#frosted").height(), 20);
+      stackBlurCanvasRGB(
+        'frosted',
+        0,
+        0,
+        $("#frosted").width(),
+        $("#frosted").height(),
+        20
+      );
       if (callback) callback();
     });
   }
