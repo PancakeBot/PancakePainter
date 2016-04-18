@@ -2,6 +2,11 @@
  * @file This PaperScript file controls the main PancakePainter SVG Editor and
  * all importing/exporting of its data.
  */
+ /* globals
+   window, mainWindow, $, _, toastr, i18n, paper, view, project, scale,
+   Raster, Group, Point, Path, Layer, dataURI, currentFile, path, fs,
+   editorLoadedInit
+ */
 
 paper.strokeWidth = 5; // Custom
 paper.settings.handleSize = 10;
@@ -20,7 +25,7 @@ paper.pancakeShades = [
 
 // Handy translated color names
 paper.pancakeShadeNames = [];
-_.each(paper.pancakeShades, function(color, index){
+_.each(paper.pancakeShades, function(color, index){ /* jshint unused:false */
   paper.pancakeShadeNames.push(i18n.t('color.color' + index));
 });
 
@@ -34,9 +39,9 @@ var toolSelect = require('./tools/tool.select')(paper);
 var $editor = $('#editor');
 paper.setCursor = function(type) {
   // TODO: Implement cursor change on hover of handles, objects, etc
-  //if (!type) type = 'default';
-  //$editor.css('cursor', type);
-}
+  if (!type) type = 'default';
+  $editor.css('cursor', type);
+};
 
 function onResize(event) {
   // Ensure paper project view retains correct scaling and position.
@@ -52,7 +57,10 @@ paper.initImageImport = function() {
       t: 'OpenDialog',
       title: i18n.t('import.title'),
       filters: [
-        { name: i18n.t('import.files'), extensions: ['jpg', 'jpeg', 'gif', 'png'] }
+        {
+          name: i18n.t('import.files'),
+          extensions: ['jpg', 'jpeg', 'gif', 'png']
+        }
       ]
     }, function(filePath){
       if (!filePath) {  // Open cancelled
@@ -65,7 +73,7 @@ paper.initImageImport = function() {
           source: dataURI(filePath[0]),
           position: view.center
         });
-        // The raster MUST be in a group to alleviate coordinate & scaling issues.
+        // The raster MUST be in a group to alleviate coord & scaling issues.
         paper.traceImage = new Group([img]);
         paper.traceImage.img = img;
       paper.mainLayer.activate(); // We're done with the image layer for now
@@ -76,7 +84,7 @@ paper.initImageImport = function() {
         var scale = {
           x: (view.bounds.width * 0.8) / this.width,
           y: (view.bounds.height * 0.8) / this.height
-        }
+        };
 
         paper.traceImage.pInitialBounds = this.bounds;
 
@@ -88,7 +96,7 @@ paper.initImageImport = function() {
 
         // Select the thing and disable other selections
         toolSelect.imageTraceMode(true);
-      }
+      };
     });
   } else {
     // Select the thing and disable other selections
@@ -96,14 +104,14 @@ paper.initImageImport = function() {
   }
 
   view.update();
-}
+};
 
 // Called when completing image import management
 paper.finishImageImport = function() {
-  activateToolItem('#tool-pen');
+  window.activateToolItem('#tool-pen');
   toolPen.activate();
   toolSelect.imageTraceMode(false);
-}
+};
 
 
 // Clear the existing project workspace (no confirmation)
@@ -129,18 +137,18 @@ paper.newPBP = function(noLayers) {
   // Reset current file status (keeping previous file name, for kicks)
   currentFile.name = "";
   currentFile.changed = false;
-}
+};
 
 // Render the text/SVG for the pancakebot project files
 paper.getPBP = function(){
   paper.deselect(); // Don't export with something selected!
   return project.exportJSON();
-}
+};
 
 // Called whenever the file is changed from a tool
 paper.fileChanged = function() {
   currentFile.changed = true;
-}
+};
 
 // Stopgap till https://github.com/paperjs/paper.js/issues/801 is resolved.
 // Clean a path of duplicated segment points, triggered on change/create
@@ -154,7 +162,7 @@ paper.cleanPath = function(path){
       }
     }
   });
-}
+};
 
 // Load a given PBP filepath into the project workspace
 paper.loadPBP = function(filePath){
@@ -179,7 +187,7 @@ paper.loadPBP = function(filePath){
 
   toastr.info(i18n.t('file.opened', {file: currentFile.name}));
   view.update();
-}
+};
 
 // Convert the given path into a set of fill lines
 paper.fillTracePath = function (fillPath, config) {
@@ -199,7 +207,10 @@ paper.fillTracePath = function (fillPath, config) {
   // Init boundpath and traversal line
   boundPath = new Path.Ellipse({
     center: p.position,
-    size: [p.bounds.width + p.bounds.width/Math.PI , p.bounds.height + p.bounds.height/Math.PI]
+    size: [
+      p.bounds.width + p.bounds.width/Math.PI,
+      p.bounds.height + p.bounds.height/Math.PI
+    ]
   });
 
   // Ensure line is far longer than the diagonal of the object
@@ -219,7 +230,7 @@ paper.fillTracePath = function (fillPath, config) {
 
   // Find destination position on other side of circle
   pos = angle + 360;  if (pos > 360) pos -= 360;
-  destination = boundPath.getPointAt(pos * amt);
+  var destination = boundPath.getPointAt(pos * amt);
 
   // Find vector and vector length divided by line spacing to get # iterations.
   var vector = destination - line.position;
@@ -251,7 +262,7 @@ paper.fillTracePath = function (fillPath, config) {
   for (var g in lines) {
     var l = lines[g][0];
 
-    for (var i = 1; i < lines[g].length; i++) {
+    for (i = 1; i < lines[g].length; i++) {
       // Don't join lines that cross outside the path
       var v = new Path({
         segments: [l.lastSegment.point, lines[g][i].firstSegment.point]
@@ -260,7 +271,8 @@ paper.fillTracePath = function (fillPath, config) {
 
       // Find a point halfway between where these lines would be connected
       // If it's not within the path, don't do it!
-      if (!p.contains(v.getPointAt(v.length/2)) || v.getIntersections(p).length > 3) {
+      var intersectionCount = v.getIntersections(p).length;
+      if (!p.contains(v.getPointAt(v.length/2)) || intersectionCount > 3) {
         // Not contained, store the previous l & start a new grouping;
         l = lines[g][i];
         skippedJoins++;
@@ -278,7 +290,7 @@ paper.fillTracePath = function (fillPath, config) {
   boundPath.remove();
 
   view.update();
-}
+};
 
 // Find which grouping a given fill path should go with
 function findGroup(testPoint, lines, newGroupThresh){
