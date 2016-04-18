@@ -36,11 +36,14 @@ var toolPen = require('./tools/tool.pen')(paper);
 var toolFill = require('./tools/tool.fill')(paper);
 var toolSelect = require('./tools/tool.select')(paper);
 
+// Load Helpers
+paper.undo = require('./helpers/helper.undo')(paper);
+
 var $editor = $('#editor');
 paper.setCursor = function(type) {
   // TODO: Implement cursor change on hover of handles, objects, etc
   if (!type) type = 'default';
-  $editor.css('cursor', type);
+  //$editor.css('cursor', type);
 };
 
 function onResize(event) {
@@ -114,8 +117,25 @@ paper.finishImageImport = function() {
 };
 
 
-// Clear the existing project workspace (no confirmation)
+// Clear the existing project workspace/file (no confirmation)
 paper.newPBP = function(noLayers) {
+  paper.emptyProject();
+
+  if (!noLayers) {
+    paper.imageLayer = project.getActiveLayer(); // Creates the default layer
+    paper.mainLayer = new Layer(); // Everything is drawn on here by default now
+    paper.undo.clearState();
+  }
+
+  view.update();
+
+  // Reset current file status (keeping previous file name, for kicks)
+  currentFile.name = "";
+  currentFile.changed = false;
+};
+
+// Just Empty/Clear the workspace.
+paper.emptyProject = function() {
   paper.deselect();
 
   paper.imageLayer.remove();
@@ -126,17 +146,22 @@ paper.newPBP = function(noLayers) {
     paper.traceImage.remove();
     paper.traceImage = null;
   }
+};
 
-  if (!noLayers) {
-    paper.imageLayer = project.getActiveLayer(); // Creates the default layer
-    paper.mainLayer = new Layer(); // Everything is drawn on here by default now
+// Handle undo requests (different depending on if the tool cares).
+paper.handleUndo = function(op) {
+  // If the tool provides a function, and it returns false, don't run undo.
+  if (typeof paper.tool.undoSet === 'function') {
+    if (!paper.tool.undoSet(op)) {
+      return;
+    }
   }
 
-  view.update();
-
-  // Reset current file status (keeping previous file name, for kicks)
-  currentFile.name = "";
-  currentFile.changed = false;
+  if (op === 'undo') {
+    paper.undo.goBack();
+  } else if (op === 'redo') {
+    paper.undo.goForward();
+  }
 };
 
 // Render the text/SVG for the pancakebot project files
@@ -148,6 +173,7 @@ paper.getPBP = function(){
 // Called whenever the file is changed from a tool
 paper.fileChanged = function() {
   currentFile.changed = true;
+  paper.undo.stateChanged();
 };
 
 // Stopgap till https://github.com/paperjs/paper.js/issues/801 is resolved.
@@ -186,6 +212,7 @@ paper.loadPBP = function(filePath){
   }
 
   toastr.info(i18n.t('file.opened', {file: currentFile.name}));
+  paper.undo.clearState();
   view.update();
 };
 
