@@ -242,6 +242,7 @@ module.exports = function(paper) {
     }
   };
 
+  paper.selectPath = initSelectionRectangle;
   function initSelectionRectangle(path) {
     if (paper.selectRect !== null) paper.selectRect.remove();
     var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
@@ -315,7 +316,7 @@ module.exports = function(paper) {
       path = null;
       paper.deselect();
     }
-  }
+  };
 
   return tool;
 };
