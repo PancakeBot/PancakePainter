@@ -17,9 +17,10 @@ module.exports = function(paper) {
 
   // Handy internal vars
   paper.selectRect = null;
+  paper.selectRectLast = null;
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
-  var segment, path;
+  var segment, path, addselect;
   paper.imageTraceMode = false;
   var hitOptions = {
     segments: true,
@@ -29,15 +30,24 @@ module.exports = function(paper) {
   };
 
   // Externalize deseletion
-  paper.deselect = function() {
+  paper.deselect = function(noFinish) {
     if (paper.selectRect) {
+      paper.selectRectLast = paper.selectRect;
       paper.selectRect.remove();
       paper.selectRect = null;
 
       // Complete imageTraceMode if we're deselecting.
-      if (paper.imageTraceMode) {
+      if (paper.imageTraceMode && !noFinish) {
         paper.finishImageImport();
       }
+    }
+  };
+
+  paper.reselect = function() {
+    if (paper.selectRectLast && paper.tool.name === 'tools.select') {
+      project.activeLayer.addChild(paper.selectRectLast);
+      paper.selectRect = paper.selectRectLast;
+      paper.selectRectLast = null;
     }
   };
 
@@ -47,8 +57,8 @@ module.exports = function(paper) {
   tool.cursorOffset = '1 1'; // Position for cursor point
 
   tool.onMouseDown = function(event) {
-    segment = path = null;
-
+    segment = path = addselect = null;
+    console.log('shift?', event.modifiers.shift);
     var hitResult = project.hitTest(event.point, hitOptions);
 
     // Don't select image if not in trace mode
@@ -91,8 +101,8 @@ module.exports = function(paper) {
     if (event.modifiers.shift) {
       if (hitResult.type === 'segment') {
         hitResult.segment.remove();
+        return;
       }
-      return;
     }
 
     if (hitResult) {
@@ -135,16 +145,29 @@ module.exports = function(paper) {
         }
       }
 
-      if ((paper.selectRect === null || paper.selectRect.ppath !== path) &&
-          paper.selectRect !== path) {
+      // If a fill hit, move the path to the front.
+      if (hitResult.type === 'fill') {
+        hitResult.item.bringToFront();
+      }
+
+      var noSel = paper.selectRect === null;
+      if (paper.selectRect) {
+        noSel = noSel || _.indexOf(paper.selectRect.ppaths, path) === -1;
+      }
+
+      if (event.modifiers.shift) {
+        if (paper.selectRect !== path) {
+          console.log('Add to Selection');
+          addselect = true;
+          addToSelection(path);
+        }
+      } else if (noSel && paper.selectRect !== path) {
+        console.log('NoSel INIT');
         initSelectionRectangle(path);
       }
+
     }
 
-    // If a fill hit, move the path
-    if (hitResult.type === 'fill') {
-      project.activeLayer.addChild(hitResult.item);
-    }
   };
 
   tool.onMouseDrag = function(event) {
@@ -154,13 +177,18 @@ module.exports = function(paper) {
       var ratio = centerDiff.length / selectionRectangleScale;
       var scaling = new Point(ratio, ratio);
       paper.selectRect.scaling = scaling;
-      paper.selectRect.ppath.scaling = scaling;
+      _.each(paper.selectRect.ppaths, function(path){
+        path.scaling = scaling;
+      });
+
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
       var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
-      paper.selectRect.ppath.rotation = rotation;
       paper.selectRect.rotation = rotation;
+      _.each(paper.selectRect.ppaths, function(path){
+        path.rotation = rotation;
+      });
       return;
     }
 
@@ -184,7 +212,10 @@ module.exports = function(paper) {
         psr.position.y += event.delta.y;
       } else {
         psr.position = psr.position.add(event.delta);
-        psr.ppath.position = psr.ppath.position.add(event.delta);
+        _.each(psr.ppaths, function(path){
+          path.position = psr.position.add(event.delta);
+        });
+
       }
     }
   };
@@ -225,7 +256,7 @@ module.exports = function(paper) {
     selectionRectangleRotation = null;
 
     // If we have a mouse up with either of these, the file has changed!
-    if (path || segment) {
+    if ((path || segment) && !addselect) {
       paper.cleanPath(path);
       paper.fileChanged();
     }
@@ -235,9 +266,13 @@ module.exports = function(paper) {
     if (paper.selectRect) {
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
-        paper.selectRect.ppath.remove();
+        _.each(paper.selectRect.ppaths, function(path){
+          path.remove();
+        });
+
         if (paper.imageTraceMode) paper.traceImage = null;
         paper.deselect();
+
       }
 
       // Deselect
@@ -251,6 +286,7 @@ module.exports = function(paper) {
 
   paper.selectPath = initSelectionRectangle;
   function initSelectionRectangle(path) {
+    console.log('INIT Selection');
     if (paper.selectRect !== null) paper.selectRect.remove();
     var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
     var bounds;
@@ -261,7 +297,7 @@ module.exports = function(paper) {
       path.pInitialBounds = path.bounds;
     } else {
       // No bounding box reset
-      bounds = path.pInitialBounds;
+      bounds = path.pInitialBounds ? path.pInitialBounds : path.bounds;
     }
 
     var b = bounds.clone().expand(25, 25);
@@ -283,7 +319,41 @@ module.exports = function(paper) {
     paper.selectRect.name = "selection rectangle";
     paper.selectRect.selected = true;
     paper.selectRect.ppath = path;
+    paper.selectRect.ppaths = [path];
     paper.selectRect.ppath.pivot = paper.selectRect.pivot;
+  }
+
+  // Add to an existing selection
+  paper.selectAdd = addToSelection;
+  function addToSelection(path) {
+    if (paper.selectRect === null) {
+      initSelectionRectangle(path);
+      return;
+    }
+
+    paper.selectRect.ppaths.push(path);
+
+    var bounds = paper.selectRect.bounds;
+    _.each(paper.selectRect.ppaths, function(p) {
+      bounds = p.bounds.unite(bounds);
+    });
+
+    var b = bounds.clone().expand(25, 25);
+    paper.selectRect.bringToFront();
+    paper.selectRect.position = b.center;
+    paper.selectRect.segments[0].point = new Point(b.left, b.bottom);
+    paper.selectRect.segments[1].point = new Point(b.left, b.top);
+    paper.selectRect.segments[5].point = new Point(b.right, b.top);
+    paper.selectRect.segments[6].point = new Point(b.right, b.bottom);
+
+    paper.selectRect.segments[4].point = new Point(b.center.x, b.top);
+    paper.selectRect.segments[3].point = new Point(b.center.x, b.top - 25);
+    paper.selectRect.segments[2].point = new Point(b.center.x, b.top);
+    paper.selectRect.pivot = b.center;
+
+    _.each(paper.selectRect.ppaths, function(p) {
+      p.pivot = paper.selectRect.pivot;
+    });
   }
 
   function getBoundSelection(point) {
