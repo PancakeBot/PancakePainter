@@ -31,7 +31,7 @@ module.exports = function menuInit(app) {
           // Add generic click event only if not already bound
           sub.click = function(e) {
             app.menuClick(e.key);
-          }
+          };
         }
       }
     });

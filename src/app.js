@@ -440,6 +440,10 @@ function bindControls() {
           paper.newPBP();
         });
         break;
+      case 'edit.undo':
+      case 'edit.redo':
+        paper.handleUndo(menu === 'edit.undo' ? 'undo': 'redo');
+        break;
       case 'view.settings':
         toggleOverlay(true, function(){
           $('#settings').fadeIn('slow');

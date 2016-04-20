@@ -30,6 +30,22 @@ module.exports = function(paper) {
   tool.cursorOffset = '1 31'; // Position for cursor point
   tool.cursorColors = true; // Different icons/cursor for each color?
 
+  // Catch when undo is being changed, and kill it/augment it depending.
+  tool.undoSet = function(op) {
+    if (pencilDraw && drawPath) return false;
+
+    if (polygonalDraw) {
+      if (op === 'undo' && drawPath.segments.length > 1) {
+        drawPath.segments.pop();
+        bandLine.segments[0].point = drawPath.lastSegment.point;
+        paper.view.update();
+      }
+      return false;
+    }
+
+    return true;
+  };
+
   tool.onMouseDown = function(event) {
     // Continue drawing polygonal (ignores hitTest while on)
     if (drawPath && polygonalDraw) {
@@ -80,7 +96,7 @@ module.exports = function(paper) {
     if (drawPath) {
       if (drawPath.length <= minLineLength && event.event.button === 0) {
         // Restart the path
-        drawPath.remove()
+        drawPath.remove();
         drawPath = newBatterPath(event.point);
 
         polygonalDraw = true;
@@ -144,20 +160,22 @@ module.exports = function(paper) {
         drawPath.closed = true;
       }
 
+
+      bandLine.remove();
+      bandLine = null;
+      paper.setCursor();
+      clearEndSnap();
+
       // Remove orphan node paths
       if (drawPath.segments.length === 1) {
         drawPath.remove();
       } else {
         drawPath.data.isPolygonal = true;
-        paper.fileChanged();
         paper.cleanPath(drawPath);
+        paper.fileChanged();
       }
 
       drawPath = null;
-      bandLine.remove();
-      bandLine = null;
-      paper.setCursor();
-      clearEndSnap();
     }
   }
 

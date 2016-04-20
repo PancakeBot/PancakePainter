@@ -47,6 +47,35 @@ module.exports = function applyTemplate() {
       ]
     },
     {
+      key: 'edit.title',
+      submenu: [
+        {
+          key: 'edit.undo',
+          accelerator: 'Control+z'
+        },
+        {
+          key: 'edit.redo',
+          accelerator: 'Control+Shift+z'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          key: 'edit.cut',
+          accelerator: 'Control+x'
+        },
+        {
+          key: 'edit.copy',
+          accelerator: 'Control+c'
+        },
+        {
+          key: 'edit.paste',
+          accelerator: 'Control+v'
+        },
+
+      ]
+    },
+    {
       label: 'View',
       submenu: [
         {
