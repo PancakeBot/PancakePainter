@@ -2,7 +2,6 @@
  * @file This is a helper include for adding undo/redo functionality for the
  * Paper.JS canvas drawing area.
  **/
- /*globals _ */
 
  module.exports = function(paper) {
    var undo = {};

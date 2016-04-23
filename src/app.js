@@ -334,6 +334,9 @@ function buildImageImporter() {
 
 // When the page is done loading, all the controls in the page can be bound.
 function bindControls() {
+  // Bind cut/copy/paste controls... Cause they're not always caught.
+  $(window).keydown(paper.handleClipboard);
+
   // Callback/event for when any menu item is clicked
   app.menuClick = function(menu, callback) {
     switch (menu) {
@@ -446,6 +449,12 @@ function bindControls() {
       case 'edit.undo':
       case 'edit.redo':
         paper.handleUndo(menu === 'edit.undo' ? 'undo': 'redo');
+        break;
+      case 'edit.copy':
+      case 'edit.cut':
+      case 'edit.paste':
+      case 'edit.duplicate':
+        paper.handleClipboard(menu.split('.')[1]);
         break;
       case 'view.settings':
         toggleOverlay(true, function(){
