@@ -20,7 +20,7 @@ module.exports = function(paper) {
   paper.selectRectLast = null;
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
-  var segment, path, addselect;
+  var segment, path, selectChange;
   paper.imageTraceMode = false;
   var hitOptions = {
     segments: true,
@@ -57,7 +57,7 @@ module.exports = function(paper) {
   tool.cursorOffset = '1 1'; // Position for cursor point
 
   tool.onMouseDown = function(event) {
-    segment = path = addselect = null;
+    segment = path = selectChange = null;
     console.log('shift?', event.modifiers.shift);
     var hitResult = project.hitTest(event.point, hitOptions);
 
@@ -150,19 +150,28 @@ module.exports = function(paper) {
         hitResult.item.bringToFront();
       }
 
-      var noSel = paper.selectRect === null;
+      var pickingSelectRect = paper.selectRect === path;
+      var pathAlreadySelected = false;
       if (paper.selectRect) {
-        noSel = noSel || _.indexOf(paper.selectRect.ppaths, path) === -1;
+        pathAlreadySelected = paper.selectRect.ppaths.indexOf(path) > -1;
       }
 
       if (event.modifiers.shift) {
-        if (paper.selectRect !== path) {
+        // If pressing shift, try to look for paths inside of selection.
+        var insideItem = getBoundSelection(event.point, true);
+        pathAlreadySelected = paper.selectRect.ppaths.indexOf(insideItem) > -1;
+
+        if (!pickingSelectRect ||
+           (pickingSelectRect && insideItem !== path && !pathAlreadySelected)) {
           console.log('Add to Selection');
-          addselect = true;
-          addToSelection(path);
+          selectChange = true;
+          addToSelection(insideItem);
+        } else if (pathAlreadySelected) {
+          selectChange = true;
+          removeFromSelection(insideItem);
         }
-      } else if (noSel && paper.selectRect !== path) {
-        console.log('NoSel INIT');
+      } else if (!pickingSelectRect && !pathAlreadySelected) {
+        console.log('pickingSelectRect INIT');
         initSelectionRectangle(path);
       }
 
@@ -171,6 +180,7 @@ module.exports = function(paper) {
   };
 
   tool.onMouseDrag = function(event) {
+    if (event.modifiers.shift) return;
     if (selectionRectangleScale !== null) {
       // Path scale adjustment
       var centerDiff = event.point.subtract(paper.selectRect.bounds.center);
@@ -256,7 +266,7 @@ module.exports = function(paper) {
     selectionRectangleRotation = null;
 
     // If we have a mouse up with either of these, the file has changed!
-    if ((path || segment) && !addselect) {
+    if ((path || segment) && !selectChange) {
       paper.cleanPath(path);
       paper.fileChanged();
     }
@@ -287,7 +297,7 @@ module.exports = function(paper) {
   paper.selectPath = initSelectionRectangle;
   function initSelectionRectangle(path) {
     console.log('INIT Selection');
-    if (paper.selectRect !== null) paper.selectRect.remove();
+    if (paper.selectRect !== null) paper.deselect();
     var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
     var bounds;
 
@@ -331,9 +341,57 @@ module.exports = function(paper) {
       return;
     }
 
-    paper.selectRect.ppaths.push(path);
+    // Don't try to add our own selection rectangle or non-paths to selections!
+    if (paper.selectRect === path || !(path instanceof Path)) {
+      return;
+    }
 
-    var bounds = paper.selectRect.bounds;
+    // Don't try existing paths.
+    if (paper.selectRect.ppaths.indexOf(path) !== -1) {
+      return;
+    }
+
+    paper.selectRect.ppaths.push(path);
+    fixGroupSelectRect();
+  }
+
+  // Add to an existing selection
+  paper.selectRemove = removeFromSelection;
+  function removeFromSelection(path) {
+    // No selection? Can't do anything.
+    if (paper.selectRect === null) {
+      return;
+    }
+
+    // Otherwise, move through all the paths and match it up.
+    var findIndex = paper.selectRect.ppaths.indexOf(path);
+    if (findIndex !== -1) {
+      paper.selectRect.ppaths.splice(findIndex, 1);
+      fixGroupSelectRect();
+    }
+  }
+
+  // Fix the group selection rectangle.
+  function fixGroupSelectRect() {
+    // No selection? Can't do anything.
+    if (paper.selectRect === null) {
+      return;
+    }
+
+    // If there's no items in selection, assume deselection.
+    if (paper.selectRect.ppaths.length === 0) {
+      paper.deselect();
+      return;
+    }
+
+    // If there's only one item in selection, just reset it.
+    if (paper.selectRect.ppaths.length === 1) {
+      initSelectionRectangle(paper.selectRect.ppaths[0]);
+      return;
+    }
+
+    // Otherwise, reset the existing selection rectangle around the paths.
+    var bounds = paper.selectRect.ppaths[0].bounds;
     _.each(paper.selectRect.ppaths, function(p) {
       bounds = p.bounds.unite(bounds);
     });
@@ -356,7 +414,8 @@ module.exports = function(paper) {
     });
   }
 
-  function getBoundSelection(point) {
+
+  function getBoundSelection(point, ignoreSelectRect) {
     // Check for items that are overlapping a rect around the event point
     var items = project.getItems({
       overlapping: new Rectangle(
@@ -373,6 +432,10 @@ module.exports = function(paper) {
       if (paper.traceImage) {
         if (i === paper.traceImage) return; // Don't select the trace img group
         if (i === paper.traceImage.img) return; // Don't select the trace image
+      }
+
+      if (ignoreSelectRect) {
+        if (i === paper.selectRect) return; // Don't select select rect.
       }
 
       // TODO: Prioritize selection of paths completely inside of other paths
