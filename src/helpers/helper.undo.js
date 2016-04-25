@@ -79,19 +79,10 @@
     *   JSON content of the entire canvas & layers to be read back by setState.
     */
    undo.getState = function() {
-     var reSelect = null;
-     if (paper.selectRect) {
-       reSelect = paper.selectRect.ppath;
-       paper.selectRect.remove();
-       paper.selectRect = null;
-     }
-
+     paper.deselect(true);
      var state = project.exportJSON();
 
-     if (reSelect) {
-       paper.selectPath(reSelect);
-     }
-
+     paper.reselect();
      return state;
    };
 

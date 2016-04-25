@@ -4,6 +4,7 @@
  * entire objects, rotation, scaling and node/segment adjustment.
  **/
 "use strict";
+/*globals _ */
 
 module.exports = function(paper) {
   var tool = new paper.Tool();
@@ -16,9 +17,10 @@ module.exports = function(paper) {
 
   // Handy internal vars
   paper.selectRect = null;
+  paper.selectRectLast = null;
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
-  var segment, path;
+  var segment, path, selectChange;
   paper.imageTraceMode = false;
   var hitOptions = {
     segments: true,
@@ -28,15 +30,24 @@ module.exports = function(paper) {
   };
 
   // Externalize deseletion
-  paper.deselect = function() {
+  paper.deselect = function(noFinish) {
     if (paper.selectRect) {
+      paper.selectRectLast = paper.selectRect;
       paper.selectRect.remove();
       paper.selectRect = null;
 
       // Complete imageTraceMode if we're deselecting.
-      if (paper.imageTraceMode) {
+      if (paper.imageTraceMode && !noFinish) {
         paper.finishImageImport();
       }
+    }
+  };
+
+  paper.reselect = function() {
+    if (paper.selectRectLast && paper.tool.name === 'tools.select') {
+      project.activeLayer.addChild(paper.selectRectLast);
+      paper.selectRect = paper.selectRectLast;
+      paper.selectRectLast = null;
     }
   };
 
@@ -46,15 +57,15 @@ module.exports = function(paper) {
   tool.cursorOffset = '1 1'; // Position for cursor point
 
   tool.onMouseDown = function(event) {
-    segment = path = null;
-
+    segment = path = selectChange = null;
+    console.log('shift?', event.modifiers.shift);
     var hitResult = project.hitTest(event.point, hitOptions);
 
     // Don't select image if not in trace mode
     if (hitResult && !paper.imageTraceMode) {
       if (paper.traceImage) {
-        if (hitResult.item == paper.traceImage
-                || hitResult.item == paper.traceImage.img) {
+        if (hitResult.item === paper.traceImage ||
+            hitResult.item === paper.traceImage.img) {
           hitResult = null; // Act like we didn't hit anything
         }
       }
@@ -87,39 +98,41 @@ module.exports = function(paper) {
       }
     }
 
-    if (event.modifiers.shift) {
-      if (hitResult.type === 'segment') {
-        hitResult.segment.remove();
-      }
-      return;
-    }
-
     if (hitResult) {
       if (paper.imageTraceMode) {
 
         // Select the group, not the image
-        if (hitResult.item == paper.traceImage.img) {
+        if (hitResult.item === paper.traceImage.img) {
           hitResult.item = paper.traceImage;
         }
 
         //console.log('HITRESULT', hitResult.item);
 
         // Don't select any other items if in image trace mode
-        if (hitResult.item != paper.selectRect && hitResult.item != paper.traceImage) {
+        if (hitResult.item !== paper.selectRect &&
+            hitResult.item !== paper.traceImage) {
           return;
         }
       }
 
       path = hitResult.item;
+      var pickingSelectRect = paper.selectRect === path;
 
       if (hitResult.type === 'segment') {
+        // Remove segment on shift click.
+        if (event.modifiers.shift && !pickingSelectRect) {
+          hitResult.segment.remove();
+          return;
+        }
+
         if (paper.selectRect !== null && path.name === "selection rectangle") {
           if (hitResult.segment.index >= 2 && hitResult.segment.index <= 4) {
             // Rotation hitbox
             selectionRectangleRotation = 0;
           } else {
             // Scale hitbox
-            selectionRectangleScale = event.point.subtract(paper.selectRect.bounds.center).length / path.scaling.x;
+            var center = event.point.subtract(paper.selectRect.bounds.center);
+            selectionRectangleScale = center.length / path.scaling.x;
           }
         } else {
           segment = hitResult.segment;
@@ -132,30 +145,59 @@ module.exports = function(paper) {
         }
       }
 
-      if ((paper.selectRect === null || paper.selectRect.ppath !== path) && paper.selectRect !== path) {
+      // If a fill hit, move the path to the front.
+      if (hitResult.type === 'fill') {
+        hitResult.item.bringToFront();
+      }
+
+      var pathAlreadySelected = false;
+      if (paper.selectRect) {
+        pathAlreadySelected = paper.selectRect.ppaths.indexOf(path) > -1;
+      }
+
+      if (event.modifiers.shift) {
+        // If pressing shift, try to look for paths inside of selection.
+        var insideItem = getBoundSelection(event.point, true);
+        pathAlreadySelected = paper.selectRect.ppaths.indexOf(insideItem) > -1;
+
+        if (!pickingSelectRect ||
+           (pickingSelectRect && insideItem !== path && !pathAlreadySelected)) {
+          console.log('Add to Selection');
+          selectChange = true;
+          addToSelection(insideItem);
+        } else if (pathAlreadySelected) {
+          selectChange = true;
+          removeFromSelection(insideItem);
+        }
+      } else if (!pickingSelectRect && !pathAlreadySelected) {
+        console.log('pickingSelectRect INIT');
         initSelectionRectangle(path);
       }
+
     }
 
-    // If a fill hit, move the path
-    if (hitResult.type === 'fill') {
-      project.activeLayer.addChild(hitResult.item);
-    }
   };
 
   tool.onMouseDrag = function(event) {
+    if (event.modifiers.shift) return;
     if (selectionRectangleScale !== null) {
       // Path scale adjustment
-      var ratio = event.point.subtract(paper.selectRect.bounds.center).length / selectionRectangleScale;
+      var centerDiff = event.point.subtract(paper.selectRect.bounds.center);
+      var ratio = centerDiff.length / selectionRectangleScale;
       var scaling = new Point(ratio, ratio);
       paper.selectRect.scaling = scaling;
-      paper.selectRect.ppath.scaling = scaling;
+      _.each(paper.selectRect.ppaths, function(path){
+        path.scaling = scaling;
+      });
+
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
       var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
-      paper.selectRect.ppath.rotation = rotation;
       paper.selectRect.rotation = rotation;
+      _.each(paper.selectRect.ppaths, function(path){
+        path.rotation = rotation;
+      });
       return;
     }
 
@@ -169,15 +211,20 @@ module.exports = function(paper) {
 
       initSelectionRectangle(path);
     } else if (path) {
+      var psr = paper.selectRect;
+
       // Path translate position adjustment
       if (path !== paper.selectRect) {
         path.position.x += event.delta.x;
         path.position.y += event.delta.y;
-        paper.selectRect.position.x += event.delta.x;
-        paper.selectRect.position.y += event.delta.y;
+        psr.position.x += event.delta.x;
+        psr.position.y += event.delta.y;
       } else {
-        paper.selectRect.position = paper.selectRect.position.add(event.delta);
-        paper.selectRect.ppath.position = paper.selectRect.ppath.position.add(event.delta);
+        psr.position = psr.position.add(event.delta);
+        _.each(psr.ppaths, function(path){
+          path.position = psr.position.add(event.delta);
+        });
+
       }
     }
   };
@@ -194,8 +241,8 @@ module.exports = function(paper) {
     } else {
       // No hover events for the trace image
       if (paper.traceImage) {
-        if (event.item == paper.traceImage) return;
-        if (event.item == paper.traceImage.img) return;
+        if (event.item === paper.traceImage) return;
+        if (event.item === paper.traceImage.img) return;
       }
     }
 
@@ -213,12 +260,12 @@ module.exports = function(paper) {
     }
   };
 
-  tool.onMouseUp = function(event) {
+  tool.onMouseUp = function() {
     selectionRectangleScale = null;
     selectionRectangleRotation = null;
 
     // If we have a mouse up with either of these, the file has changed!
-    if (path || segment) {
+    if ((path || segment) && !selectChange) {
       paper.cleanPath(path);
       paper.fileChanged();
     }
@@ -228,9 +275,13 @@ module.exports = function(paper) {
     if (paper.selectRect) {
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
-        paper.selectRect.ppath.remove();
+        _.each(paper.selectRect.ppaths, function(path){
+          path.remove();
+        });
+
         if (paper.imageTraceMode) paper.traceImage = null;
         paper.deselect();
+
       }
 
       // Deselect
@@ -244,7 +295,8 @@ module.exports = function(paper) {
 
   paper.selectPath = initSelectionRectangle;
   function initSelectionRectangle(path) {
-    if (paper.selectRect !== null) paper.selectRect.remove();
+    console.log('INIT Selection');
+    if (paper.selectRect !== null) paper.deselect();
     var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
     var bounds;
 
@@ -254,7 +306,7 @@ module.exports = function(paper) {
       path.pInitialBounds = path.bounds;
     } else {
       // No bounding box reset
-      bounds = path.pInitialBounds;
+      bounds = path.pInitialBounds ? path.pInitialBounds : path.bounds;
     }
 
     var b = bounds.clone().expand(25, 25);
@@ -276,21 +328,113 @@ module.exports = function(paper) {
     paper.selectRect.name = "selection rectangle";
     paper.selectRect.selected = true;
     paper.selectRect.ppath = path;
+    paper.selectRect.ppaths = [path];
     paper.selectRect.ppath.pivot = paper.selectRect.pivot;
   }
 
-  function getBoundSelection(point) {
+  // Add to an existing selection
+  paper.selectAdd = addToSelection;
+  function addToSelection(path) {
+    if (paper.selectRect === null) {
+      initSelectionRectangle(path);
+      return;
+    }
+
+    // Don't try to add our own selection rectangle or non-paths to selections!
+    if (paper.selectRect === path || !(path instanceof Path)) {
+      return;
+    }
+
+    // Don't try existing paths.
+    if (paper.selectRect.ppaths.indexOf(path) !== -1) {
+      return;
+    }
+
+    paper.selectRect.ppaths.push(path);
+    fixGroupSelectRect();
+  }
+
+  // Add to an existing selection
+  paper.selectRemove = removeFromSelection;
+  function removeFromSelection(path) {
+    // No selection? Can't do anything.
+    if (paper.selectRect === null) {
+      return;
+    }
+
+    // Otherwise, move through all the paths and match it up.
+    var findIndex = paper.selectRect.ppaths.indexOf(path);
+    if (findIndex !== -1) {
+      paper.selectRect.ppaths.splice(findIndex, 1);
+      fixGroupSelectRect();
+    }
+  }
+
+  // Fix the group selection rectangle.
+  function fixGroupSelectRect() {
+    // No selection? Can't do anything.
+    if (paper.selectRect === null) {
+      return;
+    }
+
+    // If there's no items in selection, assume deselection.
+    if (paper.selectRect.ppaths.length === 0) {
+      paper.deselect();
+      return;
+    }
+
+    // If there's only one item in selection, just reset it.
+    if (paper.selectRect.ppaths.length === 1) {
+      initSelectionRectangle(paper.selectRect.ppaths[0]);
+      return;
+    }
+
+    // Otherwise, reset the existing selection rectangle around the paths.
+    var bounds = paper.selectRect.ppaths[0].bounds;
+    _.each(paper.selectRect.ppaths, function(p) {
+      bounds = p.bounds.unite(bounds);
+    });
+
+    var b = bounds.clone().expand(25, 25);
+    paper.selectRect.bringToFront();
+    paper.selectRect.position = b.center;
+    paper.selectRect.segments[0].point = new Point(b.left, b.bottom);
+    paper.selectRect.segments[1].point = new Point(b.left, b.top);
+    paper.selectRect.segments[5].point = new Point(b.right, b.top);
+    paper.selectRect.segments[6].point = new Point(b.right, b.bottom);
+
+    paper.selectRect.segments[4].point = new Point(b.center.x, b.top);
+    paper.selectRect.segments[3].point = new Point(b.center.x, b.top - 25);
+    paper.selectRect.segments[2].point = new Point(b.center.x, b.top);
+    paper.selectRect.pivot = b.center;
+
+    _.each(paper.selectRect.ppaths, function(p) {
+      p.pivot = paper.selectRect.pivot;
+    });
+  }
+
+
+  function getBoundSelection(point, ignoreSelectRect) {
     // Check for items that are overlapping a rect around the event point
     var items = project.getItems({
-      overlapping: new Rectangle(point.x - 2, point.y - 2,point.x + 2, point.y + 2)
+      overlapping: new Rectangle(
+        point.x - 2,
+        point.y - 2,
+        point.x + 2,
+        point.y + 2
+      )
     });
 
     var item = null;
     _.each(items, function (i) {
 
       if (paper.traceImage) {
-        if (i == paper.traceImage) return; // Don't select the trace image group
-        if (i == paper.traceImage.img) return; // Don't select the trace image
+        if (i === paper.traceImage) return; // Don't select the trace img group
+        if (i === paper.traceImage.img) return; // Don't select the trace image
+      }
+
+      if (ignoreSelectRect) {
+        if (i === paper.selectRect) return; // Don't select select rect.
       }
 
       // TODO: Prioritize selection of paths completely inside of other paths
