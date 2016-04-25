@@ -98,13 +98,6 @@ module.exports = function(paper) {
       }
     }
 
-    if (event.modifiers.shift) {
-      if (hitResult.type === 'segment') {
-        hitResult.segment.remove();
-        return;
-      }
-    }
-
     if (hitResult) {
       if (paper.imageTraceMode) {
 
@@ -123,8 +116,15 @@ module.exports = function(paper) {
       }
 
       path = hitResult.item;
+      var pickingSelectRect = paper.selectRect === path;
 
       if (hitResult.type === 'segment') {
+        // Remove segment on shift click.
+        if (event.modifiers.shift && !pickingSelectRect) {
+          hitResult.segment.remove();
+          return;
+        }
+
         if (paper.selectRect !== null && path.name === "selection rectangle") {
           if (hitResult.segment.index >= 2 && hitResult.segment.index <= 4) {
             // Rotation hitbox
@@ -150,7 +150,6 @@ module.exports = function(paper) {
         hitResult.item.bringToFront();
       }
 
-      var pickingSelectRect = paper.selectRect === path;
       var pathAlreadySelected = false;
       if (paper.selectRect) {
         pathAlreadySelected = paper.selectRect.ppaths.indexOf(path) > -1;
