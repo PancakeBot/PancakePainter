@@ -58,7 +58,6 @@ module.exports = function(paper) {
 
   tool.onMouseDown = function(event) {
     segment = path = selectChange = null;
-    console.log('shift?', event.modifiers.shift);
     var hitResult = project.hitTest(event.point, hitOptions);
 
     // Don't select image if not in trace mode
@@ -162,7 +161,6 @@ module.exports = function(paper) {
 
         if (!pickingSelectRect ||
            (pickingSelectRect && insideItem !== path && !pathAlreadySelected)) {
-          console.log('Add to Selection');
           selectChange = true;
           addToSelection(insideItem);
         } else if (pathAlreadySelected) {
@@ -170,7 +168,6 @@ module.exports = function(paper) {
           removeFromSelection(insideItem);
         }
       } else if (!pickingSelectRect && !pathAlreadySelected) {
-        console.log('pickingSelectRect INIT');
         initSelectionRectangle(path);
       }
 
@@ -295,7 +292,6 @@ module.exports = function(paper) {
 
   paper.selectPath = initSelectionRectangle;
   function initSelectionRectangle(path) {
-    console.log('INIT Selection');
     if (paper.selectRect !== null) paper.deselect();
     var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
     var bounds;

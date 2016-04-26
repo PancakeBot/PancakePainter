@@ -72,7 +72,10 @@ module.exports = function applyTemplate() {
           key: 'edit.paste',
           accelerator: 'Control+v'
         },
-
+        {
+          key: 'edit.duplicate',
+          accelerator: 'Control+d'
+        }
       ]
     },
     {

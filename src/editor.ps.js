@@ -38,6 +38,7 @@ var toolSelect = require('./tools/tool.select')(paper);
 
 // Load Helpers
 paper.undo = require('./helpers/helper.undo')(paper);
+paper.clipboard = require('./helpers/helper.clipboard')(paper);
 
 var $editor = $('#editor');
 paper.setCursor = function(type) {
@@ -163,6 +164,53 @@ paper.handleUndo = function(op) {
     paper.undo.goForward();
   }
 };
+
+// Handle clipboard requests
+paper.handleClipboard = function(op) {
+  // For clarity, don't do any clipboard operations if not on the select tool.
+  if (paper.tool.name !== 'tools.select') {
+    return;
+  }
+
+  // Support "event" passthrough from window keydown event.
+  var event = op;
+  if (typeof op === 'object') {
+    if (event.ctrlKey && event.keyCode === 67) {
+      op = 'copy';
+    }
+    if (event.ctrlKey && event.keyCode === 88) {
+      op = 'cut';
+    }
+    if (event.ctrlKey && event.keyCode === 86) {
+      op = 'paste';
+    }
+    if (event.ctrlKey && event.keyCode === 68) {
+      op = 'duplicate';
+    }
+
+    // If our captured keystroke didn't result in valid op, quit.
+    if (typeof op !== 'string') {
+      return;
+    }
+
+    // Prevent whatever else was going to happen.
+    event.preventDefault();
+  }
+
+  switch (op) {
+    case 'cut':
+    case 'copy':
+      paper.clipboard.copy(op === 'cut');
+      break;
+    case 'paste':
+      paper.clipboard.paste();
+      break;
+    case 'duplicate':
+      paper.clipboard.dupe();
+      break;
+  }
+};
+
 
 // Render the text/SVG for the pancakebot project files
 paper.getPBP = function(){
