@@ -138,6 +138,7 @@ paper.newPBP = function(noLayers) {
 // Just Empty/Clear the workspace.
 paper.emptyProject = function() {
   paper.deselect();
+  paper.selectRectLast = null;
 
   paper.imageLayer.remove();
   paper.mainLayer.remove();
