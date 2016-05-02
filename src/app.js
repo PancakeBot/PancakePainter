@@ -81,13 +81,23 @@ function setRenderSettings() {
   renderConfig.startWait = app.settings.v.startwait;
   renderConfig.endWait = app.settings.v.endwait;
   renderConfig.shadeChangeWait = app.settings.v.changewait;
+  renderConfig.useLineFill = app.settings.v.uselinefill;
   renderConfig.fillSpacing = app.settings.v.fillspacing;
   renderConfig.fillAngle = app.settings.v.fillangle;
   renderConfig.fillGroupThreshold = app.settings.v.fillthresh;
+  renderConfig.shapeFillWidth = app.settings.v.shapefillwidth;
   renderConfig.botSpeed = parseInt(
     (app.settings.v.botspeed / 100) * botSpeedMax,
     10
   );
+
+  renderConfig.useColorSpeed = app.settings.v.usecolorspeed;
+  renderConfig.botColorSpeed = [
+    parseInt((app.settings.v.botspeedcolor1 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor2 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor3 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor4 / 100) * botSpeedMax, 10)
+  ];
 }
 
 // Page loaded
@@ -446,6 +456,9 @@ function bindControls() {
           paper.newPBP();
         });
         break;
+      case 'edit.selectall':
+        paper.selectAll();
+        break;
       case 'edit.undo':
       case 'edit.redo':
         paper.handleUndo(menu === 'edit.undo' ? 'undo': 'redo');
@@ -494,11 +507,36 @@ function bindControls() {
         app.settings.load();
         $('#settings .managed').each(function(){
           $(this).val(app.settings.v[this.id]);
+          if (this.type === "checkbox") {
+            $(this).prop('checked', app.settings.v[this.id]);
+          } else {
+            $(this).val(app.settings.v[this.id]);
+          }
         });
         setRenderSettings();
+        $('input[type="range"]').rangeslider('update', true);
       }
     }
   });
+
+  // Setup rangeslider overlay and preview.
+  $('input[type="range"]').on('input', function(){
+    var e = $(this).siblings('b');
+    if ($(this).attr('data-unit')) {
+      var u = 'settings.units.' + $(this).attr('data-unit');
+      e.attr('title', this.value + ' ' + i18n.t(u + '.title'))
+        .text(this.value + i18n.t(u + '.label'));
+    } else {
+      e.text(this.value);
+    }
+  }).rangeslider({
+    polyfill: false
+  });
+
+  // Fancy checkbox
+  $('input[type="checkbox"].fancy').after($('<div>').click(function(){
+    $(this).siblings('input[type="checkbox"]').click();
+  }));
 
   // Complete Settings management
   $('#settings .managed').each(function(){
@@ -506,18 +544,24 @@ function bindControls() {
     var v = app.settings.v;
 
     // Set loaded value (if any)
-    if (typeof v[key] !== 'undefined') $(this).val(v[key]);
-
-    // Prevent text entry
-    $(this).keypress(function(e){
-      if (e.charCode > 31 && (e.charCode < 48 || e.charCode > 57)) {
-        return false;
+    if (typeof v[key] !== 'undefined') {
+      if (this.type === "checkbox") {
+        $(this).prop('checked', v[key]);
+      } else {
+        $(this).val(v[key]);
       }
-    });
+    }
+
+    $('input[type="range"]').trigger('input');
 
     // Bind to catch change
     $(this).change(function(){
-      app.settings.v[key] = parseInt(this.value);
+      if (this.type === 'checkbox') {
+        app.settings.v[key] = $(this).prop('checked');
+      } else {
+        app.settings.v[key] = parseInt(this.value);
+      }
+
       app.settings.save();
       setRenderSettings();
     }).change();

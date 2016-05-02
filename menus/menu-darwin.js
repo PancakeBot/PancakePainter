@@ -125,6 +125,13 @@ module.exports = function applyTemplate() {
         {
           key: 'edit.duplicate',
           accelerator: 'Command+d'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          key: 'edit.selectall',
+          accelerator: 'Command+a'
         }
       ]
     },

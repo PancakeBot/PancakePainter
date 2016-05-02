@@ -3,10 +3,14 @@
  * paths into GCODE compatible with the PancakeBot.
  **/
 "use strict";
+/*globals _ */
+var ClipperLib = require('./libs/clipper');
+var jscut = require('./libs/jscut_custom')(ClipperLib);
 
 module.exports = function(config) {
   var paper = config.paper;
   var Point = paper.Point;
+  var CompoundPath = paper.CompoundPath;
   var returnRenderer = {}; // The function/object returned by this module
 
   // Create gcode from current project
@@ -26,11 +30,18 @@ module.exports = function(config) {
 
     workLayer.activate();
     _.each(fillList, function(path){
-      paper.fillTracePath(path, config);
+      if (config.useLineFill) {
+        paper.fillTracePath(path, config);
+      } else {
+        shapeFillPath(path, config);
+      }
     });
 
     var numPaths = workLayer.children.length;
     var colorGroups = [];
+
+    // Flatten all compound paths into single paths.
+    flattenAllCompoundPaths();
 
     // Clean up remaining drawn closed paths to be easier to manage
     convertAllClosedPaths(workLayer);
@@ -41,6 +52,7 @@ module.exports = function(config) {
     // Move through each path on the worklayer, and group them in reverse order
     // by color shade, 0-3, darker first (indicated in the path data.color).
     _.each(workLayer.children, function(path){
+
       var revIndex = 3 - path.data.color;
 
       if (!colorGroups[revIndex]) colorGroups[revIndex] = [];
@@ -49,9 +61,20 @@ module.exports = function(config) {
 
     // Move through each color
     var pathCount = 0;
+    var lastColor = "";
     _.each(colorGroups, function(group, groupIndex){
       // Move through each path in the given color group
       _.each(group, function(path){
+        // Color specific speed change, before path draw.
+        if (config.useColorSpeed && lastColor !== path.data.color) {
+          out += gc('note', 'Shade specific speed change:');
+          out += gc('speed', config.botColorSpeed[path.data.color]);
+          lastColor = path.data.color;
+        }
+
+        if (!path.segments) {
+          console.log('Bad path!', path);
+        }
         pathCount++;
         out += [
           gc('note', 'Starting path #' + pathCount + '/' + numPaths + ', segments: ' + path.segments.length + ', length: ' + Math.round(path.length) + ', color #' + (path.data.color + 1)),
@@ -84,7 +107,10 @@ module.exports = function(config) {
 
     // Create an artificial move to the exact point where the pump should turn
     // off, before the next move occurs to ensure correct drip timing.
-    var shutdownOffset = Math.max(0, Math.min(path.length, path.length - config.lineEndPreShutoff));
+    var shutdownOffset = Math.max(
+      0,
+      Math.min(path.length, path.length - config.lineEndPreShutoff)
+    );
     var gcPreShutoff = [];
     if (shutdownOffset > 0) {
       gcPreShutoff = [
@@ -111,7 +137,7 @@ module.exports = function(config) {
       out+= gc('move', reMap(segment.point));
 
       if (index === 0) { // First path segment
-        // After we've moved to the point, start the pump and wait for it to warm up
+        // After we've moved to the point, start the pump/wait for it to warm up
         out+= [gc('pumpon'), gc('wait', config.startWait), ''].join('');
 
         // AFTER a first segment move/pump on, if the total path length is less
@@ -145,9 +171,13 @@ module.exports = function(config) {
       gc('note', 'startWait: ' + config.startWait),
       gc('note', 'endWait: ' + config.endWait),
       gc('note', 'shadeChangeWait: ' + config.shadeChangeWait),
+      gc('note', 'useLineFill: ' + (config.useLineFill ? 'true' : 'false')),
+      gc('note', 'shapeFillWidth: ' + config.shapeFillWidth),
       gc('note', 'fillSpacing: ' + config.fillSpacing),
       gc('note', 'fillAngle: ' + config.fillAngle),
       gc('note', 'fillGroupThreshold: ' + config.fillGroupThreshold),
+      gc('note', 'useColorSpeed: ' + config.useColorSpeed),
+      gc('note', 'botColorSpeed: ' + config.botColorSpeed.join(',')),
       gc('note', '----------------------------------------'),
       gc('workspace', config.printArea),
       gc('units'),
@@ -189,9 +219,9 @@ module.exports = function(config) {
    * @param {string} name
    *   Key in cmds object to find the command string
    * @param {object|string|integer} values
-   *   Object containing the keys of placeholders to find in command string, with
-   *   value to replace placeholder. If not an object, treated as single value to
-   *   replace "%%" in command string.
+   *   Object containing the keys of placeholders to find in command string,
+   *   with value to replace placeholder. If not an object, treated as single
+   *   value to replace "%%" in command string.
    * @returns {string}
    *   Serial command string intended to be outputted directly, empty string
    *   if error.
@@ -200,7 +230,7 @@ module.exports = function(config) {
     var cmds = {
       units: 'G21 ;Set units to MM',
       abs: 'G90 ;Use Absolute units',
-      home: 'G28 X0 Y0 ;Home All Axis',
+      home: ['G00 X1 Y1 ;Help homing', 'G28 X0 Y0 ;Home All Axis'],
       move: 'G00 X%x Y%y',
       speed: 'G1 F%% ;Set Speed',
       pumpon: 'M106 ;Pump on',
@@ -208,11 +238,16 @@ module.exports = function(config) {
       change: 'M142 ;Bottle change', // TODO: This code is currently unknown!
       note: ';%%',
       wait: 'G4 P%% ;Pause for %% milliseconds',
-      workspace: 'W1 X%x Y%y L%l T%t ;Define Workspace of this file', // Also made up
+      workspace: 'W1 X%x Y%y L%l T%t ;Define Workspace of this file',
       off: 'M84 ;Motors off'
     };
     if (!name || !cmds[name]) return ''; // Sanity check
     var out = cmds[name];
+
+    // Render group commands:
+    if (_.isArray(out)) {
+      out = out.join("\n");
+    }
 
     if (typeof values === 'object') {
       for(var v in values) {
@@ -249,7 +284,7 @@ module.exports = function(config) {
       l: config.noMirror ? pa.l : pa.x,
       y: pa.y,
       t: pa.t
-    }
+    };
 
     var b = paper.view.bounds;
     return {
@@ -276,8 +311,8 @@ module.exports = function(config) {
     // 2. Move through each group, convert list of paths into sets of first and
     //    last segment points, ensure groups are sorted.
     // 3. Find the point closest to the top left corner. If it's an end, reverse
-    //    the path associated, make the first point the next one to check, remove
-    //    the points from the group.
+    //    the path, make the first point the next one to check, remove the
+    //    points from the group.
     // 4. Rinse and repeat!
 
     // Prep the colorGroups, darkest to lightest.
@@ -285,7 +320,7 @@ module.exports = function(config) {
     var colorGroups = {};
     _.each(sortedColors, function(colorName) {
       colorGroups[colorName] = [];
-    })
+    });
 
     // Put each path in the sorted colorGroups, with its first and last point
     _.each(a.children, function(path){
@@ -342,7 +377,7 @@ module.exports = function(config) {
     });
   }
 
-  // Find the closest point to a given source point from an array of point groups.
+  // Find the closest point to a given source point from array of point groups.
   function closestPointInGroup(srcPoint, pathGroup) {
     var closestID = 0;
     var closestPointIndex = 0;
@@ -356,11 +391,161 @@ module.exports = function(config) {
           closestID = index;
           closestPointIndex = pointIndex;
         }
-      })
+      });
     });
 
     return {id: closestID, closestPointIndex: closestPointIndex, dist: closest};
   }
+
+  /**
+   * Convert an incoming filled path into a set of cam paths.
+   *
+   * @param  {pathItem} inPath
+   *  The fill path to work with.
+   *
+   * @return {[type]}        [description]
+   */
+  paper.shapeFillPath = shapeFillPath;
+  function shapeFillPath(inPath, options) {
+    // 1. Copy the input path and flatten to a polygon (or multiple gons).
+    // 2. Convert the polygon(s) points into the clipper array format.
+    // 3. Delete the temp path.
+    // 4. Run the paths array through jscut.
+    // 5. Output the paths as a cam fill compound path.
+
+    var p = inPath.clone();
+    var geometries = [];
+    var scale = 100000;
+    var pxPerInch = 96;
+
+    // Is this a compound path?
+    if (p.children) {
+      _.each(p.children, function(c, pathIndex) {
+        if (!c.length) return;
+        c.flatten(config.flattenResolution);
+        geometries[pathIndex] = [];
+        _.each(c.segments, function(s){
+          geometries[pathIndex].push({
+            X: Math.round(s.point.x * scale / pxPerInch),
+            Y: Math.round(s.point.y * scale / pxPerInch),
+          });
+        });
+      });
+    } else { // Single path
+      // With no path length, we're done.
+      if (p.length) {
+        p.remove();
+        inPath.remove();
+        return;
+      }
+
+      geometries[0] = [];
+      if (p.length) {
+        p.remove();
+        inPath.remove();
+        return;
+      }
+      p.flatten(config.flattenResolution);
+      _.each(p.segments, function(s){
+        geometries[0].push({
+          X: Math.round(s.point.x * scale / pxPerInch),
+          Y: Math.round(s.point.y * scale / pxPerInch),
+        });
+      });
+    }
+
+    // Get rid of our temporary poly path
+    p.remove();
+
+    var cutConfig = {
+      tool: {
+        units: "inch",
+        diameter: options.shapeFillWidth/25.4, // mm to inches
+        stepover: 1
+      },
+      operation: {
+        camOp: "Pocket",
+        units: "inch",
+        geometries: [geometries]
+      }
+    };
+
+    var cutPaths = jscut.cam.getCamPaths(cutConfig.operation, cutConfig.tool);
+
+    // If there's a result, create a compound path for it.
+    if (cutPaths) {
+      var pathString = jscut.cam.toSvgPathData(cutPaths, pxPerInch);
+      var camPath = new CompoundPath(pathString);
+      camPath.data = _.extend({}, inPath.data);
+      camPath.data.campath = true;
+      camPath.bringToFront();
+      camPath.scale(1, -1); // Flip vertically (clipper issue)
+      camPath.position = new Point(camPath.position.x, -camPath.position.y);
+
+      if (!options.debug) {
+        inPath.remove();
+      } else {
+        camPath.set({
+          strokeColor: 'red',
+          strokeWidth: 2
+        });
+      }
+
+      paper.view.update();
+    } else {
+      // Too small to be filled.
+      if (!options.debug) inPath.remove();
+      return null;
+    }
+  }
+
+  // Return true if the layer contains any groups at the top level
+  paper.layerContainsCompoundPaths = function(layer) {
+    if (typeof layer === 'undefined') layer = paper.project.activeLayer;
+    for(var i in layer.children) {
+      if (layer.children[i] instanceof paper.CompoundPath) return true;
+    }
+    return false;
+  };
+
+  // Ungroup any groups recursively
+  function flattenAllCompoundPaths(layer) {
+    if (typeof layer === 'undefined') layer = paper.project.activeLayer;
+
+    // Remove all groups
+    while(paper.layerContainsCompoundPaths(layer)) {
+      for(var i in layer.children) {
+        var path = layer.children[i];
+        if (path instanceof paper.CompoundPath) {
+          var kids = path.removeChildren();
+          _.each(kids, function(k) {
+            k.data = _.extend({}, path.data);
+          });
+          path.parent.insertChildren(0, kids);
+          path.remove();
+        }
+      }
+    }
+  }
+
+  paper.previewCam = function(config) {
+    // If you modify the child list, you MUST operate on a COPY
+    var paths = _.extend([], paper.project.activeLayer.children);
+    var fillList = [];
+    _.each(paths, function(path){
+      // Get rid of old campaths.
+      if (path.data.campath === true) {
+        path.remove();
+      } else if (path.data.fill === true) { // Add each fill to the list.
+        fillList.push(path);
+      }
+    });
+
+    _.each(fillList, function(path){
+      shapeFillPath(path, config);
+    });
+  };
+
 
   return returnRenderer;
 };
