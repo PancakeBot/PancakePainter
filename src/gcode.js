@@ -405,6 +405,7 @@ module.exports = function(config) {
     // Is this a compound path?
     if (p.children) {
       _.each(p.children, function(c, pathIndex) {
+        if (!c.length) return;
         c.flatten(config.flattenResolution);
         geometries[pathIndex] = [];
         _.each(c.segments, function(s){
@@ -415,7 +416,19 @@ module.exports = function(config) {
         });
       });
     } else { // Single path
+      // With no path length, we're done.
+      if (p.length) {
+        p.remove();
+        inPath.remove();
+        return;
+      }
+
       geometries[0] = [];
+      if (p.length) {
+        p.remove();
+        inPath.remove();
+        return;
+      }
       p.flatten(config.flattenResolution);
       _.each(p.segments, function(s){
         geometries[0].push({
@@ -431,14 +444,12 @@ module.exports = function(config) {
     var cutConfig = {
       tool: {
         units: "inch",
-        diameter: options.camWidth || 0.15,
-        passDepth: 0.17,
+        diameter: options.camWidth || 0.12,
         stepover: options.camStep || 0.8
       },
       operation: {
         camOp: "Pocket",
         units: "inch",
-        cutDepth: 0.25,
         geometries: [geometries]
       }
     };
@@ -467,7 +478,7 @@ module.exports = function(config) {
       paper.view.update();
     } else {
       // Too small to be filled.
-      //inPath.remove();
+      if (!options.debug) inPath.remove();
       return null;
     }
   }
