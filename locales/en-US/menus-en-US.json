@@ -22,7 +22,8 @@
     "cut": "C&ut",
     "copy": "&Copy",
     "paste": "&Paste",
-    "duplicate": "&Duplicate"
+    "duplicate": "&Duplicate",
+    "selectall": "Select &All"
   },
   "view" : {
     "settings": "Advanced Settings"

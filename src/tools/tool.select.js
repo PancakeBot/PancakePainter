@@ -409,6 +409,24 @@ module.exports = function(paper) {
     });
   }
 
+  // Select all top level items.
+  tool.selectAll = function() {
+    paper.deselect();
+
+    var paths = [];
+    _.each(project.activeLayer.children, function(path){
+      if (path instanceof paper.Path || path instanceof paper.CompoundPath) {
+        paths.push(path);
+      }
+    });
+
+    // No paths? Don't select anything.
+    if (!paths.length) return;
+
+    addToSelection(paths[0]);
+    paper.selectRect.ppaths = paths;
+    fixGroupSelectRect();
+  };
 
   function getBoundSelection(point, ignoreSelectRect) {
     // Check for items that are overlapping a rect around the event point

@@ -115,8 +115,18 @@ paper.finishImageImport = function() {
   window.activateToolItem('#tool-pen');
   toolPen.activate();
   toolSelect.imageTraceMode(false);
+  view.update();
 };
 
+// Shortcut for deferring logic to paperscript from app.js.
+paper.selectAll = function() {
+  if (paper.tool.name !== "tools.select") {
+    window.activateToolItem('#tool-select');
+    toolSelect.activate();
+  }
+
+  toolSelect.selectAll();
+};
 
 // Clear the existing project workspace/file (no confirmation)
 paper.newPBP = function(noLayers) {
@@ -168,6 +178,13 @@ paper.handleUndo = function(op) {
 
 // Handle clipboard requests
 paper.handleClipboard = function(op) {
+  // Select all is being weird...
+  // TODO: this probably shouldn't go here...
+  if (op.ctrlKey && op.keyCode === 65) {
+    paper.selectAll();
+    return;
+  }
+
   // For clarity, don't do any clipboard operations if not on the select tool.
   if (paper.tool.name !== 'tools.select') {
     return;

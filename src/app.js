@@ -446,6 +446,9 @@ function bindControls() {
           paper.newPBP();
         });
         break;
+      case 'edit.selectall':
+        paper.selectAll();
+        break;
       case 'edit.undo':
       case 'edit.redo':
         paper.handleUndo(menu === 'edit.undo' ? 'undo': 'redo');
