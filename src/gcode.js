@@ -30,7 +30,11 @@ module.exports = function(config) {
 
     workLayer.activate();
     _.each(fillList, function(path){
-      camFillPath(path, config);
+      if (config.useLineFill) {
+        paper.fillTracePath(path, config);
+      } else {
+        shapeFillPath(path, config);
+      }
     });
 
     var numPaths = workLayer.children.length;
@@ -159,6 +163,8 @@ module.exports = function(config) {
       gc('note', 'startWait: ' + config.startWait),
       gc('note', 'endWait: ' + config.endWait),
       gc('note', 'shadeChangeWait: ' + config.shadeChangeWait),
+      gc('note', 'useLineFill: ' + (config.useLineFill ? 'true' : 'false')),
+      gc('note', 'shapeFillWidth: ' + config.shapeFillWidth),
       gc('note', 'fillSpacing: ' + config.fillSpacing),
       gc('note', 'fillAngle: ' + config.fillAngle),
       gc('note', 'fillGroupThreshold: ' + config.fillGroupThreshold),
@@ -389,8 +395,8 @@ module.exports = function(config) {
    *
    * @return {[type]}        [description]
    */
-  paper.camFillPath = camFillPath;
-  function camFillPath(inPath, options) {
+  paper.shapeFillPath = shapeFillPath;
+  function shapeFillPath(inPath, options) {
     // 1. Copy the input path and flatten to a polygon (or multiple gons).
     // 2. Convert the polygon(s) points into the clipper array format.
     // 3. Delete the temp path.
@@ -444,8 +450,8 @@ module.exports = function(config) {
     var cutConfig = {
       tool: {
         units: "inch",
-        diameter: options.camWidth || 0.12,
-        stepover: options.camStep || 0.8
+        diameter: options.shapeFillWidth/25.4, // mm to inches
+        stepover: 1
       },
       operation: {
         camOp: "Pocket",
@@ -526,7 +532,7 @@ module.exports = function(config) {
     });
 
     _.each(fillList, function(path){
-      camFillPath(path, config);
+      shapeFillPath(path, config);
     });
   };
 

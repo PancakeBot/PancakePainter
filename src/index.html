@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="../node_modules/paper/dist/paper-full.js"></script>
+    <script type="text/javascript" src="../node_modules/rangeslider.js/dist/rangeslider.min.js"></script>
     <script type="text/javascript" src="libs/stackblur.js"></script>
     <script type="text/javascript" src="libs/html2canvas.js"></script>
     <link rel="stylesheet" href="styles/index.css" media="screen" charset="utf-8">
     <link rel="stylesheet" href="../node_modules/toastr/build/toastr.min.css" media="screen" charset="utf-8">
+    <link rel="stylesheet" href="../node_modules/rangeslider.js/dist/rangeslider.css" media="screen" charset="utf-8">
   </head>
   <body>
 
@@ -36,58 +38,71 @@
             <legend data-i18n>settings.gcode.title</legend>
 
             <div>
-              <label for="botspeed" data-i18n>settings.gcode.botspeed</label>
-              <input id="botspeed" class="managed" type="number" min="25" default="70" max="100" step="1">
+              <label for="botspeed" data-i18n>settings.gcode.botspeed</label><b>00</b>
+              <input id="botspeed" class="managed" data-unit="percent" type="range" min="25" default="70" max="100" step="1">
               <aside data-i18n>settings.gcode.botspeedinfo</aside>
             </div>
 
             <div>
-              <label for="flatten" data-i18n>settings.gcode.flatten</label>
-              <input id="flatten" class="managed" type="number" min="2" default="15" max="50" step="1">
-              <aside data-i18n>settings.gcode.flatteninfo</aside>
+              <label for="shapefillwidth" data-i18n>settings.gcode.shapefillwidth</label><b>00</b>
+              <input id="shapefillwidth" class="managed" data-unit="millimeters" type="range" min="2" default="5" max="11" step="0.1">
+              <aside data-i18n>settings.gcode.shapefillwidthinfo</aside>
             </div>
 
             <div>
-              <label for="shutoff" data-i18n>settings.gcode.shutoff</label>
-              <input id="shutoff" class="managed" type="number" min="0" default="20" max="200" step="1">
+              <label for="shutoff" data-i18n>settings.gcode.shutoff</label><b>00</b>
+              <input id="shutoff" class="managed" data-unit="pixels" type="range" min="0" default="20" max="200" step="1">
               <aside data-i18n>settings.gcode.shutoffinfo</aside>
             </div>
 
             <div>
-              <label for="startwait" data-i18n>settings.gcode.startwait</label>
-              <input id="startwait" class="managed" type="number" min="0" default="450" max="2000" step="1">
+              <label for="startwait" data-i18n>settings.gcode.startwait</label><b>00</b>
+              <input id="startwait" class="managed" data-unit="milliseconds" type="range" min="0" default="450" max="2000" step="1">
               <aside data-i18n>settings.gcode.startwaitinfo</aside>
             </div>
 
             <div>
-              <label for="endwait" data-i18n>settings.gcode.endwait</label>
-              <input id="endwait" class="managed" type="number" min="0" default="250" max="2000" step="1">
+              <label for="endwait" data-i18n>settings.gcode.endwait</label><b>00</b>
+              <input id="endwait" class="managed" data-unit="milliseconds" type="range" min="0" default="250" max="2000" step="1">
               <aside data-i18n>settings.gcode.endwaitinfo</aside>
             </div>
 
             <div>
-              <label for="changewait" data-i18n>settings.gcode.changewait</label>
-              <input id="changewait" class="managed" type="number" min="0" default="35" max="200" step="1">
+              <label for="changewait" data-i18n>settings.gcode.changewait</label><b>00</b>
+              <input id="changewait" class="managed" data-unit="seconds" type="range" min="0" default="35" max="200" step="1">
               <aside data-i18n>settings.gcode.changewaitinfo</aside>
             </div>
 
             <div>
-              <label for="fillspacing" data-i18n>settings.gcode.fillspacing</label>
-              <input id="fillspacing" class="managed" type="number" min="2" default="15" max="30" step="1">
+              <label for="uselinefill" data-i18n>settings.gcode.uselinefill</label>
+              <input id="uselinefill" class="managed fancy" type="checkbox">
+              <aside data-i18n>settings.gcode.uselinefillinfo</aside>
+            </div>
+
+            <div>
+              <label for="fillspacing" data-i18n>settings.gcode.fillspacing</label><b>00</b>
+              <input id="fillspacing" class="managed" data-unit="pixels" type="range" min="2" default="15" max="30" step="1">
               <aside data-i18n>settings.gcode.fillspacinginfo</aside>
             </div>
 
             <div>
-              <label for="fillangle" data-i18n>settings.gcode.fillangle</label>
-              <input id="fillangle" class="managed" type="number" min="-180" default="23" max="180" step="1">
+              <label for="fillangle" data-i18n>settings.gcode.fillangle</label><b>00</b>
+              <input id="fillangle" class="managed" data-unit="degrees" type="range" min="-180" default="23" max="180" step="1">
               <aside data-i18n>settings.gcode.fillangleinfo</aside>
             </div>
 
             <div>
-              <label for="fillthresh" data-i18n>settings.gcode.fillthresh</label>
-              <input id="fillthresh" class="managed" type="number" min="0" max="100" default="27" step="1">
+              <label for="fillthresh" data-i18n>settings.gcode.fillthresh</label><b>00</b>
+              <input id="fillthresh" class="managed" data-unit="pixels" type="range" min="0" max="100" default="27" step="1">
               <aside data-i18n>settings.gcode.fillthreshinfo</aside>
             </div>
+
+            <div>
+              <label for="flatten" data-i18n>settings.gcode.flatten</label><b>00</b>
+              <input id="flatten" class="managed" data-unit="pixels" type="range" min="2" default="15" max="50" step="1">
+              <aside data-i18n>settings.gcode.flatteninfo</aside>
+            </div>
+
           </fieldset>
         </div>
       </div>

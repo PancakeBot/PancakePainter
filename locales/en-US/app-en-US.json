@@ -81,11 +81,37 @@
     "button": {
       "reset": "Revert All Settings"
     },
+    "units": {
+      "milliseconds": {
+        "label": "ms",
+        "title": "milliseconds"
+      },
+      "seconds": {
+        "label": " sec",
+        "title": "second(s)"
+      },
+      "millimeters": {
+        "label": "mm",
+        "title": "millimeter(s)"
+      },
+      "percent": {
+        "label": "%",
+        "title": "percent"
+      },
+      "pixels": {
+        "label": " dv/px",
+        "title": "device pixels"
+      },
+      "degrees": {
+        "label": "°",
+        "title": "degrees"
+      }
+    },
     "gcode": {
       "title": "Print Export Options",
       "botspeed": "Print Speed:",
       "botspeedinfo": "The percent of the maximum speed that the PancakeBot will move at, defaults to 70%. If this has no effect on your PancakeBot you may need to install the new firmware available on PancakeBot.com. Increasing the speed of the PancakeBot may reduce its life span.",
-      "flatten": "Flatten resolution:",
+      "flatten": "Smallest flatten distance:",
       "flatteninfo": "The resolution limit when converting curves into polygons for GCODE coordinates. Lower value creates more points and higher resolution, higher value creates fewer points and lower resolution approximation.",
       "shutoff": "Line end pre-shutoff distance:",
       "shutoffinfo": "The distance of travel before the end of a line that the pump should turn off ahead of, prevents line end drip increase. Larger distance means pump will shut off sooner.",
@@ -95,12 +121,16 @@
       "endwaitinfo": "The number of milliseconds to wait at the end of a line. Pump should have already shutoff early, this should ensure a clean line end. Correct value depends on batter viscosity and pump pressure.",
       "changewait": "Seconds between bottle/shade changes:",
       "changewaitinfo": "Amount of time the bot will wait between shade/color changes. Bot will remain parked during this time to allow cooking or bottle change.",
-      "fillspacing": "Fill line spacing:",
+      "uselinefill": "Use diagonal line fill:",
+      "uselinefillinfo": "If enabled, PancakePainter will use the diagonal line fill algorithm when creating GCODE to fill shapes, instead of the default shape fill algorithm.",
+      "fillspacing": "Line fill spacing:",
       "fillspacinginfo": "The amount of space between fill lines. Smaller values are closer together and more of them, larger values create fewer lines spaced further apart.",
-      "fillangle": "Fill angle (in degrees):",
+      "fillangle": "Line fill angle (in degrees):",
       "fillangleinfo": "Angle of the automatic fill lines, defaults at 23, and be -180 to 180.",
-      "fillthresh": "Fill grouping threshold:",
-      "fillthreshinfo": "Minimum threshold for grouping dynamic line endings together into connected groups. Large value connects more groups, 0 will ensure no groups are made."
+      "fillthresh": "Line fill grouping threshold:",
+      "fillthreshinfo": "Minimum threshold for grouping dynamic line endings together into connected groups. Large value connects more groups, 0 will ensure no groups are made.",
+      "shapefillwidth": "Shape fill effective batter width:",
+      "shapefillwidthinfo": "Effective width of the batter line being drawn, iterated from the edge inwards on paths to be filled. Smaller values will make more lines when filling, adding more batter. Larger values will add fewer lines and less batter, and may leave some shapes unfilled or with holes in them."
     }
   }
 }

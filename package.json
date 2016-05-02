@@ -20,6 +20,7 @@
     "n-dimensional-flood-fill": "^1.0.0",
     "ndarray": "^1.0.18",
     "paper": "^0.9.25",
+    "rangeslider.js": "^2.1.1",
     "toastr": "^2.1.2",
     "underscore": "^1.8.3"
   },
