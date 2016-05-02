@@ -17,6 +17,6 @@
   },
   "optionalDependencies": {
     "grunt-appdmg": "^0.3.1",
-    "grunt-electron-installer": "^1.0.8"
+    "grunt-electron-installer": "^2.1.0"
   }
 }
