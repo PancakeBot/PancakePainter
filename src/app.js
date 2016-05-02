@@ -90,6 +90,14 @@ function setRenderSettings() {
     (app.settings.v.botspeed / 100) * botSpeedMax,
     10
   );
+
+  renderConfig.useColorSpeed = app.settings.v.usecolorspeed;
+  renderConfig.botColorSpeed = [
+    parseInt((app.settings.v.botspeedcolor1 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor2 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor3 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor4 / 100) * botSpeedMax, 10)
+  ];
 }
 
 // Page loaded

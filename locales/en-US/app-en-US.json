@@ -130,7 +130,13 @@
       "fillthresh": "Line fill grouping threshold:",
       "fillthreshinfo": "Minimum threshold for grouping dynamic line endings together into connected groups. Large value connects more groups, 0 will ensure no groups are made.",
       "shapefillwidth": "Shape fill effective batter width:",
-      "shapefillwidthinfo": "Effective width of the batter line being drawn, iterated from the edge inwards on paths to be filled. Smaller values will make more lines when filling, adding more batter. Larger values will add fewer lines and less batter, and may leave some shapes unfilled or with holes in them."
+      "shapefillwidthinfo": "Effective width of the batter line being drawn, iterated from the edge inwards on paths to be filled. Smaller values will make more lines when filling, adding more batter. Larger values will add fewer lines and less batter, and may leave some shapes unfilled or with holes in them.",
+      "botspeedcolor1": "Shade 1 speed (light):",
+      "botspeedcolor2": "Shade 2 speed (medium):",
+      "botspeedcolor3": "Shade 3 speed (medium dark):",
+      "botspeedcolor4": "Shade 4 speed (dark):",
+      "usecolorspeed": "Shade specific speed:",
+      "usecolorspeedinfo": "If enabled, set the shade specific speeds below to allow automatic setting of a different print speed after each shade change. Disable to use only the speed at the top of settings."
     }
   }
 }

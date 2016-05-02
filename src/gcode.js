@@ -61,9 +61,17 @@ module.exports = function(config) {
 
     // Move through each color
     var pathCount = 0;
+    var lastColor = "";
     _.each(colorGroups, function(group, groupIndex){
       // Move through each path in the given color group
       _.each(group, function(path){
+        // Color specific speed change, before path draw.
+        if (config.useColorSpeed && lastColor !== path.data.color) {
+          out += gc('note', 'Shade specific speed change:');
+          out += gc('speed', config.botColorSpeed[path.data.color]);
+          lastColor = path.data.color;
+        }
+
         if (!path.segments) {
           console.log('Bad path!', path);
         }
@@ -168,6 +176,8 @@ module.exports = function(config) {
       gc('note', 'fillSpacing: ' + config.fillSpacing),
       gc('note', 'fillAngle: ' + config.fillAngle),
       gc('note', 'fillGroupThreshold: ' + config.fillGroupThreshold),
+      gc('note', 'useColorSpeed: ' + config.useColorSpeed),
+      gc('note', 'botColorSpeed: ' + config.botColorSpeed.join(',')),
       gc('note', '----------------------------------------'),
       gc('workspace', config.printArea),
       gc('units'),
