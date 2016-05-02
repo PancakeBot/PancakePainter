@@ -5989,6 +5989,10 @@
     //distance = proximity in units/pixels below which vertices will be stripped.
     //Default ~= sqrt(2) so when adjacent vertices or semi-adjacent vertices have
     //both x & y coords within 1 unit, then the second vertex will be stripped.
+    if (typeof path === 'undefined') {
+      return new Array();
+    }
+
     var cnt = path.length;
     if (cnt == 0)
       return new Array();
