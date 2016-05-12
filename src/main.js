@@ -131,7 +131,8 @@ function windowInit() {
         height: app.settings.v.window.height,
         resizable: true,
         icon: appPath + "resources/app.png",
-        title: "PancakePainter"
+        title: "PancakePainter",
+        fullscreenable: false // Workaround for fullscreen OSX bug :'(
       };
 
       // Centered or fixed window position?
