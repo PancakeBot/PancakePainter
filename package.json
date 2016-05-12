@@ -19,7 +19,7 @@
     "jquery": "^2.1.4",
     "n-dimensional-flood-fill": "^1.0.0",
     "ndarray": "^1.0.18",
-    "paper": "^0.9.25",
+    "paper": "git://github.com/paperjs/paper.js/#1626c67",
     "rangeslider.js": "^2.1.1",
     "toastr": "^2.1.2",
     "underscore": "^1.8.3"
