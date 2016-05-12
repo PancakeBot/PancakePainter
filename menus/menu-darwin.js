@@ -4,7 +4,7 @@
 "use strict";
 module.exports = function applyTemplate() {
   var remote = require('electron').remote;
-  var app = remote.require('app');
+  var app = remote.app;
   var BrowserWindow = remote.BrowserWindow;
   var path = require('path');
   var packageData = require(path.join(app.getAppPath(), 'package.json'));
