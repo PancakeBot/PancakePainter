@@ -16,7 +16,7 @@ module.exports = function(grunt) {
   var version = appInfo.version;
   var electronVer = appInfo.electronVersion; // Electron build version
   var numericVersion = appInfo.version.split('-')[0];
-  var buildIgnore = 'build/dist|build/node_modules|build/tasks|build/package.json|build/Gruntfile.js';
+  var buildIgnore = 'build/dist|build/node_modules|build/tasks|build/package.json|build/Gruntfile.js|node_modules/electron-*|node_modules/grunt*';
 
   // Project configuration.
   grunt.initConfig({
