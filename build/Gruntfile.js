@@ -1,8 +1,6 @@
 var path = require('path');
 
 module.exports = function(grunt) {
-  var electronVer = '0.36.5'; // Electron build version
-
   // Load the plugins...
   grunt.loadNpmTasks('grunt-electron');
   if (process.platform === 'win32') grunt.loadNpmTasks('grunt-electron-installer');
@@ -16,6 +14,7 @@ module.exports = function(grunt) {
 
   var appInfo = grunt.file.readJSON('package.json');
   var version = appInfo.version;
+  var electronVer = appInfo.electronVersion; // Electron build version
   var numericVersion = appInfo.version.split('-')[0];
   var buildIgnore = 'build/dist|build/node_modules|build/tasks|build/package.json|build/Gruntfile.js';
 
