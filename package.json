@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "author": "techninja",
   "stage": "development",
-  "electronVersion": "0.37.5",
+  "electronVersion": "1.0.1",
   "license": "Apache-2.0",
   "scripts": {
     "start": "electron ."
@@ -29,6 +29,6 @@
     "url": "https://github.com/PancakeBot/PancakePainter.git"
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.37.5"
+    "electron-prebuilt": "1.0.1"
   }
 }

@@ -5,14 +5,14 @@
  **/
 "use strict";
 
-var app = require('app');  // Module to control application life.
+var app = require('electron').app;  // Module to control application life.
 var appPath = app.getAppPath() + '/';
 var fs = require('fs-plus');
 var _ = require('underscore');
 
 // Module to create native browser window.
-var BrowserWindow = require('browser-window');
-var dialog = require('dialog');
+var BrowserWindow = require('electron').BrowserWindow;
+var dialog = require('electron').dialog;
 var i18n = require('i18next');
 
 // Report crashes to our server.

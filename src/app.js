@@ -19,10 +19,10 @@ var gcRender = require('./gcode.js');
 
 // Main Process ===========================================---------------------
 // Include global main process connector objects for the renderer (this window).
-var remote = require('remote');
+var remote = require('electron').remote;
 var mainWindow = remote.getCurrentWindow();
 var i18n = remote.require('i18next');
-var app = remote.require('app');
+var app = remote.app;
 require('../menus/menu-init')(app); // Initialize the menus
 var fs = remote.require('fs-plus');
 var dataURI = require('datauri');

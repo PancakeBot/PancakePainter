@@ -4,8 +4,8 @@
  **/
 "use strict";
 module.exports = function menuInit(app) {
-  var remote = require('remote');
-  var Menu = remote.require('menu');
+  var remote = require('electron').remote;
+  var Menu = remote.Menu;
   var i18n = remote.require('i18next');
   var _ = require('underscore');
 

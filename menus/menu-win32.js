@@ -3,8 +3,8 @@
  */
 "use strict";
 module.exports = function applyTemplate() {
-  var remote = require('remote');
-  var BrowserWindow = remote.require('browser-window');
+  var remote = require('electron').remote;
+  var BrowserWindow = remote.BrowserWindow;
 
   var template = [
     {
