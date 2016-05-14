@@ -11,6 +11,7 @@ module.exports = function(paper) {
 
   // Paper global extenders
   var Path = paper.Path;
+  var CompoundPath = paper.CompoundPath;
   var Point = paper.Point;
   var Rectangle = paper.Rectangle;
   var project = paper.project;
@@ -20,18 +21,18 @@ module.exports = function(paper) {
   paper.selectRectLast = null;
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
-  var segment, path, selectChange;
+  var segment, path, selectChangeOnly;
   paper.imageTraceMode = false;
-  var hitOptions = {
-    segments: true,
-    stroke: true,
-    fill: true,
-    tolerance: 5
-  };
 
   // Externalize deseletion
   paper.deselect = function(noFinish) {
     if (paper.selectRect) {
+      // Completely deselect sub paths
+      _.each(paper.selectRect.ppaths, function(path) {
+        path.selected = false;
+        path.fullySelected = false;
+      });
+
       paper.selectRectLast = paper.selectRect;
       paper.selectRect.remove();
       paper.selectRect = null;
@@ -43,6 +44,7 @@ module.exports = function(paper) {
     }
   };
 
+  // Externalize reselect of last selection.
   paper.reselect = function() {
     if (paper.selectRectLast && paper.tool.name === 'tools.select') {
       project.activeLayer.addChild(paper.selectRectLast);
@@ -56,8 +58,16 @@ module.exports = function(paper) {
   tool.key = 'select';
   tool.cursorOffset = '1 1'; // Position for cursor point
 
-  tool.onMouseDown = function(event) {
-    segment = path = selectChange = null;
+  // Hittest wrapper for greater select abstraction.
+  paper.selectTestResult = function (event, options) {
+    var hitOptions = {
+      segments: true,
+      stroke: true,
+      fill: true,
+      tolerance: 5
+    };
+
+    hitOptions = _.extend(hitOptions, options);
     var hitResult = project.hitTest(event.point, hitOptions);
 
     // Don't select image if not in trace mode
@@ -72,10 +82,9 @@ module.exports = function(paper) {
 
     // If we didn't hit anything with hitTest...
     if (!hitResult) {
-      // Finish imageTraceMode
+      // Finish if in imageTraceMode.
       if (paper.imageTraceMode) {
-        paper.deselect();
-        return;
+        return false;
       }
 
       // Find any items that are Paths (not layers) that contain the point
@@ -84,95 +93,141 @@ module.exports = function(paper) {
       // If we actually found something, fake a fill hitResult
       if (item) {
         hitResult = {
-          type: 'fill', // SURE it is ;)
+          type: 'bounds',
           item: item
         };
       } else {
-        // Deselect if nothing clicked (feels natural for deselection)
-        if (paper.selectRect !== null) {
-          paper.deselect();
-        }
+        return false;
+      }
+    }
 
+    // From this point on, we must have clicked something.
+    var path = hitResult.item;
+
+    // Figure out useful selection state switches:
+    hitResult.pickingSelectRect = false;
+    hitResult.multiSelect = false;
+    hitResult.itemSelected = false;
+    hitResult.hasSelection = false;
+    hitResult.insideItem = null;
+    hitResult.insideItemSelected = false;
+
+    if (paper.selectRect) {
+      var ppaths = paper.selectRect.ppaths;
+      hitResult.hasSelection = true;
+      hitResult.multiSelect = ppaths.length > 1;
+      hitResult.itemSelected = ppaths.indexOf(path) > -1;
+      hitResult.pickingSelectRect = paper.selectRect === path;
+
+      // If we're selecting the selectRect via bounds, try to find an item a
+      // user might be trying to select inside of it.
+      hitResult.insideItem = getBoundSelection(event.point, true);
+      hitResult.insideItemSelected = ppaths.indexOf(hitResult.insideItem) > -1;
+
+      // If not picking select rect and no inside item, default to current.
+      if (!hitResult.insideItem && !hitResult.pickingSelectRect) {
+        hitResult.insideItem = hitResult.item;
+        hitResult.insideItemSelected = hitResult.itemSelected;
+      }
+
+    }
+
+    return hitResult;
+  };
+
+  // User clicks witht he mouse on the canvas:
+  tool.onMouseDown = function(event) {
+    segment = path = selectChangeOnly = null;
+
+    // Always ensure the select Rect is above everything else before tests.
+    if (paper.selectRect) {
+      paper.selectRect.bringToFront();
+    }
+    var clickResult = paper.selectTestResult(event);
+
+    // Finish early and deselect if we didn't click anything.
+    if (!clickResult) {
+      // If we're pressing shift, don't deselect.
+      if (!event.modifiers.shift) {
+        paper.deselect();
+      }
+      return;
+    }
+
+    // We can assume we've clicked on soemthing at this point.
+    path = clickResult.item;
+
+    // When in image trace mode, regular selections are ignored.
+    if (paper.imageTraceMode) {
+      // Select the group, not the image
+      if (clickResult.item === paper.traceImage.img) {
+        clickResult.item = paper.traceImage;
+        path = clickResult.item;
+      }
+
+      // Don't select any other items if in image trace mode
+      if (!clickResult.pickingSelectRect && path !== paper.traceImage) {
         return;
       }
     }
 
-    if (hitResult) {
-      if (paper.imageTraceMode) {
-
-        // Select the group, not the image
-        if (hitResult.item === paper.traceImage.img) {
-          hitResult.item = paper.traceImage;
-        }
-
-        //console.log('HITRESULT', hitResult.item);
-
-        // Don't select any other items if in image trace mode
-        if (hitResult.item !== paper.selectRect &&
-            hitResult.item !== paper.traceImage) {
-          return;
-        }
+    // Clicking one of the selection modifier hitbox nodes:
+    if (clickResult.pickingSelectRect && clickResult.type === 'segment') {
+      if (clickResult.segment.index >= 2 && clickResult.segment.index <= 4) {
+        // Rotation hitbox
+        selectionRectangleRotation = 0;
+      } else {
+        // Scale hitbox
+        var center = event.point.subtract(paper.selectRect.bounds.center);
+        selectionRectangleScale = center.length / path.scaling.x;
       }
+    }
 
-      path = hitResult.item;
-      var pickingSelectRect = paper.selectRect === path;
+    // Don't do anything more if on image trace mode.
+    if (paper.imageTraceMode) {
+      return;
+    }
 
-      if (hitResult.type === 'segment') {
-        // Remove segment on shift click.
-        if (event.modifiers.shift && !pickingSelectRect) {
-          hitResult.segment.remove();
+    // If not while multi selecting...
+    if (!clickResult.multiSelect && !clickResult.pickingSelectRect) {
+      // Clicking on a path node segment:
+      if (clickResult.type === 'segment') {
+        // Remove segment on shift click only on selected item.
+        if (event.modifiers.shift && clickResult.itemSelected) {
+          clickResult.segment.remove();
           return;
+        } else {
+          // Not shift clicking, not multiselect, globalize the segment so it
+          // can be repositioned.
+          segment = clickResult.segment;
         }
 
-        if (paper.selectRect !== null && path.name === "selection rectangle") {
-          if (hitResult.segment.index >= 2 && hitResult.segment.index <= 4) {
-            // Rotation hitbox
-            selectionRectangleRotation = 0;
-          } else {
-            // Scale hitbox
-            var center = event.point.subtract(paper.selectRect.bounds.center);
-            selectionRectangleScale = center.length / path.scaling.x;
-          }
-        } else {
-          segment = hitResult.segment;
-        }
-      } else if (hitResult.type === 'stroke' && path !== paper.selectRect) {
-        if (paper.selectRect && paper.selectRect.ppath === path) {
-          // Add new segment node to the path (if it's already selected)
-          var location = hitResult.location;
+      } else if (clickResult.type === 'stroke'){
+        // Add new segment node to the path (if it's already selected)
+        if (clickResult.itemSelected) {
+          var location = clickResult.location;
           segment = path.insert(location.index + 1, event.point);
         }
       }
-
-      // If a fill hit, move the path to the front.
-      if (hitResult.type === 'fill') {
-        hitResult.item.bringToFront();
-      }
-
-      var pathAlreadySelected = false;
-      if (paper.selectRect) {
-        pathAlreadySelected = paper.selectRect.ppaths.indexOf(path) > -1;
-      }
-
-      if (event.modifiers.shift) {
-        // If pressing shift, try to look for paths inside of selection.
-        var insideItem = getBoundSelection(event.point, true);
-        pathAlreadySelected = paper.selectRect.ppaths.indexOf(insideItem) > -1;
-
-        if (!pickingSelectRect ||
-           (pickingSelectRect && insideItem !== path && !pathAlreadySelected)) {
-          selectChange = true;
-          addToSelection(insideItem);
-        } else if (pathAlreadySelected) {
-          selectChange = true;
-          removeFromSelection(insideItem);
-        }
-      } else if (!pickingSelectRect && !pathAlreadySelected) {
-        initSelectionRectangle(path);
-      }
-
     }
 
+    // Move the path to the front.
+    path.bringToFront();
+
+    // If pressing shift, try to look for paths inside of selection.
+    if (event.modifiers.shift) {
+      if (!clickResult.insideItemSelected) {
+        selectChangeOnly = true;
+        addToSelection(clickResult.insideItem);
+      } else {
+        selectChangeOnly = true;
+        removeFromSelection(clickResult.insideItem);
+      }
+    } else if (!clickResult.itemSelected &&
+               !clickResult.pickingSelectRect) {
+      selectChangeOnly = true;
+      initSelectionRectangle(path);
+    }
   };
 
   tool.onMouseDrag = function(event) {
@@ -200,34 +255,25 @@ module.exports = function(paper) {
 
     if (segment && !paper.imageTraceMode) {
       // Individual path segment position adjustment
-      segment.point.x += event.delta.x;
-      segment.point.y += event.delta.y;
+      segment.point.add(event.delta);
 
-      // Smooth -only- non-polygonal paths
-      //if (!path.data.isPolygonal) path.smooth();
-
+      selectChangeOnly = false;
       initSelectionRectangle(path);
     } else if (path) {
+      selectChangeOnly = false;
       var psr = paper.selectRect;
 
       // Path translate position adjustment
-      if (path !== paper.selectRect) {
-        path.position.x += event.delta.x;
-        path.position.y += event.delta.y;
-        psr.position.x += event.delta.x;
-        psr.position.y += event.delta.y;
-      } else {
-        psr.position = psr.position.add(event.delta);
-        _.each(psr.ppaths, function(path){
-          path.position = psr.position.add(event.delta);
-        });
-
-      }
+      psr.position = psr.position.add(event.delta);
+      _.each(psr.ppaths, function(path){
+        path.position = psr.position.add(event.delta);
+      });
     }
   };
 
   tool.onMouseMove = function(event) {
     project.activeLayer.selected = false;
+    project.activeLayer.fullySelected = false;
 
     if (paper.selectRect) {
       paper.selectRect.selected = true;
@@ -244,13 +290,15 @@ module.exports = function(paper) {
     }
 
 
-    var boundItem = getBoundSelection(event.point);
+    var clickResult = paper.selectTestResult(event);
 
     if (event.item) {
       event.item.selected = true;
       paper.setCursor('copy');
-    } else if (boundItem) {
-      boundItem.selected = true;
+    } else if (clickResult) {
+      if (!clickResult.pickingSelectRect) {
+        clickResult.item.selected = true;
+      }
       paper.setCursor('move');
     } else {
       paper.setCursor();
@@ -262,7 +310,7 @@ module.exports = function(paper) {
     selectionRectangleRotation = null;
 
     // If we have a mouse up with either of these, the file has changed!
-    if ((path || segment) && !selectChange) {
+    if ((path || segment) && !selectChangeOnly) {
       paper.cleanPath(path);
       paper.fileChanged();
     }
@@ -283,7 +331,6 @@ module.exports = function(paper) {
 
       // Deselect
       if (event.key === 'escape') {
-        paper.selectRect.ppath.fullySelected = false;
         paper.deselect();
       }
 
@@ -292,8 +339,15 @@ module.exports = function(paper) {
 
   paper.selectPath = initSelectionRectangle;
   function initSelectionRectangle(path) {
-    if (paper.selectRect !== null) paper.deselect();
-    var reset = path.rotation === 0 && path.scaling.x === 1 && path.scaling.y === 1;
+    paper.deselect();
+
+    // Ensure we're selecting the right path.
+    path = ensureSelectable(path, true);
+    if (!path) return;
+
+    var reset = path.rotation === 0 &&
+                path.scaling.x === 1 &&
+                path.scaling.y === 1;
     var bounds;
 
     if (reset) {
@@ -328,21 +382,54 @@ module.exports = function(paper) {
     paper.selectRect.ppath.pivot = paper.selectRect.pivot;
   }
 
+
+  // Make sure the passed path is selectable, returns null, the path (or parent)
+  function ensureSelectable(path, skipType) {
+    // Falsey passed? Can't select that.
+    if (!path) {
+      return null;
+    }
+
+    // Is a child of a compound path? Select the parent.
+    if (path.parent instanceof CompoundPath) {
+      path = path.parent;
+    }
+
+    if (!skipType) {
+      // Not a path or compound path? Can't select that.
+      if (!(path instanceof Path) && !(path instanceof CompoundPath)) {
+        return null;
+      }
+    }
+
+    // If we have a selection...
+    if (paper.selectRect) {
+      // Is the same path as the select rectangle? Can't select that.
+      if (path === paper.selectRect) {
+        return null;
+      }
+
+      // Already selected? Can't select it.
+      if (paper.selectRect.ppaths.indexOf(path) !== -1) {
+        return null;
+      }
+    }
+
+    return path;
+  }
+
   // Add to an existing selection
   paper.selectAdd = addToSelection;
   function addToSelection(path) {
+    // Only add to selection if we have a selection.
     if (paper.selectRect === null) {
       initSelectionRectangle(path);
       return;
     }
 
     // Don't try to add our own selection rectangle or non-paths to selections!
-    if (paper.selectRect === path || !(path instanceof Path)) {
-      return;
-    }
-
-    // Don't try existing paths.
-    if (paper.selectRect.ppaths.indexOf(path) !== -1) {
+    path = ensureSelectable(path);
+    if (!path) {
       return;
     }
 
@@ -459,6 +546,10 @@ module.exports = function(paper) {
       }
     });
 
+    // If we're ignoring the select Rect, we want only osmehting selctable.
+    if (ignoreSelectRect) {
+      return ensureSelectable(item);
+    }
     return item;
   }
 
