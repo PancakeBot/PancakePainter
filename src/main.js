@@ -68,7 +68,7 @@ function settingsInit() {
       fillspacing: 15,      // Space between each trace fill line
       fillangle: 23,        // Angle of line for trace fill
       fillthresh: 27,       // Threshold to group zig zags
-      shapefillwidth: 5     // Effective fill space.
+      shapefillwidth: 4     // Effective fill space.
     },
     clear: function() {
       fs.removeSync(settingsFile);
