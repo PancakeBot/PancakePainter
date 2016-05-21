@@ -375,10 +375,22 @@ function bindControls() {
             $('#exporting').fadeIn('slow', function(){
               // Run in a timeout to allow the previous code to run first.
               setTimeout(function() {
-                fs.writeFileSync(
-                  filePath,
-                  gcRender(menu === 'file.exportmirrored')
-                ); // Write file!
+                try {
+                  fs.writeFileSync(
+                    filePath,
+                    gcRender(menu === 'file.exportmirrored')
+                  ); // Write file!
+                } catch(e) {
+                  // Catch errors in export.
+                  toggleOverlay(false);
+                  $('#exporting').fadeOut('slow',function(){
+                    // Notify user
+                    toastr.error(
+                      i18n.t('export.err', {file: path.parse(filePath).base})
+                    );
+                  });
+                }
+
                 toggleOverlay(false);
                 $('#exporting').fadeOut('slow',function(){
                   // Notify user
