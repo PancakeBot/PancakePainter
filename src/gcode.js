@@ -122,6 +122,7 @@ module.exports = function(config) {
 
     // Render segment points to Gcode movements
     _.each(path.segments, function(segment, index){
+      if (!segment || !segment.location) return;
       var segOffset = segment.location.offset;
 
       // If we're on anything but the first segment before we've moved, but this
