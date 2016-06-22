@@ -255,7 +255,7 @@ module.exports = function(paper) {
 
     if (segment && !paper.imageTraceMode) {
       // Individual path segment position adjustment
-      segment.point.add(event.delta);
+      segment.point = segment.point.add(event.delta);
 
       selectChangeOnly = false;
       initSelectionRectangle(path);
