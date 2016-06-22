@@ -231,6 +231,12 @@ function buildToolbar() {
           draggable: 'false'
         }).css('background-image', 'url(images/icon-' + tool.key + '.png)')
       ).click(function(){
+        // Complete polygon draw no matter what.
+        // TODO: Make all tools expose a "clear all" reset for other tools.
+        if (paper.tool.polygonDrawComplete) {
+          paper.tool.polygonDrawComplete();
+        }
+
         tool.activate();
         activateToolItem(this);
       }));

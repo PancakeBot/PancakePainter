@@ -150,6 +150,7 @@ module.exports = function(paper) {
     }
   };
 
+  tool.polygonDrawComplete = polygonDrawComplete;
   function polygonDrawComplete() {
     if (polygonalDraw) {
       polygonalDraw = false;
