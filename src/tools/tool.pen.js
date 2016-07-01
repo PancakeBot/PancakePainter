@@ -144,8 +144,16 @@ module.exports = function(paper) {
     }
   };
 
+
+  // Catch Escape key (not caught with the tool's onKeyDown).
+  $(document).keyup(function(e) {
+     if (e.keyCode == 27) {
+        polygonDrawComplete();
+    }
+  });
+
   tool.onKeyDown = function (event) {
-    if (_.contains(['escape', 'enter'], event.key)) {
+    if (_.contains(['enter'], event.key)) {
       polygonDrawComplete();
     }
   };
