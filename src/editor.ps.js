@@ -2,6 +2,11 @@
  * @file This PaperScript file controls the main PancakePainter SVG Editor and
  * all importing/exporting of its data.
  */
+ /* globals
+   window, mainWindow, $, _, toastr, i18n, paper, view, project, scale,
+   Raster, Group, Point, Path, Layer, dataURI, currentFile, path, fs,
+   editorLoadedInit
+ */
 
 paper.strokeWidth = 5; // Custom
 paper.settings.handleSize = 10;
@@ -20,7 +25,7 @@ paper.pancakeShades = [
 
 // Handy translated color names
 paper.pancakeShadeNames = [];
-_.each(paper.pancakeShades, function(color, index){
+_.each(paper.pancakeShades, function(color, index){ /* jshint unused:false */
   paper.pancakeShadeNames.push(i18n.t('color.color' + index));
 });
 
@@ -31,12 +36,16 @@ var toolPen = require('./tools/tool.pen')(paper);
 var toolFill = require('./tools/tool.fill')(paper);
 var toolSelect = require('./tools/tool.select')(paper);
 
+// Load Helpers
+paper.undo = require('./helpers/helper.undo')(paper);
+paper.clipboard = require('./helpers/helper.clipboard')(paper);
+
 var $editor = $('#editor');
 paper.setCursor = function(type) {
   // TODO: Implement cursor change on hover of handles, objects, etc
-  //if (!type) type = 'default';
+  if (!type) type = 'default';
   //$editor.css('cursor', type);
-}
+};
 
 function onResize(event) {
   // Ensure paper project view retains correct scaling and position.
@@ -52,7 +61,10 @@ paper.initImageImport = function() {
       t: 'OpenDialog',
       title: i18n.t('import.title'),
       filters: [
-        { name: i18n.t('import.files'), extensions: ['jpg', 'jpeg', 'gif', 'png'] }
+        {
+          name: i18n.t('import.files'),
+          extensions: ['jpg', 'jpeg', 'gif', 'png']
+        }
       ]
     }, function(filePath){
       if (!filePath) {  // Open cancelled
@@ -65,7 +77,7 @@ paper.initImageImport = function() {
           source: dataURI(filePath[0]),
           position: view.center
         });
-        // The raster MUST be in a group to alleviate coordinate & scaling issues.
+        // The raster MUST be in a group to alleviate coord & scaling issues.
         paper.traceImage = new Group([img]);
         paper.traceImage.img = img;
       paper.mainLayer.activate(); // We're done with the image layer for now
@@ -76,7 +88,7 @@ paper.initImageImport = function() {
         var scale = {
           x: (view.bounds.width * 0.8) / this.width,
           y: (view.bounds.height * 0.8) / this.height
-        }
+        };
 
         paper.traceImage.pInitialBounds = this.bounds;
 
@@ -88,7 +100,7 @@ paper.initImageImport = function() {
 
         // Select the thing and disable other selections
         toolSelect.imageTraceMode(true);
-      }
+      };
     });
   } else {
     // Select the thing and disable other selections
@@ -96,19 +108,47 @@ paper.initImageImport = function() {
   }
 
   view.update();
-}
+};
 
 // Called when completing image import management
 paper.finishImageImport = function() {
-  activateToolItem('#tool-pen');
+  window.activateToolItem('#tool-pen');
   toolPen.activate();
   toolSelect.imageTraceMode(false);
-}
+  view.update();
+};
 
+// Shortcut for deferring logic to paperscript from app.js.
+paper.selectAll = function() {
+  if (paper.tool.name !== "tools.select") {
+    window.activateToolItem('#tool-select');
+    toolSelect.activate();
+  }
 
-// Clear the existing project workspace (no confirmation)
+  toolSelect.selectAll();
+};
+
+// Clear the existing project workspace/file (no confirmation)
 paper.newPBP = function(noLayers) {
+  paper.emptyProject();
+
+  if (!noLayers) {
+    paper.imageLayer = project.getActiveLayer(); // Creates the default layer
+    paper.mainLayer = new Layer(); // Everything is drawn on here by default now
+    paper.undo.clearState();
+  }
+
+  view.update();
+
+  // Reset current file status (keeping previous file name, for kicks)
+  currentFile.name = "";
+  currentFile.changed = false;
+};
+
+// Just Empty/Clear the workspace.
+paper.emptyProject = function() {
   paper.deselect();
+  paper.selectRectLast = null;
 
   paper.imageLayer.remove();
   paper.mainLayer.remove();
@@ -118,29 +158,89 @@ paper.newPBP = function(noLayers) {
     paper.traceImage.remove();
     paper.traceImage = null;
   }
+};
 
-  if (!noLayers) {
-    paper.imageLayer = project.getActiveLayer(); // Creates the default layer
-    paper.mainLayer = new Layer(); // Everything is drawn on here by default now
+// Handle undo requests (different depending on if the tool cares).
+paper.handleUndo = function(op) {
+  // If the tool provides a function, and it returns false, don't run undo.
+  if (typeof paper.tool.undoSet === 'function') {
+    if (!paper.tool.undoSet(op)) {
+      return;
+    }
   }
 
-  view.update();
+  if (op === 'undo') {
+    paper.undo.goBack();
+  } else if (op === 'redo') {
+    paper.undo.goForward();
+  }
+};
 
-  // Reset current file status (keeping previous file name, for kicks)
-  currentFile.name = "";
-  currentFile.changed = false;
-}
+// Handle clipboard requests
+paper.handleClipboard = function(op) {
+  // Select all is being weird...
+  // TODO: this probably shouldn't go here...
+  if (op.ctrlKey && op.keyCode === 65) {
+    paper.selectAll();
+    return;
+  }
+
+  // For clarity, don't do any clipboard operations if not on the select tool.
+  if (paper.tool.name !== 'tools.select') {
+    return;
+  }
+
+  // Support "event" passthrough from window keydown event.
+  var event = op;
+  if (typeof op === 'object') {
+    if (event.ctrlKey && event.keyCode === 67) {
+      op = 'copy';
+    }
+    if (event.ctrlKey && event.keyCode === 88) {
+      op = 'cut';
+    }
+    if (event.ctrlKey && event.keyCode === 86) {
+      op = 'paste';
+    }
+    if (event.ctrlKey && event.keyCode === 68) {
+      op = 'duplicate';
+    }
+
+    // If our captured keystroke didn't result in valid op, quit.
+    if (typeof op !== 'string') {
+      return;
+    }
+
+    // Prevent whatever else was going to happen.
+    event.preventDefault();
+  }
+
+  switch (op) {
+    case 'cut':
+    case 'copy':
+      paper.clipboard.copy(op === 'cut');
+      break;
+    case 'paste':
+      paper.clipboard.paste();
+      break;
+    case 'duplicate':
+      paper.clipboard.dupe();
+      break;
+  }
+};
+
 
 // Render the text/SVG for the pancakebot project files
 paper.getPBP = function(){
   paper.deselect(); // Don't export with something selected!
   return project.exportJSON();
-}
+};
 
 // Called whenever the file is changed from a tool
 paper.fileChanged = function() {
   currentFile.changed = true;
-}
+  paper.undo.stateChanged();
+};
 
 // Stopgap till https://github.com/paperjs/paper.js/issues/801 is resolved.
 // Clean a path of duplicated segment points, triggered on change/create
@@ -154,7 +254,7 @@ paper.cleanPath = function(path){
       }
     }
   });
-}
+};
 
 // Load a given PBP filepath into the project workspace
 paper.loadPBP = function(filePath){
@@ -178,8 +278,9 @@ paper.loadPBP = function(filePath){
   }
 
   toastr.info(i18n.t('file.opened', {file: currentFile.name}));
+  paper.undo.clearState();
   view.update();
-}
+};
 
 // Convert the given path into a set of fill lines
 paper.fillTracePath = function (fillPath, config) {
@@ -199,7 +300,10 @@ paper.fillTracePath = function (fillPath, config) {
   // Init boundpath and traversal line
   boundPath = new Path.Ellipse({
     center: p.position,
-    size: [p.bounds.width + p.bounds.width/Math.PI , p.bounds.height + p.bounds.height/Math.PI]
+    size: [
+      p.bounds.width + p.bounds.width/Math.PI,
+      p.bounds.height + p.bounds.height/Math.PI
+    ]
   });
 
   // Ensure line is far longer than the diagonal of the object
@@ -219,7 +323,7 @@ paper.fillTracePath = function (fillPath, config) {
 
   // Find destination position on other side of circle
   pos = angle + 360;  if (pos > 360) pos -= 360;
-  destination = boundPath.getPointAt(pos * amt);
+  var destination = boundPath.getPointAt(pos * amt);
 
   // Find vector and vector length divided by line spacing to get # iterations.
   var vector = destination - line.position;
@@ -251,7 +355,7 @@ paper.fillTracePath = function (fillPath, config) {
   for (var g in lines) {
     var l = lines[g][0];
 
-    for (var i = 1; i < lines[g].length; i++) {
+    for (i = 1; i < lines[g].length; i++) {
       // Don't join lines that cross outside the path
       var v = new Path({
         segments: [l.lastSegment.point, lines[g][i].firstSegment.point]
@@ -260,7 +364,8 @@ paper.fillTracePath = function (fillPath, config) {
 
       // Find a point halfway between where these lines would be connected
       // If it's not within the path, don't do it!
-      if (!p.contains(v.getPointAt(v.length/2)) || v.getIntersections(p).length > 3) {
+      var intersectionCount = v.getIntersections(p).length;
+      if (!p.contains(v.getPointAt(v.length/2)) || intersectionCount > 3) {
         // Not contained, store the previous l & start a new grouping;
         l = lines[g][i];
         skippedJoins++;
@@ -278,7 +383,7 @@ paper.fillTracePath = function (fillPath, config) {
   boundPath.remove();
 
   view.update();
-}
+};
 
 // Find which grouping a given fill path should go with
 function findGroup(testPoint, lines, newGroupThresh){

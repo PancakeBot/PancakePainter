@@ -3,9 +3,9 @@
  */
 "use strict";
 module.exports = function applyTemplate() {
-  var remote = require('remote');
-  var app = remote.require('app');
-  var BrowserWindow = remote.require('browser-window');
+  var remote = require('electron').remote;
+  var app = remote.app;
+  var BrowserWindow = remote.BrowserWindow;
   var path = require('path');
   var packageData = require(path.join(app.getAppPath(), 'package.json'));
   var appName = packageData.name;
@@ -93,6 +93,45 @@ module.exports = function applyTemplate() {
         {
           key: 'file.saveas',
           accelerator: 'Command+Shift+S'
+        }
+      ]
+    },
+    {
+      key: 'edit.title',
+      submenu: [
+        {
+          key: 'edit.undo',
+          accelerator: 'Command+z'
+        },
+        {
+          key: 'edit.redo',
+          accelerator: 'Command+Shift+z'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          key: 'edit.cut',
+          accelerator: 'Command+x'
+        },
+        {
+          key: 'edit.copy',
+          accelerator: 'Command+c'
+        },
+        {
+          key: 'edit.paste',
+          accelerator: 'Command+v'
+        },
+        {
+          key: 'edit.duplicate',
+          accelerator: 'Command+d'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          key: 'edit.selectall',
+          accelerator: 'Command+a'
         }
       ]
     },

@@ -82,17 +82,19 @@ environment setup to start hacking.
 
 #### Node.js (4.x+) & npm
 Required for automated builds and node module install. Electron uses Node.js
-and npm to manage running and packages. See [nodejs.org](http://iojs.org) for
+and npm to manage running and packages. See [nodejs.org](http://nodejs.org) for
 installation for your operating system. `npm` is installed along with it. If you
 already have node installed, you can probably go without upgrading as Electron
 provides its own node.js implementation built in.
 
-#### Electron (v0.30.x)
+#### Install PancakePainter run resources
 Though the `src/index.html` may somewhat render in a regular browser, you're
-going to need to run it inside of Electron before it all works. After node
-is installed, just run from your terminal/console
-`npm install -g electron-prebuilt` to install Electron on your path. When
-complete, just run `electron -v` to see the installed app version.
+going to need to run it inside of Electron before it all works. To get the local
+code running, be sure to run `npm install --force` from the repository root,
+this will give you the third party resources needed to run. The `--force` is
+unfortunately required to pass install of Paper.js as a node module, even
+though we only use it as a clientside library, so we can ignore the
+errors. See the tracking [issue here](https://github.com/paperjs/paper.js/issues/739).
 
 #### Build Tools
 Various node modules require builds and may complain if you don't have the right
@@ -115,20 +117,11 @@ anything new for this at all.
 should run fine there. If there is call for support, it can be added (or submit
 a Pull Request!)
 
-#### Install PancakePainter run resources
-To get the local code running, be sure to run `npm install --force` from the
-repo root, this will give you the third party resources needed to run. The
-`--force` is unfortunately required to pass install of Paper.js as a node
-module, even though we only use it as a clientside library, so we can ignore the
-errors. See the tracking [issue here](https://github.com/paperjs/paper.js/issues/739).
-
 ### Running from source
-* Once Electron prebuilt is installed, just run `electron path/to/pancakepainter`,
-or `electron ./` if you're working directory is the root of the repo.
+* Once `npm install` has run, just run `npm start` from the repository root.
 * Remember: Alt+Ctrl+I to open the debug console, Ctl+R will reload if the
 console is open, and a reload _only_ reloads the contents of the window, and
 will _**not**_ reload the application main process.
-
 
 ## ETC.
 This open source project has been built with love by

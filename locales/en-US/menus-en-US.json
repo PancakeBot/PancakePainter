@@ -3,7 +3,7 @@
     "creator": "techninja",
     "target": "en-US",
     "langname": "English",
-    "release": "0.1.0"
+    "release": "1.2.0"
   },
   "file": {
     "title": "&File",
@@ -14,6 +14,16 @@
     "exportmirrored": "&Export mirrored for printing...",
     "save": "&Save Project",
     "saveas": "Save Project &as…"
+  },
+  "edit": {
+    "title": "Edit",
+    "undo": "&Undo",
+    "redo": "&Redo",
+    "cut": "C&ut",
+    "copy": "&Copy",
+    "paste": "&Paste",
+    "duplicate": "&Duplicate",
+    "selectall": "Select &All"
   },
   "view" : {
     "settings": "Advanced Settings"

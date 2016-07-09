@@ -3,6 +3,9 @@
  * This is the central render process main window JS, and has access to
  * the DOM and all node abilities.
  **/
+/*globals
+  document, window, $, _, toastr, paper, html2canvas, stackBlurCanvasRGB
+*/
 "use strict";
 
 // Libraries ==============================================---------------------
@@ -16,10 +19,10 @@ var gcRender = require('./gcode.js');
 
 // Main Process ===========================================---------------------
 // Include global main process connector objects for the renderer (this window).
-var remote = require('remote');
+var remote = require('electron').remote;
 var mainWindow = remote.getCurrentWindow();
 var i18n = remote.require('i18next');
-var app = remote.require('app');
+var app = remote.app;
 require('../menus/menu-init')(app); // Initialize the menus
 var fs = remote.require('fs-plus');
 var dataURI = require('datauri');
@@ -62,7 +65,7 @@ var currentFile = {
   name: "", // Name for the file (no path)
   path: path.join(app.getPath('userDesktop'), i18n.t('file.default')),
   changed: false // Can close app without making any changes
-}
+};
 
 // Toastr notifications
 toastr.options.positionClass = "toast-bottom-right";
@@ -78,10 +81,23 @@ function setRenderSettings() {
   renderConfig.startWait = app.settings.v.startwait;
   renderConfig.endWait = app.settings.v.endwait;
   renderConfig.shadeChangeWait = app.settings.v.changewait;
+  renderConfig.useLineFill = app.settings.v.uselinefill;
   renderConfig.fillSpacing = app.settings.v.fillspacing;
   renderConfig.fillAngle = app.settings.v.fillangle;
   renderConfig.fillGroupThreshold = app.settings.v.fillthresh;
-  renderConfig.botSpeed = parseInt((app.settings.v.botspeed / 100) * botSpeedMax, 10);
+  renderConfig.shapeFillWidth = app.settings.v.shapefillwidth;
+  renderConfig.botSpeed = parseInt(
+    (app.settings.v.botspeed / 100) * botSpeedMax,
+    10
+  );
+
+  renderConfig.useColorSpeed = app.settings.v.usecolorspeed;
+  renderConfig.botColorSpeed = [
+    parseInt((app.settings.v.botspeedcolor1 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor2 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor3 / 100) * botSpeedMax, 10),
+    parseInt((app.settings.v.botspeedcolor4 / 100) * botSpeedMax, 10)
+  ];
 }
 
 // Page loaded
@@ -96,7 +112,7 @@ $(function(){
   $('[data-i18n=""]').each(function() {
     var $node = $(this);
 
-    if ($node.text().indexOf('.') > -1 && $node.attr('data-i18n') == "") {
+    if ($node.text().indexOf('.') > -1 && $node.attr('data-i18n') === "") {
       var key = $node.text();
       $node.attr('data-i18n', key);
       $node.text(i18n.t(key));
@@ -121,7 +137,7 @@ function initEditor() {
 
   // Set maximum work area render size & manage dynamic sizing of elements not
   // handled via CSS only.
-  $(window).on('resize', function(e){
+  $(window).on('resize', function() {
     // Window Size (less the appropriate margins)
     var win = {
       w: $(window).width() - (margin.l + margin.r),
@@ -156,8 +172,8 @@ function initEditor() {
     });
 
     editorLoad(); // Load the editor (if it hasn't already been loaded)
-    // This must happen after the very first resize, otherwise the canvas doesn't
-    // have the correct dimensions for Paper to size to.
+    // This must happen after the very first resize, otherwise the canvas
+    // doesn't have the correct dimensions for Paper to size to.
     $(mainWindow).trigger('move');
 
     if ($('#overlay').is(':visible')) {
@@ -196,7 +212,7 @@ function editorLoadedInit() {
 function buildToolbar() {
   var $t = $('<ul>').appendTo('#tools');
 
-  _.each(paper.tools, function(tool, index){
+  _.each(paper.tools, function(tool){
     var colorID = '';
     if (tool.cursorColors === true) {
       colorID = "-" + paper.pancakeCurrentShade;
@@ -215,6 +231,12 @@ function buildToolbar() {
           draggable: 'false'
         }).css('background-image', 'url(images/icon-' + tool.key + '.png)')
       ).click(function(){
+        // Complete polygon draw no matter what.
+        // TODO: Make all tools expose a "clear all" reset for other tools.
+        if (paper.tool.polygonDrawComplete) {
+          paper.tool.polygonDrawComplete();
+        }
+
         tool.activate();
         activateToolItem(this);
       }));
@@ -232,7 +254,8 @@ function activateToolItem(item) {
 
   var cursor = '';
   if ($(item).data('cursor-colors')) {
-    cursor = 'url("images/cursor-' + $(item).data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
+    cursor = 'url("images/cursor-' +
+      $(item).data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
   } else {
     cursor = 'url("images/cursor-' + $(item).data('cursor-key') + '.png")';
   }
@@ -279,7 +302,8 @@ function selectColor(index) {
   var cursor = '';
   var $item = $('#tools .active');
   if ($item.data('cursor-colors')) {
-    cursor = 'url("images/cursor-' + $item.data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
+    cursor = 'url("images/cursor-' +
+      $item.data('cursor-key') + '-' + paper.pancakeCurrentShade + '.png")';
     if ($item.data('cursor-offset')) {
       cursor+= ' ' + $item.data('cursor-offset');
     }
@@ -288,14 +312,17 @@ function selectColor(index) {
 
   // Change selected path's color
   if (paper.selectRect) {
-    if (paper.selectRect.ppath) {
-      if (paper.selectRect.ppath.data.fill === true) {
-        paper.selectRect.ppath.fillColor = paper.pancakeShades[index];
-      } else {
-        paper.selectRect.ppath.strokeColor = paper.pancakeShades[index];
-      }
+    if (paper.selectRect.ppaths.length) {
+      _.each(paper.selectRect.ppaths, function(path){
+        if (path.data.fill === true) {
+          path.fillColor = paper.pancakeShades[index];
+        } else {
+          path.strokeColor = paper.pancakeShades[index];
+        }
 
-      paper.selectRect.ppath.data.color = index;
+        path.data.color = index;
+      });
+
       paper.view.update();
       currentFile.changed = true;
     }
@@ -309,7 +336,9 @@ function buildImageImporter() {
     .attr('id', 'import')
     .data('cursor-key', 'select')
     .attr('title', i18n.t('import.title'));
-  $importButton.append($('<div>').css('background-image', 'url(images/icon-import.png)'));
+  $importButton.append(
+    $('<div>').css('background-image', 'url(images/icon-import.png)')
+  );
 
   $importButton.click(function(){
     activateToolItem($importButton);
@@ -321,6 +350,9 @@ function buildImageImporter() {
 
 // When the page is done loading, all the controls in the page can be bound.
 function bindControls() {
+  // Bind cut/copy/paste controls... Cause they're not always caught.
+  $(window).keydown(paper.handleClipboard);
+
   // Callback/event for when any menu item is clicked
   app.menuClick = function(menu, callback) {
     switch (menu) {
@@ -329,7 +361,10 @@ function bindControls() {
         mainWindow.dialog({
           t: 'SaveDialog',
           title: i18n.t('export.title'),
-          defaultPath: path.join(app.getPath('userDesktop'), currentFile.name.split('.')[0]),
+          defaultPath: path.join(
+            app.getPath('userDesktop'),
+            currentFile.name.split('.')[0]
+          ),
           filters: [
             { name: 'PancakeBot GCODE', extensions: ['gcode'] }
           ]
@@ -337,26 +372,46 @@ function bindControls() {
           if (!filePath) return; // Cancelled
 
           // Verify file extension
-          if (filePath.split('.').pop().toLowerCase() !== 'gcode') filePath += '.gcode';
+          if (filePath.split('.').pop().toLowerCase() !== 'gcode') {
+            filePath += '.gcode';
+          }
 
           // Throw up the overlay and activate the exporting note.
           toggleOverlay(true, function(){
             $('#exporting').fadeIn('slow', function(){
               // Run in a timeout to allow the previous code to run first.
               setTimeout(function() {
-                fs.writeFileSync(filePath, gcRender(menu === 'file.exportmirrored')); // Write file!
+                try {
+                  fs.writeFileSync(
+                    filePath,
+                    gcRender(menu === 'file.exportmirrored')
+                  ); // Write file!
+                } catch(e) {
+                  // Catch errors in export.
+                  toggleOverlay(false);
+                  $('#exporting').fadeOut('slow',function(){
+                    // Notify user
+                    toastr.error(
+                      i18n.t('export.err', {file: path.parse(filePath).base})
+                    );
+                  });
+                }
+
                 toggleOverlay(false);
                 $('#exporting').fadeOut('slow',function(){
                   // Notify user
-                  toastr.success(i18n.t('export.note', {file: path.parse(filePath).base}));
+                  toastr.success(
+                    i18n.t('export.note', {file: path.parse(filePath).base})
+                  );
                 });
               }, 200);
-            })
-          })
+            });
+          });
         });
         break;
       case 'file.saveas':
         currentFile.name = "";
+        /* falls through */
       case 'file.save':
         if (currentFile.name === "") {
           mainWindow.dialog({
@@ -370,7 +425,9 @@ function bindControls() {
             if (!filePath) return; // Cancelled
 
             // Verify file extension
-            if (filePath.split('.').pop().toLowerCase() !== 'pbp') filePath += '.pbp';
+            if (filePath.split('.').pop().toLowerCase() !== 'pbp') {
+              filePath += '.pbp';
+            }
             currentFile.path = filePath;
             currentFile.name = path.parse(filePath).base;
 
@@ -417,6 +474,19 @@ function bindControls() {
           paper.newPBP();
         });
         break;
+      case 'edit.selectall':
+        paper.selectAll();
+        break;
+      case 'edit.undo':
+      case 'edit.redo':
+        paper.handleUndo(menu === 'edit.undo' ? 'undo': 'redo');
+        break;
+      case 'edit.copy':
+      case 'edit.cut':
+      case 'edit.paste':
+      case 'edit.duplicate':
+        paper.handleClipboard(menu.split('.')[1]);
+        break;
       case 'view.settings':
         toggleOverlay(true, function(){
           $('#settings').fadeIn('slow');
@@ -444,7 +514,10 @@ function bindControls() {
         type: 'question',
         message: i18n.t('settings.resetconfirm'),
         detail: i18n.t('settings.resetconfirmdetail'),
-        buttons: [i18n.t('common.button.cancel'), i18n.t('settings.button.reset')]
+        buttons: [
+          i18n.t('common.button.cancel'),
+          i18n.t('settings.button.reset')
+        ]
       });
       if (doReset !== 0) {
         // Clear the file, reload settings, push to elements.
@@ -452,11 +525,36 @@ function bindControls() {
         app.settings.load();
         $('#settings .managed').each(function(){
           $(this).val(app.settings.v[this.id]);
+          if (this.type === "checkbox") {
+            $(this).prop('checked', app.settings.v[this.id]);
+          } else {
+            $(this).val(app.settings.v[this.id]);
+          }
         });
         setRenderSettings();
+        $('input[type="range"]').rangeslider('update', true);
       }
     }
   });
+
+  // Setup rangeslider overlay and preview.
+  $('input[type="range"]').on('input', function(){
+    var e = $(this).siblings('b');
+    if ($(this).attr('data-unit')) {
+      var u = 'settings.units.' + $(this).attr('data-unit');
+      e.attr('title', this.value + ' ' + i18n.t(u + '.title'))
+        .text(this.value + i18n.t(u + '.label'));
+    } else {
+      e.text(this.value);
+    }
+  }).rangeslider({
+    polyfill: false
+  });
+
+  // Fancy checkbox
+  $('input[type="checkbox"].fancy').after($('<div>').click(function(){
+    $(this).siblings('input[type="checkbox"]').click();
+  }));
 
   // Complete Settings management
   $('#settings .managed').each(function(){
@@ -464,18 +562,24 @@ function bindControls() {
     var v = app.settings.v;
 
     // Set loaded value (if any)
-    if (typeof v[key] !== 'undefined') $(this).val(v[key]);
-
-    // Prevent text entry
-    $(this).keypress(function(e){
-      if (e.charCode > 31 && (e.charCode < 48 || e.charCode > 57)) {
-        return false;
+    if (typeof v[key] !== 'undefined') {
+      if (this.type === "checkbox") {
+        $(this).prop('checked', v[key]);
+      } else {
+        $(this).val(v[key]);
       }
-    });
+    }
+
+    $('input[type="range"]').trigger('input');
 
     // Bind to catch change
     $(this).change(function(){
-      app.settings.v[key] = parseInt(this.value);
+      if (this.type === 'checkbox') {
+        app.settings.v[key] = $(this).prop('checked');
+      } else {
+        app.settings.v[key] = parseInt(this.value);
+      }
+
       app.settings.save();
       setRenderSettings();
     }).change();
@@ -486,11 +590,11 @@ function bindControls() {
         this.value = $(this).attr('default');
         $(this).change();
       }
-    })
+    });
   });
 }
 
-window.onbeforeunload = function(e) {
+window.onbeforeunload = function() {
   return checkFileStatus();
 };
 
@@ -524,7 +628,11 @@ function checkFileStatus(callback) {
         type: 'warning',
         message: i18n.t('file.confirm.changed'),
         detail: i18n.t('file.confirm.save', {file: currentFile.name}),
-        buttons:[i18n.t('file.button.discard'), i18n.t('file.button.save'), i18n.t('file.button.savenew')]
+        buttons:[
+          i18n.t('file.button.discard'),
+          i18n.t('file.button.save'),
+          i18n.t('file.button.savenew')
+        ]
       });
 
       if (doSave) {
@@ -573,7 +681,14 @@ function updateFrosted(callback) {
       $("#frosted").remove();
       $("#overlay").append(canvas);
       $("#overlay canvas").attr('id', 'frosted');
-      stackBlurCanvasRGB('frosted', 0, 0, $("#frosted").width(), $("#frosted").height(), 20);
+      stackBlurCanvasRGB(
+        'frosted',
+        0,
+        0,
+        $("#frosted").width(),
+        $("#frosted").height(),
+        20
+      );
       if (callback) callback();
     });
   }

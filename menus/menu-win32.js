@@ -3,8 +3,8 @@
  */
 "use strict";
 module.exports = function applyTemplate() {
-  var remote = require('remote');
-  var BrowserWindow = remote.require('browser-window');
+  var remote = require('electron').remote;
+  var BrowserWindow = remote.BrowserWindow;
 
   var template = [
     {
@@ -43,6 +43,45 @@ module.exports = function applyTemplate() {
         {
           key: 'file.saveas',
           accelerator: 'Control+Shift+S'
+        }
+      ]
+    },
+    {
+      key: 'edit.title',
+      submenu: [
+        {
+          key: 'edit.undo',
+          accelerator: 'Control+z'
+        },
+        {
+          key: 'edit.redo',
+          accelerator: 'Control+Shift+z'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          key: 'edit.cut',
+          accelerator: 'Control+x'
+        },
+        {
+          key: 'edit.copy',
+          accelerator: 'Control+c'
+        },
+        {
+          key: 'edit.paste',
+          accelerator: 'Control+v'
+        },
+        {
+          key: 'edit.duplicate',
+          accelerator: 'Control+d'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          key: 'edit.selectall',
+          accelerator: 'Control+a'
         }
       ]
     },
