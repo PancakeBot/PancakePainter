@@ -8,7 +8,8 @@
   "electronVersion": "1.0.1",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "jshint **/*.js"
   },
   "dependencies": {
     "datauri": "^0.7.1",
@@ -29,6 +30,7 @@
     "url": "https://github.com/PancakeBot/PancakePainter.git"
   },
   "devDependencies": {
-    "electron-prebuilt": "1.0.1"
+    "electron-prebuilt": "1.0.1",
+    "jshint": "^2.9.2"
   }
 }
