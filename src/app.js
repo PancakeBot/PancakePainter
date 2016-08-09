@@ -25,7 +25,6 @@ var i18n = remote.require('i18next');
 var app = remote.app;
 require('../menus/menu-init')(app); // Initialize the menus
 var fs = remote.require('fs-plus');
-var dataURI = require('datauri');
 
 // Bot specific configuration & state =====================---------------------
 var scale = {};
@@ -196,7 +195,7 @@ function editorLoad() {
 }
 
 // Trigger load init resize only after editor has called this function.
-function editorLoadedInit() {
+function editorLoadedInit() { /* jshint ignore:line */
   $(window).resize();
   buildToolbar();
   buildImageImporter();

@@ -7,9 +7,11 @@
   "stage": "development",
   "electronVersion": "1.0.1",
   "license": "Apache-2.0",
+  "copyright": "Copyright (C) PancakeBot Inc., all rights reserved. Code under Apache v2.0 free and open source license.",
+  "iconURL": "http://raw.githubusercontent.com/PancakeBot/PancakePainter/master/resources/win32/app.ico",
   "scripts": {
     "start": "electron .",
-    "test": "jshint **/*.js"
+    "test": "jshint **/*.js --exclude=node_modules/*"
   },
   "dependencies": {
     "datauri": "^0.7.1",

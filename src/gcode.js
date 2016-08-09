@@ -77,9 +77,17 @@ module.exports = function(config) {
         }
         pathCount++;
         out += [
-          gc('note', 'Starting path #' + pathCount + '/' + numPaths + ', segments: ' + path.segments.length + ', length: ' + Math.round(path.length) + ', color #' + (path.data.color + 1)),
+          gc(
+            'note',
+            'Starting path #' + pathCount + '/' + numPaths + ', segments: ' +
+            path.segments.length + ', length: ' + Math.round(path.length) +
+            ', color #' + (path.data.color + 1)
+          ),
           renderPath(path),
-          gc('note', 'Completed path #' + pathCount + '/' + numPaths  + ' on color #' + (path.data.color + 1))
+          gc(
+            'note', 'Completed path #' + pathCount + '/' + numPaths  +
+            ' on color #' + (path.data.color + 1)
+          )
         ].join('');
       });
 
@@ -289,8 +297,12 @@ module.exports = function(config) {
 
     var b = paper.view.bounds;
     return {
-      x: Math.round(map(b.width - (p.x - b.x), 0, b.width, pa.x, pa.l) * 1000) / 1000,
-      y: Math.round(map(p.y - b.y, 0, b.height, pa.t, pa.y) * 1000) / 1000
+      x: Math.round(
+        map(b.width - (p.x - b.x), 0, b.width, pa.x, pa.l) * 1000
+      ) / 1000,
+      y: Math.round(
+        map(p.y - b.y, 0, b.height, pa.t, pa.y) * 1000
+      ) / 1000
     };
   }
 
@@ -519,9 +531,9 @@ module.exports = function(config) {
         var path = layer.children[i];
         if (path instanceof paper.CompoundPath) {
           var kids = path.removeChildren();
-          _.each(kids, function(k) {
-            k.data = _.extend({}, path.data);
-          });
+          for (var k in kids) {
+            kids[k].data = _.extend({}, path.data);
+          }
           path.parent.insertChildren(0, kids);
           path.remove();
         }

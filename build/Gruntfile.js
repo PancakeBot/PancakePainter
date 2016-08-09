@@ -3,7 +3,9 @@ var path = require('path');
 module.exports = function(grunt) {
   // Load the plugins...
   grunt.loadNpmTasks('grunt-electron');
-  if (process.platform === 'win32') grunt.loadNpmTasks('grunt-electron-installer');
+  if (process.platform === 'win32') {
+    grunt.loadNpmTasks('grunt-electron-installer');
+  }
   //if (process.platform === 'darwin') grunt.loadNpmTasks('grunt-appdmg');
 
   // Load the tasks in '/tasks'
@@ -16,7 +18,15 @@ module.exports = function(grunt) {
   var version = appInfo.version;
   var electronVer = appInfo.electronVersion; // Electron build version
   var numericVersion = appInfo.version.split('-')[0];
-  var buildIgnore = 'build/dist|build/node_modules|build/tasks|build/package.json|build/Gruntfile.js|node_modules/electron-*|node_modules/grunt*';
+  var buildIgnore = [
+    'build/dist',
+    'build/node_modules',
+    'build/tasks',
+    'build/package.json',
+    'build/Gruntfile.js',
+    'node_modules/electron-*',
+    'node_modules/grunt*'
+  ].join('|');
 
   // Project configuration.
   grunt.initConfig({
@@ -55,7 +65,7 @@ module.exports = function(grunt) {
           prune: true,
           'version-string': {
             CompanyName: 'PancakeBot Inc.',
-            LegalCopyright: 'Copyright (C) PancakeBot Inc., all rights reserved. Code under Apache v2.0 free and open source license.',
+            LegalCopyright: appInfo.copyright,
             FileDescription: appInfo.name,
             OriginalFilename: appInfo.name + '.exe',
             FileVersion: electronVer,
@@ -68,7 +78,7 @@ module.exports = function(grunt) {
     },
     'create-windows-installer': {
       64: {
-        iconUrl: "http://raw.githubusercontent.com/PancakeBot/PancakePainter/master/resources/win32/app.ico",
+        iconUrl: appInfo.iconURL,
         appDirectory: 'build/dist/PancakePainter-win32-x64',
         outputDirectory: 'build/dist/winstall64/',
         loadingGif: 'resources/win32/install_anim.gif',
@@ -76,7 +86,7 @@ module.exports = function(grunt) {
         authors: 'PancakeBot Inc.'
       },
       32: {
-        iconUrl: "http://raw.githubusercontent.com/PancakeBot/PancakePainter/master/resources/win32/app.ico",
+        iconUrl: appInfo.iconURL,
         appDirectory: 'build/dist/PancakePainter-win32-ia32',
         outputDirectory: 'build/dist/winstall32/',
         loadingGif: 'resources/win32/install_anim.gif',
