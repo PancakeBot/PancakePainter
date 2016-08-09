@@ -3,10 +3,11 @@
  * all importing/exporting of its data.
  */
  /* globals
-   window, mainWindow, $, _, toastr, i18n, paper, view, project, scale,
-   Raster, Group, Point, Path, Layer, dataURI, currentFile, path, fs,
-   editorLoadedInit
+   window, mainWindow, _, toastr, i18n, paper, view, project, scale,
+   Raster, Group, Point, Path, Layer, currentFile, path, fs, editorLoadedInit
  */
+
+var dataURI = require('datauri');
 
 paper.strokeWidth = 5; // Custom
 paper.settings.handleSize = 10;
@@ -33,21 +34,19 @@ paper.pancakeCurrentShade = 0;
 
 // TODO: Load all tools in folder based on weight
 var toolPen = require('./tools/tool.pen')(paper);
-var toolFill = require('./tools/tool.fill')(paper);
+var toolFill = require('./tools/tool.fill')(paper); /* jshint ignore:line */
 var toolSelect = require('./tools/tool.select')(paper);
 
 // Load Helpers
 paper.undo = require('./helpers/helper.undo')(paper);
 paper.clipboard = require('./helpers/helper.clipboard')(paper);
 
-var $editor = $('#editor');
 paper.setCursor = function(type) {
   // TODO: Implement cursor change on hover of handles, objects, etc
   if (!type) type = 'default';
-  //$editor.css('cursor', type);
 };
 
-function onResize(event) {
+function onResize(event) { /* jshint ignore:line */
   // Ensure paper project view retains correct scaling and position.
   view.zoom = scale;
   var corner = view.viewToProject(new Point(0,0));

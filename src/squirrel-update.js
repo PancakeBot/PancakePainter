@@ -4,13 +4,13 @@ var path = require('path');
 
 var appFolder = path.resolve(process.execPath, '..');
 var rootAppFolder = path.resolve(appFolder, '..');
-var binFolder = path.join(rootAppFolder, 'bin');
 var updateDotExe = path.join(rootAppFolder, 'Update.exe');
 var exeName = path.basename(process.execPath);
 
-spawn = function(command, args, callback) {
+var spawn = function(command, args, callback) {
   var error, spawnedProcess, stdout;
   stdout = '';
+
   try {
     spawnedProcess = ChildProcess.spawn(command, args);
   } catch (_error) {
@@ -23,23 +23,29 @@ spawn = function(command, args, callback) {
   spawnedProcess.stdout.on('data', function(data) {
     return stdout += data;
   });
+
   error = null;
   spawnedProcess.on('error', function(processError) {
-    return error != null ? error : error = processError;
+    return error !== null ? error : error = processError;
   });
+
   return spawnedProcess.on('close', function(code, signal) {
     if (code !== 0) {
-      if (error == null) {
-        error = new Error("Command failed: " + (signal != null ? signal : code));
+      if (error === null) {
+        error = new Error(
+          "Command failed: " + (signal !== null ? signal : code)
+        );
       }
     }
-    if (error != null) {
-      if (error.code == null) {
+
+    if (error !== null) {
+      if (error.code === null) {
         error.code = code;
       }
     }
-    if (error != null) {
-      if (error.stdout == null) {
+
+    if (error !== null) {
+      if (error.stdout === null) {
         error.stdout = stdout;
       }
     }
@@ -47,30 +53,23 @@ spawn = function(command, args, callback) {
   });
 };
 
-spawnUpdate = function(args, callback) {
+var spawnUpdate = function(args, callback) {
   return spawn(updateDotExe, args, callback);
 };
 
-isAscii = function(text) {
-  var index;
-  index = 0;
-  while (index < text.length) {
-    if (text.charCodeAt(index) > 127) {
-      return false;
-    }
-    index++;
-  }
-  return true;
-};
-
-createShortcuts = function(callback) {
+var createShortcuts = function(callback) {
   return spawnUpdate(['--createShortcut', exeName], callback);
 };
 
-updateShortcuts = function(callback) {
-  var desktopShortcutPath, homeDirectory;
-  if (homeDirectory = fs.getHomeDirectory()) {
-    desktopShortcutPath = path.join(homeDirectory, 'Desktop', 'PancakePainter.lnk');
+var updateShortcuts = function(callback) {
+  var desktopShortcutPath;
+  var homeDirectory = fs.getHomeDirectory();
+
+  if (homeDirectory) {
+    desktopShortcutPath = path.join(
+      homeDirectory, 'Desktop', 'PancakePainter.lnk'
+    );
+
     return fs.exists(desktopShortcutPath, function(desktopShortcutExists) {
       return createShortcuts(function() {
         if (desktopShortcutExists) {
@@ -85,7 +84,7 @@ updateShortcuts = function(callback) {
   }
 };
 
-removeShortcuts = function(callback) {
+var removeShortcuts = function(callback) {
   return spawnUpdate(['--removeShortcut', exeName], callback);
 };
 
