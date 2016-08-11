@@ -386,6 +386,8 @@ function bindControls() {
                     gcRender(menu === 'file.exportmirrored')
                   ); // Write file!
                 } catch(e) {
+                  console.error(e);
+
                   // Catch errors in export.
                   toggleOverlay(false);
                   $('#exporting').fadeOut('slow',function(){
