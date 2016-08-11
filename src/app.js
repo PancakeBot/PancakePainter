@@ -81,6 +81,7 @@ function setRenderSettings() {
   renderConfig.endWait = app.settings.v.endwait;
   renderConfig.shadeChangeWait = app.settings.v.changewait;
   renderConfig.useLineFill = app.settings.v.uselinefill;
+  renderConfig.useShortest = app.settings.v.useshortest;
   renderConfig.fillSpacing = app.settings.v.fillspacing;
   renderConfig.fillAngle = app.settings.v.fillangle;
   renderConfig.fillGroupThreshold = app.settings.v.fillthresh;

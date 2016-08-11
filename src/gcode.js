@@ -52,7 +52,6 @@ module.exports = function(config) {
     // Move through each path on the worklayer, and group them in reverse order
     // by color shade, 0-3, darker first (indicated in the path data.color).
     _.each(workLayer.children, function(path){
-
       var revIndex = 3 - path.data.color;
 
       if (!colorGroups[revIndex]) colorGroups[revIndex] = [];
@@ -81,7 +80,8 @@ module.exports = function(config) {
             'note',
             'Starting path #' + pathCount + '/' + numPaths + ', segments: ' +
             path.segments.length + ', length: ' + Math.round(path.length) +
-            ', color #' + (path.data.color + 1)
+            ', color #' + (path.data.color + 1) +
+            ', type: ' + (path.data.fill ? 'fill' : 'stroke')
           ),
           renderPath(path),
           gc(
@@ -181,6 +181,7 @@ module.exports = function(config) {
       gc('note', 'endWait: ' + config.endWait),
       gc('note', 'shadeChangeWait: ' + config.shadeChangeWait),
       gc('note', 'useLineFill: ' + (config.useLineFill ? 'true' : 'false')),
+      gc('note', 'useShortest: ' + (config.useShortest ? 'true' : 'false')),
       gc('note', 'shapeFillWidth: ' + config.shapeFillWidth),
       gc('note', 'fillSpacing: ' + config.fillSpacing),
       gc('note', 'fillAngle: ' + config.fillAngle),
@@ -329,7 +330,16 @@ module.exports = function(config) {
     // 4. Rinse and repeat!
 
     // Prep the colorGroups, darkest to lightest.
-    var sortedColors = ['color3', 'color2', 'color1', 'color0'];
+    var sortedColors = [
+      'color3-line',
+      'color3-fill',
+      'color2-line',
+      'color2-fill',
+      'color1-line',
+      'color1-fill',
+      'color0-line',
+      'color0-fill'
+    ];
     var colorGroups = {};
     _.each(sortedColors, function(colorName) {
       colorGroups[colorName] = [];
@@ -344,7 +354,8 @@ module.exports = function(config) {
         path.data.color = 0;
       }
 
-      colorGroups['color' + path.data.color].push({
+      var pathType = path.data.fill ? 'fill' : 'line';
+      colorGroups['color' + path.data.color + '-' + pathType].push({
         path: path,
         points: [path.firstSegment.point, path.lastSegment.point]
       });
@@ -353,39 +364,49 @@ module.exports = function(config) {
     // Move through each color group, then each point set for distance
     var drawIndex = 0; // Track the path index to insert paths into on the layer
     _.each(colorGroups, function(group){
-      var lastPoint = new Point(0, 0); // Last point, start at the corner
-      var lastPath = null; // The last path worked on for joining 0 dist paths
+      // Use the shortest distance between paths for order?
+      if (config.useShortest) {
+        while(group.length) {
+          var lastPoint = new Point(0, 0); // Last point, start at the corner.
+          var lastPath = null; // The last path worked on, for 0 dist paths.
 
-      while(group.length) {
-        var c = closestPointInGroup(lastPoint, group);
+          var c = closestPointInGroup(lastPoint, group);
 
-        // First segment, or last segment?
-        if (c.closestPointIndex === 0) { // First
-          // Set last point to the end of the path
-          lastPoint = group[c.id].points[1];
-        } else { // last
-          // Reverse the path direction, so its first point is now the last
-           group[c.id].path.reverse();
+          // First segment, or last segment?
+          if (c.closestPointIndex === 0) { // First
+            // Set last point to the end of the path
+            lastPoint = group[c.id].points[1];
+          } else { // last
+            // Reverse the path direction, so its first point is now the last
+            group[c.id].path.reverse();
 
-          // Set last point to the start of the path (now the end)
-          lastPoint = group[c.id].points[0];
+            // Set last point to the start of the path (now the end)
+            lastPoint = group[c.id].points[0];
+          }
+
+          // If the distance between the lastPoint and the next closest point
+          // is below a usable threshold, and our lastPoint is on a path,
+          // we can make this more efficient by joining the two paths.
+          if (c.dist < 7 && lastPath) {
+            // Combine lastPath with this path (remove the remainder)
+            lastPath.join(group[c.id].path);
+          } else { // Non-zero distance, add as separate path
+            // Insert the path to the next spot in the action layer.
+            a.insertChild(drawIndex, group[c.id].path);
+            lastPath = group[c.id].path;
+          }
+
+          group.splice(c.id, 1); // Remove it from the list of paths
+          drawIndex++;
         }
 
-        // If the distance between the lastPoint and the next closest point is
-        // below a usable threshold, and our lastPoint is on a path,
-        // we can make this more efficient by joining the two paths.
-        if (c.dist < 7 && lastPath) {
-          // Combine lastPath with this path (remove the remainder)
-          lastPath.join(group[c.id].path);
-        } else { // Non-zero distance, add as separate path
-          // Insert the path to the next spot in the action layer.
-          a.insertChild(drawIndex, group[c.id].path);
-          lastPath = group[c.id].path;
-        }
-
-        group.splice(c.id, 1); // Remove it from the list of paths
-
-        drawIndex++;
+      } else {
+        // If not using the shortest, just use the path order as given, with
+        // inherant priorty given to stroke paths over fill paths.
+        group.forEach(function(item){
+          a.insertChild(drawIndex, item.path);
+          drawIndex++;
+        });
       }
     });
   }
