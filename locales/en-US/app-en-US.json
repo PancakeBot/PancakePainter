@@ -96,7 +96,7 @@
         "title": "millimeter(s)"
       },
       "percent": {
-        "label": "%",
+        "label": "% (__value__)",
         "title": "percent"
       },
       "pixels": {

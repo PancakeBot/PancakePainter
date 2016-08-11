@@ -541,8 +541,15 @@ function bindControls() {
     var e = $(this).siblings('b');
     if ($(this).attr('data-unit')) {
       var u = 'settings.units.' + $(this).attr('data-unit');
+      var rangeVal = $(this).val();
+
+      // Specialty override to calculate GCODE speed as displayed range value.
+      if (this.id.indexOf('speed')) {
+        rangeVal = parseInt((rangeVal / 100) * botSpeedMax, 10);
+      }
+
       e.attr('title', this.value + ' ' + i18n.t(u + '.title'))
-        .text(this.value + i18n.t(u + '.label'));
+        .text(this.value + i18n.t(u + '.label', {value: rangeVal}));
     } else {
       e.text(this.value);
     }
