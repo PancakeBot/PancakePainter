@@ -54,6 +54,15 @@ module.exports = function(paper) {
 
   };
 
+  tool.fillThePath = function(point) {
+    cleanAllPaths(); // Clean paths of any duplicate points.
+    var fillPath = floodFill(point);
+
+    fillPath.fillColor = paper.pancakeShades[paper.pancakeCurrentShade]
+    fillPath.data.color = paper.pancakeCurrentShade;
+
+  };
+
   // TEMPORARY path cleaning function to ensure we can always fill with the
   // paperjs/paper.js#801 issue still around.
   function cleanAllPaths() {

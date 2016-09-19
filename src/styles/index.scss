@@ -83,7 +83,7 @@ body * {
 
   // Normally this would auto-size fine, but there are wrapping issues that
   // need to be addressed before we can handle more tools.
-  width: 400px;
+  width: 500px;
 
   ul {
     list-style: none;
@@ -131,6 +131,18 @@ body * {
   }
 
   #import {
+    padding: 0;
+    width: 85px;
+    height: 74px;
+    margin-left: 10px;
+    div {
+      height: 74px;
+      margin-top: -3px;
+      width: 85px; // This one likes to be a bit bigger
+    }
+  }
+
+  #importVectorized {
     padding: 0;
     width: 85px;
     height: 74px;
