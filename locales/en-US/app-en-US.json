@@ -72,6 +72,13 @@
     "wait": "Exporting, please wait…",
     "note" : "Successfully exported \"__file__\" for printing."
   },
+  "tracing": {
+    "title": "Image tracing in progress, please wait…",
+    "start": "Tracing",
+    "wait": "Image tracing in progress, please wait…",
+    "note" : "Successfully traced \"__file__\" .",
+    "error" : "Error while tracing \"__file__\" ."
+  },
   "settings": {
     "done": "Done",
     "reset": "Reset",

@@ -57,7 +57,7 @@ body * {
   top: 5px;
   transform: translate(-81%, 0);
   z-index: 5;
-  width: 400px; }
+  width: 500px; }
   #tools ul {
     list-style: none;
     margin: 0;
@@ -89,6 +89,15 @@ body * {
     height: 74px;
     margin-left: 10px; }
     #tools #import div {
+      height: 74px;
+      margin-top: -3px;
+      width: 85px; }
+  #tools #importVectorized {
+    padding: 0;
+    width: 85px;
+    height: 74px;
+    margin-left: 10px; }
+    #tools #importVectorized div {
       height: 74px;
       margin-top: -3px;
       width: 85px; }
@@ -162,6 +171,19 @@ body * {
   margin-top: -1em;
   cursor: wait; }
 
+#tracing {
+  display: none;
+  font-style: italic;
+  position: absolute;
+  background: linear-gradient(to bottom, rgba(224, 225, 226, 0) 0%, #e0e1e2 15%, #e0e1e2 50%, #e0e1e2 85%, rgba(224, 225, 226, 0.04) 99%, rgba(224, 225, 226, 0) 100%);
+  font-size: 3em;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  padding: 0.5em;
+  margin-top: -1em;
+  cursor: wait; }
+
 #non-overlay-wrapper {
   position: absolute;
   z-index: 1;
@@ -179,6 +201,132 @@ body * {
   left: 0;
   right: 0;
   bottom: 0; }
+
+/*ADDED USING CSS ONLY. NEED TO COPY IF YOU COMPILE SCSS */
+
+/* Slider titles */
+h3 {
+    color: #ffffff;
+    font-size: 0.7em;
+    margin-left: 20px;
+    margin-bottom: 0px;
+}
+/* Sliders  */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 65%;
+  margin: 15px 30px;
+  background: transparent;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8.7px;
+  cursor: pointer;
+  box-shadow: 1.3px 1.3px 2.4px #000000, 0px 0px 1.3px #0d0d0d;
+  background: #e03232;
+  border-radius: 14.4px;
+  border: 0px solid #010101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1.1px solid #ffffff;
+  height: 20px;
+  width: 21px;
+  border-radius: 50px;
+  background: #efefef;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -5.65px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #e03232;
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 8.7px;
+  cursor: pointer;
+  box-shadow: 1.3px 1.3px 2.4px #000000, 0px 0px 1.3px #0d0d0d;
+  background: #e03232;
+  border-radius: 14.4px;
+  border: 0px solid #010101;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1.1px solid #ffffff;
+  height: 20px;
+  width: 21px;
+  border-radius: 50px;
+  background: #efefef;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 8.7px;
+  cursor: pointer;
+  background: #3A3A3A;
+  border-color: #3A3A3A;
+  color: #3A3A3A;
+}
+input[type=range]::-ms-fill-lower {
+  background: #e03232;
+  border: 0px solid #010101;
+  border-radius: 28.8px;
+  box-shadow: 1.3px 1.3px 2.4px #000000, 0px 0px 1.3px #0d0d0d;
+}
+input[type=range]::-ms-fill-upper {
+  background: #e03232;
+  border: 0px solid #010101;
+  border-radius: 28.8px;
+  box-shadow: 1.3px 1.3px 2.4px #000000, 0px 0px 1.3px #0d0d0d;
+}
+input[type=range]::-ms-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1.1px solid #ffffff;
+  height: 20px;
+  width: 21px;
+  border-radius: 50px;
+  background: #efefef;
+  cursor: pointer;
+  height: 8.7px;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #e03232;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #e03232;
+}
+/* end Sliders */
+
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #3A3A3A;
+    min-width: 190px;
+    min-height: 130px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* END */
 
 div.overlay-window {
   display: none;
