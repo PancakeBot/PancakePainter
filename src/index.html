@@ -7,6 +7,8 @@
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="../node_modules/paper/dist/paper-full.js"></script>
     <script type="text/javascript" src="../node_modules/rangeslider.js/dist/rangeslider.min.js"></script>
+    <script type="text/javascript" src="libs/FileSaver.js"></script>
+    <script type="text/javascript" src="libs/potrace.js"></script>
     <script type="text/javascript" src="libs/stackblur.js"></script>
     <script type="text/javascript" src="libs/html2canvas.js"></script>
     <link rel="stylesheet" href="styles/index.css" media="screen" charset="utf-8">
@@ -27,6 +29,7 @@
 
     <div id="overlay">
       <h2 id="exporting" data-i18n>export.wait</h2>
+      <h2 id="tracing" data-i18n>tracing.wait</h2>
       <div id="settings" class="overlay-window">
         <div class="overlay-title">
           <button id="done" data-i18n>settings.done</button>

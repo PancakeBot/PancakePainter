@@ -171,6 +171,10 @@ function initEditor() {
       height: printableArea.height * mmPerPX
     });
 
+    // Scale CleanParameter with the screen resolution
+    paper.CleanParameter = paper.CleanParameterToScale * mmPerPX * mmPerPX;
+    console.log("CleanParameter: " + paper.CleanParameter);
+
     editorLoad(); // Load the editor (if it hasn't already been loaded)
     // This must happen after the very first resize, otherwise the canvas
     // doesn't have the correct dimensions for Paper to size to.
@@ -201,6 +205,7 @@ function editorLoadedInit() { /* jshint ignore:line */
   buildToolbar();
   buildImageImporter();
   buildColorPicker();
+  buildImageVectorizer();
 
   bindControls();
 
@@ -342,10 +347,175 @@ function buildImageImporter() {
 
   $importButton.click(function(){
     activateToolItem($importButton);
-    paper.initImageImport();
+    paper.initImageImport({mode:'trace'});
   });
 
   $('#tools #tool-select').before($importButton);
+}
+
+function buildImageVectorizer() {
+  var $importButton = $('<div>')
+      .addClass('tool')
+      .attr('id', 'importVectorized')
+      .data('cursor-key', 'select')
+      .attr('title', i18n.t('import.title'));
+
+  var $imageDiv =  document.createElement("DIV");
+  $imageDiv.setAttribute("id", "imageDiv");
+  $imageDiv.style.backgroundImage = "url(images/icon-vectorize.png)";
+  $importButton.append($imageDiv);
+
+  // CREATE DROPDOWN MENU
+  var $dropdown =  document.createElement("DIV");
+  $dropdown.setAttribute("class", "dropdown-content");
+  $dropdown.setAttribute("id", "dropdownMenu");
+
+  // Levels title
+  var h1 = document.createElement("H3")
+  var t1 = document.createTextNode("Color Amount");     // Create a text node
+  h1.appendChild(t1);
+  $dropdown.appendChild(h1);
+
+  // Levels Slider
+  var sliderLevels = document.createElement("INPUT");
+  sliderLevels.setAttribute("type", "range");
+  sliderLevels.setAttribute("id", "sliderLevels");
+  sliderLevels.setAttribute("min", "2");
+  sliderLevels.setAttribute("max", "4");
+  sliderLevels.setAttribute("step", "1");
+  sliderLevels.setAttribute("value", "2");
+  $dropdown.appendChild(sliderLevels);
+
+  // Levels title
+  var h2 = document.createElement("H3")
+  var t2 = document.createTextNode("Edge Fidelity");     // Create a text node
+  h2.appendChild(t2);
+  $dropdown.appendChild(h2);
+
+  // Fidelity Slider
+  var sliderFidelity = document.createElement("INPUT");
+  sliderFidelity.setAttribute("type", "range");
+  sliderFidelity.setAttribute("id", "sliderFidelity");
+  sliderFidelity.setAttribute("min", "0");
+  sliderFidelity.setAttribute("max", "50");
+  sliderFidelity.setAttribute("step", "1");
+  sliderFidelity.setAttribute("value", "0");
+  $dropdown.appendChild(sliderFidelity);
+
+  $importButton.append($dropdown);
+
+  // When hover, show the menu
+  $importButton.hover(
+      // Enter event
+      function(){
+        // Get hidden menu
+        var dropdownMenu = document.getElementById("dropdownMenu");
+        dropdownMenu.style.display = "inline-block";
+      },
+
+      // Leave event
+      function(){
+        // Get hidden menu
+        var dropdownMenu = document.getElementById("dropdownMenu");
+        dropdownMenu.style.display = "none";
+      }
+  );
+
+  $('#tools #tool-select').before($importButton);
+
+  // Even handler for ColorAmount Slider
+  $("#sliderLevels").on("change", function(){
+    paper.ColorAmount = this.value;
+    if(!paper.globalPath) return;
+
+    // Throw up the overlay and activate the exporting note.
+    toggleOverlay(true, function(){
+      $('#tracing').fadeIn('slow', function(){
+        // reload file!
+        paper.reloadImportedImage().then(function () {
+          toggleOverlay(false);
+          $('#tracing').fadeOut('slow',function(){
+            // Notify user
+            paper.view.update();
+            toastr.success(i18n.t('tracing.note', {file: path.parse(paper.globalPath).base}));
+          });
+        }).catch(function (e) {
+          toggleOverlay(false);
+          toastr.error(i18n.t('tracing.error', {file: path.parse(paper.globalPath).base}));
+        });
+      });
+    });
+  });
+
+  // Even handler for EdgeFidelity Slider
+  $("#sliderFidelity").on("change", function(){
+    paper.EdgeFidelity = this.value;
+    if(!paper.globalPath) return;
+
+    // Throw up the overlay and activate the exporting note.
+    toggleOverlay(true, function(){
+      $('#tracing').fadeIn('slow', function(){
+        // reload file!
+        paper.reloadImportedImage().then(function () {
+          toggleOverlay(false);
+          $('#tracing').fadeOut('slow',function(){
+            // Notify user
+            paper.view.update();
+            toastr.success(i18n.t('tracing.note', {file: path.parse(paper.globalPath).base}));
+          });
+        }).catch(function (e) {
+          toggleOverlay(false);
+          toastr.error(i18n.t('tracing.error', {file: path.parse(paper.globalPath).base}));
+        });
+      });
+    });
+  });
+
+  // When clicked, trigger import
+  $("#imageDiv").on("click", function(){
+    activateToolItem($importButton);
+
+    if (!paper.traceImage) {
+      mainWindow.dialog({
+        t: 'OpenDialog',
+        title: i18n.t('import.title'),
+        filters: [
+          { name: i18n.t('import.files'), extensions: ['jpg', 'jpeg', 'gif', 'png'] }
+        ]
+      }, function(filePath){
+        if (!filePath) {  // Open cancelled
+          paper.finishImageImport();
+          return;
+        }
+
+        paper.globalPath = filePath[0];
+
+        // Throw up the overlay and activate the exporting note.
+        toggleOverlay(true, function(){
+          $('#tracing').fadeIn('slow', function(){
+            // process file!
+            paper.importForKmeans(filePath[0]).then(function () {
+              toggleOverlay(false);
+              $('#tracing').fadeOut('slow',function(){
+                // Notify user
+                paper.view.update();
+                toastr.success(i18n.t('tracing.note', {file: path.parse(paper.globalPath).base}));
+              });
+            }).catch(function(e){
+              toggleOverlay(false);
+              toastr.error(i18n.t('tracing.error', {file: path.parse(paper.globalPath).base}));
+            });
+          });
+        });
+      });
+    } else {
+      // Select the thing and disable other selections
+      toolSelect.imageTraceMode(true);
+    }
+
+
+  });
+
 }
 
 // When the page is done loading, all the controls in the page can be bound.
@@ -473,7 +643,15 @@ function bindControls() {
       case 'file.close':
         checkFileStatus(function(){
           toastr.info(i18n.t(menu));
+
           paper.newPBP();
+          paper.clearImageTracing();
+
+          // Reset sliders
+          $('#sliderLevels')[0].value = paper.defaultColorAmount;
+          paper.ColorAmount = paper.defaultColorAmount;
+          $('#sliderFidelity')[0].value = paper.defaultEdgeFidelity;
+          paper.EdgeFidelity = paper.defaultEdgeFidelity;
         });
         break;
       case 'edit.selectall':

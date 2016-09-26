@@ -24,7 +24,7 @@ module.exports = function(paper) {
   var segment, path, selectChangeOnly;
   paper.imageTraceMode = false;
 
-  // Externalize deseletion
+  // Externalize deselection
   paper.deselect = function(noFinish) {
     if (paper.selectRect) {
       // Completely deselect sub paths
@@ -135,7 +135,7 @@ module.exports = function(paper) {
     return hitResult;
   };
 
-  // User clicks witht he mouse on the canvas:
+  // User clicks with the mouse on the canvas:
   tool.onMouseDown = function(event) {
     segment = path = selectChangeOnly = null;
 
@@ -236,19 +236,19 @@ module.exports = function(paper) {
       // Path scale adjustment
       var centerDiff = event.point.subtract(paper.selectRect.bounds.center);
       var ratio = centerDiff.length / selectionRectangleScale;
-      var scaling = new Point(ratio, ratio);
-      paper.selectRect.scaling = scaling;
+
+      paper.selectRect.scale(ratio);
       _.each(paper.selectRect.ppaths, function(path){
-        path.scaling = scaling;
+        path.scale(ratio);
       });
 
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
       var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
-      paper.selectRect.rotation = rotation;
+      paper.selectRect.rotate(rotation);
       _.each(paper.selectRect.ppaths, function(path){
-        path.rotation = rotation;
+        path.rotate(rotation);
       });
       return;
     }
@@ -265,8 +265,9 @@ module.exports = function(paper) {
 
       // Path translate position adjustment
       psr.position = psr.position.add(event.delta);
+
       _.each(psr.ppaths, function(path){
-        path.position = psr.position.add(event.delta);
+        path.translate(event.delta);
       });
     }
   };
@@ -327,6 +328,16 @@ module.exports = function(paper) {
         if (paper.imageTraceMode) paper.traceImage = null;
         paper.deselect();
 
+        // Check if there are no more items in the project, remove the image path
+        var items = project.activeLayer.getItems({});
+        if(items.length == 1) {
+          if(items[0].name == "selection rectangle") {
+            paper.clearImageTracing();
+          }
+        }
+        else if(items.length == 0) {
+          paper.clearImageTracing();
+        }
       }
 
       // Deselect
@@ -565,6 +576,17 @@ module.exports = function(paper) {
       path = null;
       paper.deselect();
     }
+  };
+
+  tool.selectNewSvg = function() {
+    // Select the entire traced image but don't select CompoundPath children, just select the
+    //  entire compound path
+    _.each(project.activeLayer.getItems({}), function (item) {
+      if(item.name == "traced path" && item.parent.className != "CompoundPath") {
+        initSelectionRectangle(item, true);
+      }
+    });
+    tool.activate();
   };
 
   return tool;
