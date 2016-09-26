@@ -1,6 +1,8 @@
 # PancakePainter!
 #### The super-simple drawing software for your PancakeBot.
 
+[![Join the chat at https://gitter.im/PancakePainter/Lobby](https://badges.gitter.im/PancakePainter/Lobby.svg)](https://gitter.im/PancakePainter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ![PancakePainter](https://cloud.githubusercontent.com/assets/320747/10681916/96629bc8-78e3-11e5-99e6-4f6c3e13cc86.png)
 
 ### Download/Install - v1.0.0
