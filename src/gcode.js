@@ -467,14 +467,14 @@ module.exports = function(config) {
       });
     } else { // Single path
       // With no path length, we're done.
-      if (p.length) {
+      if (!p.length) {
         p.remove();
         inPath.remove();
         return;
       }
 
       geometries[0] = [];
-      if (p.length) {
+      if (!p.length) {
         p.remove();
         inPath.remove();
         return;
@@ -516,6 +516,11 @@ module.exports = function(config) {
       camPath.scale(1, -1); // Flip vertically (clipper issue)
       camPath.position = new Point(camPath.position.x, -camPath.position.y);
 
+      // Apply data to every child in the CompoundPath
+      _.each(camPath.children, function (child) {
+        child.data = _.extend({}, inPath.data);
+      });
+      
       if (!options.debug) {
         inPath.remove();
       } else {
