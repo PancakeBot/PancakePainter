@@ -239,17 +239,41 @@ module.exports = function(paper) {
 
       paper.selectRect.scale(ratio);
       _.each(paper.selectRect.ppaths, function(path){
-        path.scale(ratio);
+        if(path.name != "traced path") {
+          path.scale(ratio);
+        }
       });
+
+      // If we are scaling any layer of the traced image then scale all the layers together
+      if(anyTracingSelected()) {
+        _.each(project.activeLayer.getItems({}), function(item){
+          if(item.name == "traced path" && item.parent.className != "CompoundPath"){
+            item.scale(ratio, paper.selectRect.bounds.center);
+          }
+        });
+      }
 
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
       var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
       paper.selectRect.rotate(rotation);
+
       _.each(paper.selectRect.ppaths, function(path){
-        path.rotate(rotation);
+        if(path.name != "traced path") {
+          path.rotate(rotation);
+        }
       });
+
+      // If we are rotating any layer of the traced image then rotate all the layers together
+      if(anyTracingSelected()) {
+        _.each(project.activeLayer.getItems({}), function(item){
+          if(item.name == "traced path" && item.parent.className != "CompoundPath"){
+            item.rotate(rotation, paper.selectRect.bounds.center);
+          }
+        });
+      }
+
       return;
     }
 
@@ -267,8 +291,19 @@ module.exports = function(paper) {
       psr.position = psr.position.add(event.delta);
 
       _.each(psr.ppaths, function(path){
-        path.translate(event.delta);
+        if(path.name != "traced path") {
+          path.translate(event.delta);
+        }
       });
+
+      if(anyTracingSelected()) {
+        // Move all the traced layers together
+        _.each(project.activeLayer.getItems({}), function(item){
+          if(item.name == "traced path" && item.parent.className != "CompoundPath"){
+            item.translate(event.delta);
+          }
+        });
+      }
     }
   };
 
@@ -393,6 +428,18 @@ module.exports = function(paper) {
     paper.selectRect.ppath.pivot = paper.selectRect.pivot;
   }
 
+  function anyTracingSelected() {
+    // Check if any path of the traced image is selected
+    if(paper.selectRect && paper.selectRect.ppath){
+      for(var n = 0; n < paper.selectRect.ppaths.length; ++n) {
+        if(paper.selectRect.ppaths[n].name == "traced path"){
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 
   // Make sure the passed path is selectable, returns null, the path (or parent)
   function ensureSelectable(path, skipType) {
