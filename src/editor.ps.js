@@ -620,6 +620,12 @@ paper.importForKmeans = function(filePath) {
         var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         var data = imageData.data;
 
+        // Detect the background color and how much colors are in the image
+        var bgColor = detectBackgroundColor(data, canvas.width, canvas.height, 10)[1];
+        var colorCount = detectBackgroundColor(data, canvas.width, canvas.height, 100)[0];
+        console.log('Detected background color is: ' + bgColor);
+        console.log('Number of colors in the image: ' + colorCount);
+
         // Save each color data in the colors vector (for kmeans)
         var colors = [];
 
@@ -631,6 +637,12 @@ paper.importForKmeans = function(filePath) {
             data[i+2] = 255;
             data[i+3] = 255;
           }
+
+          // Don't remove the background color if there are only 2 colors in the image
+          if(colorCount > 2 && data[i] == bgColor[0] && data[i+1] == bgColor[1] && data[i+2] == bgColor[2]){
+            continue;
+          }
+
           // [r,g,b] values
           var pixel = [data[i],data[i+1],data[i+2]];
           colors.push(pixel);
@@ -638,6 +650,13 @@ paper.importForKmeans = function(filePath) {
 
         // Require kmeans lib
         var clusterfck = require("clusterfck");
+
+        // Override the centroids function so the centroids are not random and are
+        //  always the same
+        clusterfck.Kmeans.prototype.randomCentroids = function(points, k) {
+          var centroids = points.slice(0); // copy
+          return centroids.slice(0, k);
+        };
 
         // Classify all pixels according to the kmeans result
         // Calculate clusters.
@@ -735,6 +754,71 @@ paper.reloadImportedImage = function() {
 
   return promise;
 };
+
+function detectBackgroundColor(data, width, height, marginPercent){
+  var margin = (marginPercent/100) * width;
+  var colors = [];
+
+  function pushPixel(data, i){
+    // Remove transparency and convert it to white color
+    if (data[i+3] != 255) {
+      colors.push([255, 255, 255]);
+    }
+    else {
+      colors.push([data[i],data[i+1],data[i+2]]);
+    }
+  }
+
+  // Iterate over all the pixels and get the colors from the image borders
+  for(var i = 0; i < data.length; i += 4){
+    var x = (i / 4) % width;
+    var y = Math.floor((i / 4) / width);
+
+    // Left side
+    if(x < margin) {
+      pushPixel(data, i);
+    }
+    // Right side
+    else if(x > (width-margin)){
+      pushPixel(data, i);
+    }
+    // Top side
+    else if(y < margin) {
+      pushPixel(data, i);
+    }
+    // Bottom side
+    else if(y > (height-margin)){
+      pushPixel(data, i);
+    }
+  }
+
+  // Count the number of ocurrences of each color
+  var counts = {};
+  for(var i = 0; i < colors.length; i++) {
+    var color = colors[i];
+    var num = (color[0] << 16) + (color[1] << 8) + color[2];
+    counts[num] = counts[num] ? counts[num]+1 : 1;
+  }
+
+  // Get the color with the maximum number of ocurrences
+  var sortable = [];
+  for (var color in counts) {
+    sortable.push([color, counts[color]]);
+  }
+
+  sortable.sort(function(a, b) {
+    // Sort descending
+    return b[1] - a[1]
+  });
+
+  var bgColor = sortable[0][0];
+  var r = (bgColor >> 16) & 255;
+  var g = (bgColor >> 8) & 255;
+  var b = bgColor & 255;
+
+  // Return the color with most ocurrences
+  return [sortable.length, [r, g, b]];
+}
 
 // Centers all the svg layers
 paper.centerAndCutImportedSVG = function() {
