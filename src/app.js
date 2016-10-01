@@ -648,9 +648,9 @@ function bindControls() {
           paper.clearImageTracing();
 
           // Reset sliders
-          $('#sliderLevels')[0].value = paper.defaultColorAmount;
+          $('#sliderLevels').val(paper.defaultColorAmount).change();
           paper.ColorAmount = paper.defaultColorAmount;
-          $('#sliderFidelity')[0].value = paper.defaultEdgeFidelity;
+          $('#sliderFidelity').val(paper.defaultEdgeFidelity).change();
           paper.EdgeFidelity = paper.defaultEdgeFidelity;
         });
         break;
