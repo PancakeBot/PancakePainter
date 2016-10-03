@@ -652,9 +652,38 @@ paper.importForKmeans = function(filePath) {
         var clusterfck = require("clusterfck");
 
         // Override the centroids function so the centroids are not random and are
-        //  always the same
+        //  always the same. Also we want to prioritize the most dominant colors.
         clusterfck.Kmeans.prototype.randomCentroids = function(points, k) {
-          var centroids = points.slice(0); // copy
+          var colors = [];
+
+          // Count the number of occurrences of each color
+          var counts = {};
+          for(var i = 0; i < points.length; i++) {
+            var color = points[i];
+            var num = (color[0] << 16) + (color[1] << 8) + color[2];
+            counts[num] = counts[num] ? counts[num]+1 : 1;
+          }
+
+          // Sort the colors by occurrence
+          var sortable = [];
+          for (var color in counts) {
+            sortable.push([color, counts[color]]);
+          }
+
+          sortable.sort(function(a, b) {
+            // Sort descending
+            return b[1] - a[1]
+          });
+
+          var centroids = sortable.slice(0); // copy
+          var centroids = centroids.map(function (item) {
+            var color = item[0];
+            var r = (color >> 16) & 255;
+            var g = (color >> 8) & 255;
+            var b = color & 255;
+            return [r, g, b];
+          });
+
           return centroids.slice(0, k);
         };
 
@@ -792,7 +821,7 @@ function detectBackgroundColor(data, width, height, marginPercent){
     }
   }
 
-  // Count the number of ocurrences of each color
+  // Count the number of occurrences of each color
   var counts = {};
   for(var i = 0; i < colors.length; i++) {
     var color = colors[i];
@@ -800,7 +829,7 @@ function detectBackgroundColor(data, width, height, marginPercent){
     counts[num] = counts[num] ? counts[num]+1 : 1;
   }
 
-  // Get the color with the maximum number of ocurrences
+  // Get the color with the maximum number of occurrences
   var sortable = [];
   for (var color in counts) {
     sortable.push([color, counts[color]]);
@@ -816,7 +845,7 @@ function detectBackgroundColor(data, width, height, marginPercent){
   var g = (bgColor >> 8) & 255;
   var b = bgColor & 255;
 
-  // Return the color with most ocurrences
+  // Return the color with most occurrences
   return [sortable.length, [r, g, b]];
 }
 
