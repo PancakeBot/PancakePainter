@@ -4,9 +4,11 @@
  */
  /* globals
    window, mainWindow, _, toastr, i18n, paper, view, project, scale,
-   Raster, Group, Point, Path, Layer, currentFile, path, fs, editorLoadedInit
+   Raster, Group, Point, Path, PathItem, Layer, Potrace, currentFile, path,
+   fs, editorLoadedInit, saveAs, Rectangle, selectColor
  */
 
+/*jshint bitwise: false*/
 var dataURI = require('datauri');
 
 /// Tracing parameters
@@ -16,8 +18,10 @@ paper.defaultEdgeFidelity = 0;
 paper.ColorAmount = paper.defaultColorAmount;   // From 2 to 4
 paper.EdgeFidelity = paper.defaultEdgeFidelity; // Edge Fidelity
 
-// Same as CleanParameter but this value will be scaled with screen resolution and saved in
-//  CleanParameter. THIS is the value you want to modify
+// Same as CleanParameter but this value will be
+// scaled with screen resolution and saved in
+// CleanParameter. THIS is the value you want
+// to modify
 paper.CleanParameterToScale = 50;
 paper.CleanParameter = paper.CleanParameterToScale; // Clean little segments
 
@@ -96,7 +100,7 @@ paper.initImageImport = function(options) {
       // Check the file type
       if(options.mode === 'vectorize') {
         // Vectorize
-        paper.importForKmeans(path)
+        paper.importForKmeans(path);
       } else {
         paper.importImage(path);
       }
@@ -140,7 +144,7 @@ paper.importImage = function(filePath) {
 
     // Select the thing and disable other selections
     toolSelect.imageTraceMode(true);
-  }
+  };
 };
 
 // Called when completing image import management
@@ -451,9 +455,9 @@ function findGroup(testPoint, lines, newGroupThresh){
   return groupID;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// IMAGE TRACING CODE BY SUR3D ///////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////// IMAGE TRACING CODE BY SUR3D /////////
+/////////////////////////////////////////////////
 
 /**
  * Converts an RGB color value to HSL. Conversion formula
@@ -467,11 +471,11 @@ function findGroup(testPoint, lines, newGroupThresh){
  * @return  {Array}           The HSL representation
  */
 function rgbToHsl(r, g, b){
-  r /= 255, g /= 255, b /= 255;
+  r /= 255; g /= 255; b /= 255;
   var max = Math.max(r, g, b), min = Math.min(r, g, b);
   var h, s, l = (max + min) / 2;
 
-  if(max == min){
+  if(max === min){
     h = s = 0; // achromatic
   }else{
     var d = max - min;
@@ -502,72 +506,106 @@ paper.computeClosestColors = function(kmeans) {
   var centroids = kmeans.centroids;
 
   // HSL colors
-  var l_centroids = [];
+  var lCentroids = [];
+  var hslColor;
 
   // Convert each to HSL
   for(var i = 0; i < paper.ColorAmount; i++)
   {
     // Get centroid and transform
-    var hsl_color = rgbToHsl(centroids[i][0],centroids[i][1],centroids[i][2]);
-    l_centroids[i] = hsl_color[2];
+    hslColor = rgbToHsl(centroids[i][0],centroids[i][1],centroids[i][2]);
+    lCentroids[i] = hslColor[2];
   }
 
   // Convert also the PancakePainter palette to hsl color space
-  var l_palette = [];
+  var lPalette = [];
 
-  for(var i = 0; i < paper.pancakeShades.length; i++)
+  for(i = 0; i < paper.pancakeShades.length; i++)
   {
     // First convert from Hex to RGB
-    var rgb_color = hexToRgb(paper.pancakeShades[i]);
+    var rgbColor = hexToRgb(paper.pancakeShades[i]);
 
     // Convert to hsl
-    var hsl_color = rgbToHsl(rgb_color.r,rgb_color.g,rgb_color.b);
+    hslColor = rgbToHsl(rgbColor.r,rgbColor.g,rgbColor.b);
 
     // Finally push
-    l_palette[i] = hsl_color[2];
-
+    lPalette[i] = hslColor[2];
   }
 
   // Now, the mapping
-  for(var i = 0; i < paper.ColorAmount; i++)
+  for(i = 0; i < paper.ColorAmount; i++)
   {
     // For each light value in l_centroids, find the closest in l_palette
     // No repetitions allowed
 
-    var minimal_diff = 999999;
-    var minimal_c = -1;
-    var minimal_p = -1;
+    var minimalDiff = 999999;
+    var minimalC = -1;
+    var minimalP = -1;
 
     // For each centroid
-    for(var c = 0; c < l_centroids.length; c++)
+    // jshint maxdepth:5
+    for(var c = 0; c < lCentroids.length; c++)
     {
       // For each color in palette
-      for(var p = 0; p < l_palette.length; p++)
+      for(var p = 0; p < lPalette.length; p++)
       {
         // Check colors has not been matched before
-        if((l_centroids[c] !== -1)&&(l_palette[p]!==-1))
+        if((lCentroids[c] !== -1)&&(lPalette[p]!==-1))
         {
           // Compute difference
-          var current_diff = Math.abs(l_centroids[c]-l_palette[p]);
+          var currentDiff = Math.abs(lCentroids[c]-lPalette[p]);
 
           //Keep the difference if smallest so far
-          if(current_diff < minimal_diff)
+          if(currentDiff < minimalDiff)
           {
-            minimal_diff = current_diff;
-            minimal_c = c;
-            minimal_p = p;
+            minimalDiff = currentDiff;
+            minimalC = c;
+            minimalP = p;
           }
         }
       }
     }
 
     // Add the mapping
-    paper.ColorMapping[minimal_c] = minimal_p;
+    paper.ColorMapping[minimalC] = minimalP;
 
     // Ensure minimal_c and minimal_p can't never be chosen again
-    l_centroids[minimal_c] = -1;
-    l_palette[minimal_p] = -1;
+    lCentroids[minimalC] = -1;
+    lPalette[minimalP] = -1;
   }
+};
+
+var pos = 1;
+
+// Loops over each layer to vectorize them and load into paper.js.
+// When finished, it calls center and cut to finish the loading process.
+// The callback argument is optional, if passed the function will be called when
+//  the processing is finished
+var loopLayersArray = function(binaryLayers, ctx, imageData, canvas,
+                               callback) {
+
+  processLayer(binaryLayers[pos], ctx, imageData, canvas, function() {
+    try {
+      // set x to next item
+      pos++;
+
+      // any more items in array? continue loop
+      if(pos < binaryLayers.length) {
+        loopLayersArray(binaryLayers, ctx, imageData, canvas, callback);
+      }
+      else { // When finished loading
+        paper.centerAndCutImportedSVG();
+        if(callback) {
+          callback();
+        }
+      }
+    }
+    catch (e) {
+      if(callback) {
+        callback(e);
+      }
+    }
+  });
 };
 
 // Loads an computes the kmeans for each image layer. Returns a promise which is
@@ -595,7 +633,8 @@ paper.importForKmeans = function(filePath) {
         var canvasHeight = this.height;
 
         // Scale down if a side is > max side value
-        if((this.width > paper.maxSideValue)||(this.height > paper.maxSideValue))
+        if((this.width > paper.maxSideValue) ||
+            (this.height > paper.maxSideValue))
         {
           if(this.width > this.height)
           {
@@ -621,41 +660,48 @@ paper.importForKmeans = function(filePath) {
         var data = imageData.data;
 
         // Detect the background color and how much colors are in the image
-        var bgColor = detectBackgroundColor(data, canvas.width, canvas.height, 10)[1];
-        var colorCount = detectBackgroundColor(data, canvas.width, canvas.height, 100)[0];
+        var bgColor = detectBackgroundColor(
+            data, canvas.width, canvas.height, 10)[1];
+        var colorCount = detectBackgroundColor(
+            data, canvas.width, canvas.height, 100)[0];
         console.log('Detected background color is: ' + bgColor);
         console.log('Number of colors in the image: ' + colorCount);
 
         // Save each color data in the colors vector (for kmeans)
         var colors = [];
+        var pixel;
 
         for (var i = 0; i < data.length; i += 4) {
           // Remove transparency and convert it to white color
-          if (data[i+3] != 255) {
+          if (data[i+3] !== 255) {
             data[i] = 255;
             data[i+1] = 255;
             data[i+2] = 255;
             data[i+3] = 255;
           }
 
-          // Don't remove the background color if there are only 2 colors in the image
-          if(colorCount > 2 && data[i] == bgColor[0] && data[i+1] == bgColor[1] && data[i+2] == bgColor[2]){
+          // Don't remove the background color if
+          // there are only 2 colors in the image
+          if(colorCount > 2 &&
+              data[i] === bgColor[0] &&
+              data[i+1] === bgColor[1] &&
+              data[i+2] === bgColor[2]){
             continue;
           }
 
           // [r,g,b] values
-          var pixel = [data[i],data[i+1],data[i+2]];
+          pixel = [data[i],data[i+1],data[i+2]];
           colors.push(pixel);
         }
 
         // Require kmeans lib
         var clusterfck = require("clusterfck");
 
-        // Override the centroids function so the centroids are not random and are
-        //  always the same. Also we want to prioritize the most dominant colors.
+        // Override the centroids function so the
+        //  centroids are not random and are
+        //  always the same. Also we want to
+        //  prioritize the most dominant colors.
         clusterfck.Kmeans.prototype.randomCentroids = function(points, k) {
-          var colors = [];
-
           // Count the number of occurrences of each color
           var counts = {};
           for(var i = 0; i < points.length; i++) {
@@ -666,18 +712,19 @@ paper.importForKmeans = function(filePath) {
 
           // Sort the colors by occurrence
           var sortable = [];
-          for (var color in counts) {
-            sortable.push([color, counts[color]]);
+          for (var c in counts) {
+            sortable.push([c, counts[c]]);
           }
 
           sortable.sort(function(a, b) {
             // Sort descending
-            return b[1] - a[1]
+            return b[1] - a[1];
           });
 
+          var centroids;
           if(sortable.length >= paper.ColorAmount){
-            var centroids = sortable.slice(0); // copy
-            var centroids = centroids.map(function (item) {
+            centroids = sortable.slice(0); // copy
+            centroids = centroids.map(function (item) {
               var color = item[0];
               var r = (color >> 16) & 255;
               var g = (color >> 8) & 255;
@@ -688,7 +735,7 @@ paper.importForKmeans = function(filePath) {
             return centroids.slice(0, k);
           }
           else {
-            var centroids = points.slice(0); // copy
+            centroids = points.slice(0); // copy
             return centroids.slice(0, k);
           }
         };
@@ -705,21 +752,21 @@ paper.importForKmeans = function(filePath) {
         // Add each cluster as svg group
         // c is the current cluster level
         // Copy original data array to avoid loosing it in the for loop
-        var binary_layers = [];
+        var binaryLayers = [];
 
-        var data_copy = new Uint8ClampedArray(data);
+        var dataCopy = new Uint8ClampedArray(data);
 
         // For each cluster
         for(var c = 0; c < clusters.length; c++) {
 
           // Data vector for the current layer
-          var current_layer = new Uint8ClampedArray(data.length);
+          var currentLayer = new Uint8ClampedArray(data.length);
 
           // Put data into the layer
-          for (var i = 0; i < data.length; i += 4) {
+          for (i = 0; i < data.length; i += 4) {
 
             // Original RGB value
-            var pixel = [data_copy[i],data_copy[i+1],data_copy[i+2]];
+            pixel = [dataCopy[i],dataCopy[i+1],dataCopy[i+2]];
 
             // Cluster index
             var clusterIndex = kmeans.classify(pixel);
@@ -727,19 +774,19 @@ paper.importForKmeans = function(filePath) {
             // If current pixel is classified as c
             if(clusterIndex === c)
             {
-              current_layer[i]     = 0; // Paint in white
-              current_layer[i + 1] = 0;
-              current_layer[i + 2] = 0;
-              current_layer[i + 3] = 255;
+              currentLayer[i]     = 0; // Paint in white
+              currentLayer[i + 1] = 0;
+              currentLayer[i + 2] = 0;
+              currentLayer[i + 3] = 255;
             }
             else {
-              current_layer[i]     = 255; // Paint in black
-              current_layer[i + 1] = 255;
-              current_layer[i + 2] = 255;
-              current_layer[i + 3] = 255;
+              currentLayer[i]     = 255; // Paint in black
+              currentLayer[i + 1] = 255;
+              currentLayer[i + 2] = 255;
+              currentLayer[i + 3] = 255;
             }
           }
-          binary_layers.push(current_layer);
+          binaryLayers.push(currentLayer);
         }
 
         // Render loopLayers
@@ -749,7 +796,7 @@ paper.importForKmeans = function(filePath) {
         // Draw all the others
         pos = 1;
 
-        loopLayersArray(binary_layers, ctx, imageData, canvas, function (error) {
+        loopLayersArray(binaryLayers, ctx, imageData, canvas, function (error) {
           if(error){
             console.error(error.stack);
             reject(error.message);
@@ -796,7 +843,7 @@ function detectBackgroundColor(data, width, height, marginPercent){
 
   function pushPixel(data, i){
     // Remove transparency and convert it to white color
-    if (data[i+3] != 255) {
+    if (data[i+3] !== 255) {
       colors.push([255, 255, 255]);
     }
     else {
@@ -829,7 +876,7 @@ function detectBackgroundColor(data, width, height, marginPercent){
 
   // Count the number of occurrences of each color
   var counts = {};
-  for(var i = 0; i < colors.length; i++) {
+  for(i = 0; i < colors.length; i++) {
     var color = colors[i];
     var num = (color[0] << 16) + (color[1] << 8) + color[2];
     counts[num] = counts[num] ? counts[num]+1 : 1;
@@ -837,13 +884,13 @@ function detectBackgroundColor(data, width, height, marginPercent){
 
   // Get the color with the maximum number of occurrences
   var sortable = [];
-  for (var color in counts) {
-    sortable.push([color, counts[color]]);
+  for (var c in counts) {
+    sortable.push([c, counts[c]]);
   }
 
   sortable.sort(function(a, b) {
     // Sort descending
-    return b[1] - a[1]
+    return b[1] - a[1];
   });
 
   var bgColor = sortable[0][0];
@@ -879,7 +926,8 @@ paper.centerAndCutImportedSVG = function() {
   group.scale(scale);
 
   // Cuts the background layer to avoid overlapping
-  var backgroundPaths =  paper.ImportedSVGLayers[0].getItems({ class: PathItem });
+  var backgroundPaths =  paper.ImportedSVGLayers
+      [0].getItems({ class: PathItem });
   var backgroundSquare = backgroundPaths[0];
 
   // First, make all paths closed to make substract() to work
@@ -903,13 +951,14 @@ paper.centerAndCutImportedSVG = function() {
   }
 
   // Now, perform the background cutting
-  for (var i = 1; i <  paper.ImportedSVGLayers.length; i++) {
+  for (i = 1; i <  paper.ImportedSVGLayers.length; i++) {
     // First children is always the compound path of the whole layer
-    var temp_background = backgroundSquare.subtract( paper.ImportedSVGLayers[i].children[0]);
-    temp_background.data = { color: backgroundSquare.data.color };
+    var tempBackground =
+        backgroundSquare.subtract(paper.ImportedSVGLayers[i].children[0]);
+    tempBackground.data = { color: backgroundSquare.data.color };
 
     backgroundSquare.remove();
-    backgroundSquare = temp_background;
+    backgroundSquare = tempBackground;
   }
 
   // Update the background layer in the Imported SVG Layers list
@@ -918,11 +967,12 @@ paper.centerAndCutImportedSVG = function() {
 
   // Ungroup all items
   var groups = project.activeLayer.getItems({ class: Group });
-  for (var i = 0; i <  groups.length; i++) {
-    var group = groups[i];
+  var paths;
+  for (i = 0; i <  groups.length; i++) {
+    group = groups[i];
 
     // Make sure the paths inside the group matches the group color
-    var paths = group.getItems({ class: PathItem });
+    paths = group.getItems({ class: PathItem });
     for(var n = 0; n < paths.length; ++n){
       paths[n].data = { color: group.data.color };
     }
@@ -932,8 +982,8 @@ paper.centerAndCutImportedSVG = function() {
   }
 
   // Make them closed
-  var paths = project.activeLayer.getItems({ class: PathItem });
-  for (var i = 0; i <  paths.length; i++) {
+  paths = project.activeLayer.getItems({ class: PathItem });
+  for (i = 0; i <  paths.length; i++) {
     var path = paths[i];
     path.closed = true;
     path.data.fill = true;
@@ -952,44 +1002,13 @@ paper.centerAndCutImportedSVG = function() {
 
 };
 
-var pos = 1;
-
-// Loops over each layer to vectorize them and load into paper.js.
-// When finished, it calls center and cut to finish the loading process.
-// The callback argument is optional, if passed the function will be called when
-//  the processing is finished
-var loopLayersArray = function(binary_layers, ctx, imageData, canvas, callback) {
-
-  processLayer(binary_layers[pos], ctx, imageData, canvas, function() {
-    try {
-      // set x to next item
-      pos++;
-
-      // any more items in array? continue loop
-      if(pos < binary_layers.length) {
-        loopLayersArray(binary_layers, ctx, imageData, canvas, callback);
-      }
-      else { // When finished loading
-        paper.centerAndCutImportedSVG();
-        if(callback) {
-          callback();
-        }
-      }
-    }
-    catch (e) {
-      if(callback) {
-        callback(e);
-      }
-    }
-  });
-};
-
 // Process one layer at a time. Basically vectorizing with Potrace and loading
 // into paper.js
 function processLayer(layer,ctx,imageData,canvas,callback) {
 
   // New imageData
-  var newImageData = ctx.createImageData(imageData.width, imageData.height); // width x height
+  var newImageData = ctx.createImageData(imageData.width,
+      imageData.height); // width x height
 
   // Copy data
   for (var i = 0; i < layer.length; i += 1) {
@@ -1116,7 +1135,7 @@ paper.drawBackgroundSquare = function(width,height){
 };
 
 // Actually does the SVG importing
-paper.importSvg = function(filePath, isFilePath, color_i) {
+paper.importSvg = function(filePath, isFilePath, colorI) {
 
   // File content
   var contents;
@@ -1134,10 +1153,11 @@ paper.importSvg = function(filePath, isFilePath, color_i) {
   }
 
   // Import svg into Paper.js
-  var svg = project.importSVG(contents, {expandShapes: false, applyMatrix: false});
+  var svg = project.importSVG(contents, {expandShapes: false,
+    applyMatrix: false});
 
-  //var colorIndex = paper.pancakeShades.length - color_i;
-  var initColor = paper.pancakeShades[ paper.ColorMapping[color_i] ];
+  //var colorIndex = paper.pancakeShades.length - colorI;
+  var initColor = paper.pancakeShades[ paper.ColorMapping[colorI] ];
 
   // Set initial SVG color
   selectColor(paper.pancakeCurrentShade);
@@ -1155,13 +1175,13 @@ paper.importSvg = function(filePath, isFilePath, color_i) {
     // Move the group to the center of the view:
     //position: view.center
   });
-  group.data = { color: paper.ColorMapping[color_i] };
+  group.data = { color: paper.ColorMapping[colorI] };
   group.name = "msvg";
 
   // Assign the color to every element inside the group
   var paths = group.getItems({});
   for (var i = 0; i <  paths.length; i++) {
-    paths[i].data = { color: paper.ColorMapping[color_i] };
+    paths[i].data = { color: paper.ColorMapping[colorI] };
   }
 
   // Keep track of the group

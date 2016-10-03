@@ -239,15 +239,17 @@ module.exports = function(paper) {
 
       paper.selectRect.scale(ratio);
       _.each(paper.selectRect.ppaths, function(path){
-        if(path.name != "traced path") {
+        if(path.name !== "traced path") {
           path.scale(ratio);
         }
       });
 
-      // If we are scaling any layer of the traced image then scale all the layers together
+      // If we are scaling any layer of the traced image then
+      //  scale all the layers together
       if(anyTracingSelected()) {
         _.each(project.activeLayer.getItems({}), function(item){
-          if(item.name == "traced path" && item.parent.className != "CompoundPath"){
+          if(item.name === "traced path" &&
+              item.parent.className !== "CompoundPath"){
             item.scale(ratio, paper.selectRect.bounds.center);
           }
         });
@@ -260,15 +262,17 @@ module.exports = function(paper) {
       paper.selectRect.rotate(rotation);
 
       _.each(paper.selectRect.ppaths, function(path){
-        if(path.name != "traced path") {
+        if(path.name !== "traced path") {
           path.rotate(rotation);
         }
       });
 
-      // If we are rotating any layer of the traced image then rotate all the layers together
+      // If we are rotating any layer of the traced image then
+      //  rotate all the layers together
       if(anyTracingSelected()) {
         _.each(project.activeLayer.getItems({}), function(item){
-          if(item.name == "traced path" && item.parent.className != "CompoundPath"){
+          if(item.name === "traced path" &&
+              item.parent.className !== "CompoundPath"){
             item.rotate(rotation, paper.selectRect.bounds.center);
           }
         });
@@ -291,7 +295,7 @@ module.exports = function(paper) {
       psr.position = psr.position.add(event.delta);
 
       _.each(psr.ppaths, function(path){
-        if(path.name != "traced path") {
+        if(path.name !== "traced path") {
           path.translate(event.delta);
         }
       });
@@ -299,7 +303,8 @@ module.exports = function(paper) {
       if(anyTracingSelected()) {
         // Move all the traced layers together
         _.each(project.activeLayer.getItems({}), function(item){
-          if(item.name == "traced path" && item.parent.className != "CompoundPath"){
+          if(item.name === "traced path" &&
+              item.parent.className !== "CompoundPath"){
             item.translate(event.delta);
           }
         });
@@ -363,14 +368,15 @@ module.exports = function(paper) {
         if (paper.imageTraceMode) paper.traceImage = null;
         paper.deselect();
 
-        // Check if there are no more items in the project, remove the image path
+        // Check if there are no more items in the project,
+        //  remove the image path
         var items = project.activeLayer.getItems({});
-        if(items.length == 1) {
-          if(items[0].name == "selection rectangle") {
+        if(items.length === 1) {
+          if(items[0].name === "selection rectangle") {
             paper.clearImageTracing();
           }
         }
-        else if(items.length == 0) {
+        else if(items.length === 0) {
           paper.clearImageTracing();
         }
       }
@@ -432,7 +438,7 @@ module.exports = function(paper) {
     // Check if any path of the traced image is selected
     if(paper.selectRect && paper.selectRect.ppath){
       for(var n = 0; n < paper.selectRect.ppaths.length; ++n) {
-        if(paper.selectRect.ppaths[n].name == "traced path"){
+        if(paper.selectRect.ppaths[n].name === "traced path"){
           return true;
         }
       }
@@ -626,10 +632,11 @@ module.exports = function(paper) {
   };
 
   tool.selectNewSvg = function() {
-    // Select the entire traced image but don't select CompoundPath children, just select the
-    //  entire compound path
+    // Select the entire traced image but don't select CompoundPath
+    //  children, just select the entire compound path
     _.each(project.activeLayer.getItems({}), function (item) {
-      if(item.name == "traced path" && item.parent.className != "CompoundPath") {
+      if(item.name === "traced path" &&
+          item.parent.className !== "CompoundPath") {
         initSelectionRectangle(item, true);
       }
     });

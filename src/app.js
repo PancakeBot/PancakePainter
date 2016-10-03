@@ -4,7 +4,8 @@
  * the DOM and all node abilities.
  **/
 /*globals
-  document, window, $, _, toastr, paper, html2canvas, stackBlurCanvasRGB
+  document, window, $, _, toastr, paper, html2canvas, stackBlurCanvasRGB,
+  toolSelect
 */
 "use strict";
 
@@ -371,7 +372,7 @@ function buildImageVectorizer() {
   $dropdown.setAttribute("id", "dropdownMenu");
 
   // Levels title
-  var h1 = document.createElement("H3")
+  var h1 = document.createElement("H3");
   var t1 = document.createTextNode("Color Amount");     // Create a text node
   h1.appendChild(t1);
   $dropdown.appendChild(h1);
@@ -387,7 +388,7 @@ function buildImageVectorizer() {
   $dropdown.appendChild(sliderLevels);
 
   // Levels title
-  var h2 = document.createElement("H3")
+  var h2 = document.createElement("H3");
   var t2 = document.createTextNode("Edge Fidelity");     // Create a text node
   h2.appendChild(t2);
   $dropdown.appendChild(h2);
@@ -437,11 +438,13 @@ function buildImageVectorizer() {
           $('#tracing').fadeOut('slow',function(){
             // Notify user
             paper.view.update();
-            toastr.success(i18n.t('tracing.note', {file: path.parse(paper.globalPath).base}));
+            toastr.success(i18n.t('tracing.note',
+                {file: path.parse(paper.globalPath).base}));
           });
-        }).catch(function (e) {
+        }).catch(function () {
           toggleOverlay(false);
-          toastr.error(i18n.t('tracing.error', {file: path.parse(paper.globalPath).base}));
+          toastr.error(i18n.t('tracing.error',
+              {file: path.parse(paper.globalPath).base}));
         });
       });
     });
@@ -461,11 +464,13 @@ function buildImageVectorizer() {
           $('#tracing').fadeOut('slow',function(){
             // Notify user
             paper.view.update();
-            toastr.success(i18n.t('tracing.note', {file: path.parse(paper.globalPath).base}));
+            toastr.success(i18n.t('tracing.note',
+                {file: path.parse(paper.globalPath).base}));
           });
-        }).catch(function (e) {
+        }).catch(function () {
           toggleOverlay(false);
-          toastr.error(i18n.t('tracing.error', {file: path.parse(paper.globalPath).base}));
+          toastr.error(i18n.t('tracing.error',
+              {file: path.parse(paper.globalPath).base}));
         });
       });
     });
@@ -480,7 +485,8 @@ function buildImageVectorizer() {
         t: 'OpenDialog',
         title: i18n.t('import.title'),
         filters: [
-          { name: i18n.t('import.files'), extensions: ['jpg', 'jpeg', 'gif', 'png'] }
+          { name: i18n.t('import.files'),
+            extensions: ['jpg', 'jpeg', 'gif', 'png'] }
         ]
       }, function(filePath){
         if (!filePath) {  // Open cancelled
@@ -499,11 +505,13 @@ function buildImageVectorizer() {
               $('#tracing').fadeOut('slow',function(){
                 // Notify user
                 paper.view.update();
-                toastr.success(i18n.t('tracing.note', {file: path.parse(paper.globalPath).base}));
+                toastr.success(i18n.t('tracing.note',
+                    {file: path.parse(paper.globalPath).base}));
               });
-            }).catch(function(e){
+            }).catch(function(){
               toggleOverlay(false);
-              toastr.error(i18n.t('tracing.error', {file: path.parse(paper.globalPath).base}));
+              toastr.error(i18n.t('tracing.error',
+                  {file: path.parse(paper.globalPath).base}));
             });
           });
         });
@@ -512,7 +520,6 @@ function buildImageVectorizer() {
       // Select the thing and disable other selections
       toolSelect.imageTraceMode(true);
     }
-
 
   });
 

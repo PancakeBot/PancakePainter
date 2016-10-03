@@ -53,7 +53,8 @@ module.exports = function(paper) {
 
       // Shortcut single click end polygon draw shape via path closing, or
       // right click
-      if (drawPath.segments.length > 2 && checkEndSnap(event.point) || event.event.button === 2) {
+      if (drawPath.segments.length > 2 &&
+          checkEndSnap(event.point) || event.event.button === 2) {
         polygonDrawComplete();
         return;
       }
@@ -127,7 +128,8 @@ module.exports = function(paper) {
         }
 
         // If the distance is right and we have end snap... make it closed!
-        if (drawPath.length > endSnapDistance + 5 && checkEndSnap(drawPath.lastSegment.point)) {
+        if (drawPath.length > endSnapDistance + 5 &&
+            checkEndSnap(drawPath.lastSegment.point)) {
           drawPath.lastSegment.remove();
           drawPath.closed = true;
         }
@@ -147,7 +149,7 @@ module.exports = function(paper) {
 
   // Catch Escape key (not caught with the tool's onKeyDown).
   $(document).keyup(function(e) {
-     if (e.keyCode == 27) {
+     if (e.keyCode === 27) {
         polygonDrawComplete();
     }
   });
@@ -164,7 +166,8 @@ module.exports = function(paper) {
       polygonalDraw = false;
 
       // If the distance is right and we have end snap... make it closed!
-      if (drawPath.segments.length > 2 && checkEndSnap(drawPath.lastSegment.point)) {
+      if (drawPath.segments.length > 2 &&
+          checkEndSnap(drawPath.lastSegment.point)) {
         drawPath.lastSegment.remove();
         drawPath.closed = true;
       }
