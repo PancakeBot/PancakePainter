@@ -675,16 +675,22 @@ paper.importForKmeans = function(filePath) {
             return b[1] - a[1]
           });
 
-          var centroids = sortable.slice(0); // copy
-          var centroids = centroids.map(function (item) {
-            var color = item[0];
-            var r = (color >> 16) & 255;
-            var g = (color >> 8) & 255;
-            var b = color & 255;
-            return [r, g, b];
-          });
+          if(sortable.length >= paper.ColorAmount){
+            var centroids = sortable.slice(0); // copy
+            var centroids = centroids.map(function (item) {
+              var color = item[0];
+              var r = (color >> 16) & 255;
+              var g = (color >> 8) & 255;
+              var b = color & 255;
+              return [r, g, b];
+            });
 
-          return centroids.slice(0, k);
+            return centroids.slice(0, k);
+          }
+          else {
+            var centroids = points.slice(0); // copy
+            return centroids.slice(0, k);
+          }
         };
 
         // Classify all pixels according to the kmeans result
