@@ -977,7 +977,7 @@ paper.centerAndCutImportedSVG = function() {
       paths[n].data = { color: group.data.color };
     }
 
-    group.parent.insertChildren(group.index,  group.removeChildren());
+    group.parent.insertChildren(group.index, group.removeChildren());
     group.remove();
   }
 
