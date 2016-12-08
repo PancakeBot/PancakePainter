@@ -48,6 +48,7 @@ var printableArea = {
   width: 443,
   height: 210
 };
+var mmPerPX = 52;
 
 var renderConfig = {
   printArea: { // Print area limitations (in 1 MM increments)
@@ -162,7 +163,7 @@ function initEditor() {
 
     scale = (scale.x < scale.y ? scale.x : scale.y);
 
-    var mmPerPX = $griddle.width() / griddleSize.width;
+    mmPerPX = $griddle.width() / griddleSize.width;
 
     var off = $griddle.offset();
     $editor.css({
@@ -359,7 +360,7 @@ function buildImageVectorizer() {
       .addClass('tool')
       .attr('id', 'importVectorized')
       .data('cursor-key', 'select')
-      .attr('title', i18n.t('import.title'));
+      .attr('title', i18n.t('tracing.menutitle'));
 
   var $imageDiv =  document.createElement("DIV");
   $imageDiv.setAttribute("id", "imageDiv");
@@ -387,7 +388,7 @@ function buildImageVectorizer() {
   sliderLevels.setAttribute("value", "2");
   $dropdown.appendChild(sliderLevels);
 
-  // Levels title
+  // Fidelity title
   var h2 = document.createElement("H3");
   var t2 = document.createTextNode("Edge Fidelity");     // Create a text node
   h2.appendChild(t2);
@@ -402,6 +403,22 @@ function buildImageVectorizer() {
   sliderFidelity.setAttribute("step", "1");
   sliderFidelity.setAttribute("value", "0");
   $dropdown.appendChild(sliderFidelity);
+
+  // Area filter title
+  var h3 = document.createElement("H3");
+  var t3 = document.createTextNode("Minimal Area Filter");
+  h3.appendChild(t3);
+  $dropdown.appendChild(h3);
+
+  // Area filter Slider
+  var areaSlider = document.createElement("INPUT");
+  areaSlider.setAttribute("type", "range");
+  areaSlider.setAttribute("id", "minimumArea");
+  areaSlider.setAttribute("min", "0");
+  areaSlider.setAttribute("max", "500");
+  areaSlider.setAttribute("step", "10");
+  areaSlider.setAttribute("value", "" + paper.CleanParameterToScale);
+  $dropdown.appendChild(areaSlider);
 
   $importButton.append($dropdown);
 
@@ -453,6 +470,35 @@ function buildImageVectorizer() {
   // Even handler for EdgeFidelity Slider
   $("#sliderFidelity").on("change", function(){
     paper.EdgeFidelity = this.value;
+    if(!paper.globalPath) return;
+
+    // Throw up the overlay and activate the exporting note.
+    toggleOverlay(true, function(){
+      $('#tracing').fadeIn('slow', function(){
+        // reload file!
+        paper.reloadImportedImage().then(function () {
+          toggleOverlay(false);
+          $('#tracing').fadeOut('slow',function(){
+            // Notify user
+            paper.view.update();
+            toastr.success(i18n.t('tracing.note',
+                {file: path.parse(paper.globalPath).base}));
+          });
+        }).catch(function () {
+          toggleOverlay(false);
+          toastr.error(i18n.t('tracing.error',
+              {file: path.parse(paper.globalPath).base}));
+        });
+      });
+    });
+  });
+
+  // Even handler for Area Slider
+  $("#minimumArea").on("change", function(){
+    // Scale CleanParameter with the screen resolution
+    paper.CleanParameterToScale = this.value;
+    paper.CleanParameter = paper.CleanParameterToScale * mmPerPX * mmPerPX;
+
     if(!paper.globalPath) return;
 
     // Throw up the overlay and activate the exporting note.

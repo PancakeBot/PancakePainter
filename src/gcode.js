@@ -19,6 +19,14 @@ module.exports = function(config) {
     var out = getCodeHeader();
     config.noMirror = noMirror;
 
+    // Ungroup all the groups in the workLayer
+    var groups = workLayer.getItems({ class: paper.Group });
+    for (var i = 0; i < groups.length; i++) {
+      var group = groups[i];
+      group.parent.insertChildren(group.index, group.removeChildren());
+      group.remove();
+    }
+
     // Convert all fill paths in the work layer into fills.
     // Must use a fillList because removing paths changes the children list
     var fillList = [];

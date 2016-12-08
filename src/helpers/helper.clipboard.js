@@ -26,9 +26,29 @@ module.exports = function(paper) {
   clipboard.copy = function(deleteSelection) {
     if (paper.selectRect) {
       clipboard.data = [];
+      var copiedGroups = [];
+
       _.each(paper.selectRect.ppaths, function(path){
-        clipboard.data.push(path.clone(false));
-        if (deleteSelection) path.remove();
+        if(path.name !== 'traced path'){
+          clipboard.data.push(path.clone(false));
+          if (deleteSelection) path.remove();
+        }
+        // If traced path was selected, copy the entire group
+        //  and keep trace of it so we don't copy it more than
+        //  once
+        else if(path.parent.className == 'Group' &&
+            path.parent.name == 'traced path' &&
+            copiedGroups.indexOf(path.parent.id) < 0) {
+          var clone = path.parent.clone(false);
+          clone.name = 'traced path';
+          _.each(clone.children, function (item) {
+            item.name = 'traced path';
+          });
+
+          copiedGroups.push(path.parent.id);
+          clipboard.data.push(clone);
+          if (deleteSelection) path.parent.remove();
+        }
       });
 
       if (deleteSelection) {
@@ -52,6 +72,16 @@ module.exports = function(paper) {
       // Clone each path, put in the layer, offset it, and add to selection.
       _.each(clipboard.data, function(path){
         var pathCopy = path.clone(false);
+
+        // If this is a traced path this should be a group, we shouldn't
+        //  never get a traced Path here, only the group
+        if(path.name == 'traced path' &&
+            path.className == 'Group'){
+          _.each(pathCopy.children, function (item) {
+            item.name = 'traced path';
+          });
+        }
+
         project.activeLayer.addChild(pathCopy);
         pathCopy.translate(new Point(25, 25));
         paper.selectAdd(pathCopy);
@@ -70,8 +100,24 @@ module.exports = function(paper) {
   clipboard.dupe = function() {
     if (paper.selectRect) {
       var newPaths = [];
+      var copiedGroups = [];
+
       _.each(paper.selectRect.ppaths, function(path){
-        newPaths.push(path.clone(true));
+        if(path.parent.className == 'Group' &&
+            path.parent.name == 'traced path' &&
+            copiedGroups.indexOf(path.parent.id) < 0) {
+
+          var clone = path.parent.clone();
+          clone.name = 'traced path';
+          _.each(clone.children, function (item) {
+            item.name = 'traced path';
+          });
+          copiedGroups.push(path.parent.id);
+          newPaths.push(clone);
+        }
+        else {
+          newPaths.push(path.clone(true));
+        }
       });
 
       // Deselect to clear for selecting the new paths.

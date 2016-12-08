@@ -304,8 +304,8 @@ paper.loadPBP = function(filePath){
 
   project.importJSON(fs.readFileSync(filePath, "utf8"));
 
-  paper.imageLayer = project.layers[0];
-  paper.mainLayer = project.layers[1];
+  paper.imageLayer = project.layers[1];
+  paper.mainLayer = project.layers[2];
 
   paper.mainLayer.activate();
 
@@ -608,14 +608,19 @@ var loopLayersArray = function(binaryLayers, ctx, imageData, canvas,
   });
 };
 
+paper.existingIDs = [];
+paper.lastTracedGroup = null;
+
 // Loads an computes the kmeans for each image layer. Returns a promise which is
 //  resolved when the processing is finished
 paper.importForKmeans = function(filePath) {
 
   if(!filePath) return;
 
-  //Cleanup
-  paper.newPBP();
+  // Get all the IDs of the current items
+  paper.existingIDs = project.activeLayer.getItems({}).map(function (item) {
+    return item.id;
+  });
 
   var promise = new Promise(function (resolve, reject) {
     // Open raster image
@@ -796,6 +801,7 @@ paper.importForKmeans = function(filePath) {
         // Draw all the others
         pos = 1;
 
+        console.log(binaryLayers.length + " binary layers");
         loopLayersArray(binaryLayers, ctx, imageData, canvas, function (error) {
           if(error){
             console.error(error.stack);
@@ -820,12 +826,13 @@ paper.importForKmeans = function(filePath) {
 // Called when the user click vector load again
 paper.reloadImportedImage = function() {
 
-  //Cleanup
-  paper.newPBP();
-
   var promise = new Promise(function (resolve, reject) {
     // Reload into timeout to allow previous code to finish
     setTimeout(function() {
+      if(paper.lastTracedGroup){
+        paper.lastTracedGroup.remove();
+      }
+
       paper.importForKmeans(paper.globalPath).then(function () {
         resolve();
       }).catch(function(e){
@@ -912,18 +919,39 @@ paper.centerAndCutImportedSVG = function() {
     position: view.center
   });
 
+  // Compute the group bounds according to their children because
+  //  group.bounds returns bad values sometimes
+  function computeGroupBounds(group) {
+    var width = 0, height = 0;
+    _.each(group.children, function (child) {
+      width = Math.max(width, child.bounds.width);
+      height = Math.max(height, child.bounds.height);
+    });
+
+    return {width: width, height: height};
+  }
+
   // Size the Group down
-  var bounds = group.bounds;
+  var bounds = computeGroupBounds(group);
   var scale = {
     x: (view.bounds.width * 0.8) / bounds.width,
     y: (view.bounds.height * 0.8) / bounds.height
   };
 
-  group.pInitialBounds = group.bounds;
+  group.pInitialBounds = bounds;
+  console.log('Initial bounds - Width: ' + group.pInitialBounds.width +
+      ' - Height: ' + group.pInitialBounds.height);
 
   // Use the smallest scale
   scale = (scale.x < scale.y ? scale.x : scale.y);
   group.scale(scale);
+
+  bounds = computeGroupBounds(group);
+  console.log('Final bounds - Width: ' + bounds.width +
+      ' - Height: ' + bounds.height);
+
+  var imgWidth = bounds.width;
+  var imgHeight = bounds.height;
 
   // Cuts the background layer to avoid overlapping
   var backgroundPaths =  paper.ImportedSVGLayers
@@ -946,7 +974,7 @@ paper.centerAndCutImportedSVG = function() {
 
       // Make it Polygonal
       currentItem.data.isPolygonal = true;
-
+      currentItem.name = "traced path";
     }
   }
 
@@ -963,10 +991,23 @@ paper.centerAndCutImportedSVG = function() {
 
   // Update the background layer in the Imported SVG Layers list
   paper.ImportedSVGLayers[0] = backgroundSquare;
+  paper.ImportedSVGLayers[0].name = 'background';
+  _.each(paper.ImportedSVGLayers[0].children, function (path) {
+    path.name = 'background';
+  });
 
-
-  // Ungroup all items
-  var groups = project.activeLayer.getItems({ class: Group });
+  // // Debug
+  // var origGroup = group.clone().translate(new Point(400, 0));
+  // origGroup.name = 'debug';
+  // origGroup.rasterize();
+  // origGroup.remove();
+  
+  // Ungroup all items, filter groups that already existed before the tracing
+  var groups = project.activeLayer.getItems({ class: Group,
+    id: function (id) {
+      return paper.existingIDs.indexOf(id) < 0;
+    }
+  });
   var paths;
   for (i = 0; i <  groups.length; i++) {
     group = groups[i];
@@ -975,6 +1016,7 @@ paper.centerAndCutImportedSVG = function() {
     paths = group.getItems({ class: PathItem });
     for(var n = 0; n < paths.length; ++n){
       paths[n].data = { color: group.data.color };
+      paths[n].name = group.name;
     }
 
     group.parent.insertChildren(group.index, group.removeChildren());
@@ -982,7 +1024,11 @@ paper.centerAndCutImportedSVG = function() {
   }
 
   // Make them closed
-  paths = project.activeLayer.getItems({ class: PathItem });
+  paths = project.activeLayer.getItems({ class: PathItem,
+    id: function (id) {
+      return paper.existingIDs.indexOf(id) < 0;
+    }
+  });
   for (i = 0; i <  paths.length; i++) {
     var path = paths[i];
     path.closed = true;
@@ -990,8 +1036,134 @@ paper.centerAndCutImportedSVG = function() {
     path.name = "traced path";
   }
 
+  // Sort all the Paths in this CompoundPath hierarchically
+  paths = project.activeLayer.getItems({ class: Path,
+    id: function (id) {
+      return paper.existingIDs.indexOf(id) < 0;
+    }
+  });
+  paths = sortHierarchically(paths);
+
+  // Add Z index to each item and assign correct color
+  _.each(paths, function (path, index) {
+    path.data.z = index;
+    path.fillColor = paper.pancakeShades[path.data.color];
+  });
+
+  if(paper.ColorAmount >= 3) {
+    _.each(paths, function (path) {
+      if (Math.abs(path.bounds.width - imgWidth) < 0.01 &&
+          Math.abs(path.bounds.height - imgHeight) < 0.01) {
+        path.data.z = 0;
+        path.data.bg = true;
+        console.log('Changed Z of path ' + path.id);
+      }
+    });
+  }
+
+  // Kill every CompoundPath, only leave their children alive
+  var compounds = project.activeLayer.getItems({ class: paper.CompoundPath,
+    id: function (id) {
+      return paper.existingIDs.indexOf(id) < 0;
+    }
+  });
+  var c = sortHierarchically(compounds);
+  _.each(c, function (compound, index) {
+    compound.data.z = index;
+  });
+
+  _.each(compounds, function (compound, index) {
+    compound.setClockwise(true);
+    compound.reorient();
+
+    var children = compound.removeChildren();
+    project.activeLayer.insertChildren(compound.index, children);
+
+    // Color counter
+    var colors = [0, 0, 0, 0];
+
+    _.each(children, function (path) {
+      path.data.compound = index;
+      if(path.data.bg){
+        path.sendToBack();
+        console.log('Sent path ' + path.id + ' to back');
+      }
+
+      if (path.clockwise) {
+        path.fillColor = paper.pancakeShades[compound.data.color];
+        path.data.color = compound.data.color;
+        ++colors[path.data.color];
+      }
+      else {
+        // Get all the paths that intersects with this path
+        var candidates = getAllIntersectPaths(path, paths);
+
+        // Sort the paths in ascending Z order (the top-most paths are first)
+        candidates = _.sortBy(candidates, function (candidate) {
+          return candidate.data.z;
+        });
+
+        var logCandidates = candidates.map(function (path) {
+          return path.id;
+        });
+        console.log('Candidates for path ' + path.id + ': ' +
+            logCandidates.toString());
+
+        // Go through all the candidate paths
+        var zFlag = path.data.z;
+        for(var n = 0; n < candidates.length; ++n){
+          var candidate = candidates[n];
+          // The candidate must be two levels deeper than our path
+          if (candidate.data.z > zFlag) {
+            // First level deep, we have to go one level deeper yet
+            if (zFlag === path.data.z) {
+              zFlag = candidate.data.z;
+            }
+            // We should be two levels deeper than our path here
+            // Take the color from this candidate
+            else {
+              path.fillColor = candidate.fillColor;
+              path.data.color = paper.pancakeShades
+                  .indexOf(path.fillColor.toCSS(true));
+              console.log('Changed color of path ' + path.id +
+                  ' to ' + path.data.color +
+                  ' from candidate ' + candidate.id);
+              break;
+            }
+          }
+        }
+        ++colors[path.data.color];
+      }
+    });
+
+    compound.remove();
+  });
+
+  _.each(paths, function (path) {
+    var area = Math.abs(path.area);
+    // Remove if to small
+    if(area < paper.CleanParameter)
+    {
+      path.remove();
+      console.log('Removed path ' + path.id + ' due to small area');
+    }
+  });
+
+  // Create group with all the paths corresponding to this
+  //  traced image
+  paths = project.activeLayer.getItems({ class: Path,
+    id: function (id) {
+      return paper.existingIDs.indexOf(id) < 0;
+    }
+  });
+  group = new Group({
+    children: paths
+  });
+  group.setName('traced path');
+  paper.lastTracedGroup = group;
+  
   // Select the new SVG and disable other selections
-  toolSelect.selectNewSvg();
+  toolSelect.selectNewSvg(group);
 
   // Update view
   paper.view.update();
@@ -999,8 +1171,61 @@ paper.centerAndCutImportedSVG = function() {
   // Clean lists
   paper.ImportedSVGLayers = []; // SVG Layers
   paper.ColorMapping = []; // Color Mapping
-
+  console.log('Finished tracing');
 };
+
+/**
+ * Returns an array with the project Paths sorted in a way that the top-most
+ *  Path is in the firsts position of the array and all the paths below are in
+ *  the subsequent index.
+ * @param paths Paths to sort
+ */
+function sortHierarchically(paths) {
+  return paths.sort(function (a, b) {
+    // If a is below b, put b first
+    if(a.isBelow(b)){
+      return 1;
+    }
+    // If b is below a, put a first
+    else if(b.isBelow(a)) {
+      return -1;
+    }
+
+    return 0;
+  });
+}
+
+/**
+ * Returns a list of all the Paths that intersects the given Path
+ * @param path Path to test intersection
+ * @param paths List of Paths to check intersection with
+ */
+function getAllIntersectPaths(path, paths) {
+  var list = [];
+
+  _.each(paths, function (p) {
+    if(pathsIntersects(p, path)){
+      list.push(p);
+    }
+  });
+
+  return list;
+}
+
+function pathsIntersects(path1, path2) {
+  for(var n = 0; n < path2.segments.length; ++n){
+    if(path1.contains(path2.segments[n].point)){
+      return true;
+    }
+  }
+  for(n = 0; n < path1.segments.length; ++n){
+    if(path2.contains(path1.segments[n].point)){
+      return true;
+    }
+  }
+
+  return false;
+}
 
 // Process one layer at a time. Basically vectorizing with Potrace and loading
 // into paper.js
@@ -1020,7 +1245,7 @@ function processLayer(layer,ctx,imageData,canvas,callback) {
   var gh = canvas.toDataURL('image/png');
 
   // Uncomment for debugging
-  // paper.savePNG(gh);
+  //paper.savePNG(gh);
 
   // Vectorize using potrace
   Potrace.loadImageFromUrl(gh);
@@ -1080,25 +1305,10 @@ paper.smoothSVG = function(svg) {
 
     // If Path (no compoundPath)
     if(child.className === 'Path'){
-
-      var area = Math.abs(child.area);
-
-      // Remove if to small
-      if(area < paper.CleanParameter)
+      if(paper.EdgeFidelity > 1)
       {
-        // Clean small segments by area
-        // if(child.area > 0 )
-        // {
-        // Remove small regions
-        child.remove();
-        // }
-      }
-      else {
-        if(paper.EdgeFidelity > 1)
-        {
-          // Simplify. paper.js code is buggy for this function
-          child.simplify(paper.EdgeFidelity);
-        }
+        // Simplify. paper.js code is buggy for this function
+        child.simplify(paper.EdgeFidelity);
       }
     }
   }
@@ -1153,7 +1363,7 @@ paper.importSvg = function(filePath, isFilePath, colorI) {
   }
 
   // Import svg into Paper.js
-  var svg = project.importSVG(contents, {expandShapes: false,
+  var svg = project.importSVG(contents, {expandShapes: true,
     applyMatrix: false});
 
   //var colorIndex = paper.pancakeShades.length - colorI;
@@ -1186,7 +1396,6 @@ paper.importSvg = function(filePath, isFilePath, colorI) {
 
   // Keep track of the group
   paper.ImportedSVGLayers.push(group);
-
 
   //// Make SVG single layered
   //// Get only Paths

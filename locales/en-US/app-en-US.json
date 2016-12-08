@@ -63,7 +63,7 @@
     "color3": "Dark"
   },
   "import": {
-    "title": "Import image for tracing…",
+    "title": "Import image for manual tracing…",
     "files": "Web format tracing image"
   },
   "export": {
@@ -74,6 +74,7 @@
     "note" : "Successfully exported \"__file__\" for printing."
   },
   "tracing": {
+    "menutitle": "Import image for tracing…",
     "title": "Image tracing in progress, please wait…",
     "start": "Tracing",
     "wait": "Image tracing in progress, please wait…",
