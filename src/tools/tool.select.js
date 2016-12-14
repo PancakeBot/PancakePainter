@@ -68,7 +68,7 @@ module.exports = function(paper) {
       segments: true,
       stroke: true,
       fill: true,
-      class: Path,
+      //class: Path,
       tolerance: 5
     };
 
@@ -277,24 +277,24 @@ module.exports = function(paper) {
       //  then scale it
       paper.selectRect.scale(1/previousRatio, paper.selectRect.bounds.center);
       paper.selectRect.scale(ratio, paper.selectRect.bounds.center);
+      var scaledGroups = [];
 
-      var groups = [];
       _.each(paper.selectRect.ppaths, function(path){
         if(path.name !== "traced path"){
           path.scale(1/previousRatio, paper.selectRect.bounds.center);
           path.scale(ratio, paper.selectRect.bounds.center);
         }
-        else if(path.parent.className == 'Group' &&
-                path.parent.name == 'traced path' &&
-                groups.indexOf(path.parent.id) < 0) {
-          path.parent.scale(1/previousRatio, paper.selectRect.bounds.center);
-          path.parent.scale(ratio, paper.selectRect.bounds.center);
-          groups.push(path.parent.id);
-        }
-        else if(path.className == 'Group'){
-          path.scale(1/previousRatio, paper.selectRect.bounds.center);
-          path.scale(ratio, paper.selectRect.bounds.center);
-          groups.push(path.parent.id);
+        else {
+          var tracing = paper.getTracedImage(path);
+          if(tracing){
+            _.each(tracing, function (compound) {
+              if(scaledGroups.indexOf(compound.id) < 0){
+                compound.scale(1/previousRatio, paper.selectRect.bounds.center);
+                compound.scale(ratio, paper.selectRect.bounds.center);
+                scaledGroups.push(compound.id);
+              }
+            });
+          }
         }
       });
 
@@ -308,21 +308,22 @@ module.exports = function(paper) {
       rotation = rotation - prevRotation;
 
       paper.selectRect.rotate(rotation);
+      var rotatedGroups = [];
 
-      var groups = [];
       _.each(paper.selectRect.ppaths, function(path){
         if(path.name !== "traced path"){
           path.rotate(rotation, paper.selectRect.pivot);
         }
-        else if(path.parent.className == 'Group' &&
-                path.parent.name == 'traced path' &&
-                groups.indexOf(path.parent.id) < 0) {
-          path.parent.rotate(rotation, paper.selectRect.pivot);
-          groups.push(path.parent.id);
-        }
-        else if(path.className == 'Group'){
-          path.rotate(rotation, paper.selectRect.pivot);
-          groups.push(path.parent.id);
+        else {
+          var tracing = paper.getTracedImage(path);
+          if(tracing){
+            _.each(tracing, function (compound) {
+              if(rotatedGroups.indexOf(compound.id) < 0){
+                compound.rotate(rotation, paper.selectRect.pivot);
+                rotatedGroups.push(compound.id);
+              }
+            });
+          }
         }
       });
 
@@ -341,24 +342,55 @@ module.exports = function(paper) {
 
       // Path translate position adjustment
       psr.position = psr.position.add(event.delta);
+      var movedGroups = [];
 
-      var groups = [];
       _.each(psr.ppaths, function(path){
         if(path.name !== "traced path") {
           path.translate(event.delta);
         }
-        else if(path.parent.className == 'Group' &&
-                path.parent.name == 'traced path' &&
-                groups.indexOf(path.parent.id) < 0) {
-          path.parent.translate(event.delta);
-          groups.push(path.parent.id);
-        }
-        else if(path.className == 'Group'){
-          path.translate(event.delta);
-          groups.push(path.parent.id);
+        else {
+          var tracing = paper.getTracedImage(path);
+          if(tracing){
+            _.each(tracing, function (compound) {
+              if(movedGroups.indexOf(compound.id) < 0){
+                compound.translate(event.delta);
+                movedGroups.push(compound.id);
+              }
+            });
+          }
         }
       });
     }
+  };
+
+  paper.getTracedImage = function(path) {
+    var targetImageId = null;
+
+    if(!(path instanceof CompoundPath)){
+      if(path.parent.name == 'traced path'){
+        targetImageId = path.parent.data.imageId;
+      }
+      else {
+        return null;
+      }
+    }
+    else {
+      if(path.name == 'traced path'){
+        targetImageId = path.data.imageId;
+      }
+      else {
+        return null;
+      }
+    }
+
+    var compounds = [];
+    _.each(project.activeLayer.getItems({class: CompoundPath}), function (compound) {
+      if(compound.data.imageId == targetImageId){
+        compounds.push(compound);
+      }
+    });
+
+    return compounds;
   };
 
   tool.onMouseMove = function(event) {
@@ -412,10 +444,19 @@ module.exports = function(paper) {
 
   tool.onKeyDown = function (event) {
     if (paper.selectRect) {
+      
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
         _.each(paper.selectRect.ppaths, function(path){
-          path.remove();
+          var tracing = paper.getTracedImage(path);
+          if(false){
+            _.each(tracing, function (compound) {
+              compound.remove();
+            });
+          }
+          else{
+            path.remove();
+          }
         });
 
         if (paper.imageTraceMode) paper.traceImage = null;
@@ -606,8 +647,7 @@ module.exports = function(paper) {
 
     var paths = [];
     _.each(project.activeLayer.children, function(path){
-      if (path instanceof paper.Path || path instanceof paper.CompoundPath
-          || path instanceof paper.Group) {
+      if (path instanceof paper.Path || path instanceof paper.CompoundPath) {
         paths.push(path);
       }
     });
@@ -672,8 +712,10 @@ module.exports = function(paper) {
     }
   };
 
-  tool.selectNewSvg = function(group) {
-    initSelectionRectangle(group);
+  tool.selectNewSvg = function(tracing) {
+    // _.each(tracing, function (compound) {
+    //   addToSelection(compound);
+    // });
     tool.activate();
   };
 

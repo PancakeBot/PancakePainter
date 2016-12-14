@@ -36,18 +36,30 @@ module.exports = function(paper) {
         // If traced path was selected, copy the entire group
         //  and keep trace of it so we don't copy it more than
         //  once
-        else if(path.parent.className == 'Group' &&
-            path.parent.name == 'traced path' &&
-            copiedGroups.indexOf(path.parent.id) < 0) {
-          var clone = path.parent.clone(false);
-          clone.name = 'traced path';
-          _.each(clone.children, function (item) {
-            item.name = 'traced path';
+        var tracing = paper.getTracedImage(path);
+        if(tracing) {
+          var newCompounds = [];
+          _.each(tracing, function(compound){
+            if(copiedGroups.indexOf(compound.id) < 0){
+              var clone = compound.clone(false);
+              clone.position = compound.position;
+              clone.scaling = compound.scaling;
+              clone.rotation = compound.rotation;
+              clone.name = 'traced path';
+
+              _.each(clone.children, function (item) {
+                item.name = 'traced path';
+              });
+
+              copiedGroups.push(compound.id);
+              newCompounds.push(clone);
+
+              if (deleteSelection) compound.remove();
+            }
           });
 
-          copiedGroups.push(path.parent.id);
-          clipboard.data.push(clone);
-          if (deleteSelection) path.parent.remove();
+          // Push the array with all the compounds of this traced image
+          clipboard.data.push(newCompounds);
         }
       });
 
@@ -71,20 +83,34 @@ module.exports = function(paper) {
 
       // Clone each path, put in the layer, offset it, and add to selection.
       _.each(clipboard.data, function(path){
-        var pathCopy = path.clone(false);
-
-        // If this is a traced path this should be a group, we shouldn't
-        //  never get a traced Path here, only the group
-        if(path.name == 'traced path' &&
-            path.className == 'Group'){
-          _.each(pathCopy.children, function (item) {
-            item.name = 'traced path';
+        // If this is an array it's a group of compounds
+        //  of a traced image
+        if(path instanceof Array){
+          var imageId = paper.getRandomInt(0, 10000);
+          _.each(path, function (compound) {
+            var compoundCopy = compound.clone(false);
+            compoundCopy.position = compound.position;
+            compoundCopy.scaling = compound.scaling;
+            compoundCopy.rotation = compound.rotation;
+            compoundCopy.name = 'traced path';
+            compoundCopy.data.imageId = imageId;
+            
+            _.each(compoundCopy.children, function (item) {
+              item.name = 'traced path';
+            });
+            
+            project.activeLayer.addChild(compoundCopy);
+            compoundCopy.translate(new Point(25, 25));
+            paper.selectAdd(compoundCopy);
           });
         }
+        else {
+          var pathCopy = path.clone(false);
 
-        project.activeLayer.addChild(pathCopy);
-        pathCopy.translate(new Point(25, 25));
-        paper.selectAdd(pathCopy);
+          project.activeLayer.addChild(pathCopy);
+          pathCopy.translate(new Point(25, 25));
+          paper.selectAdd(pathCopy);
+        }
       });
 
       paper.fileChanged();
@@ -103,20 +129,30 @@ module.exports = function(paper) {
       var copiedGroups = [];
 
       _.each(paper.selectRect.ppaths, function(path){
-        if(path.parent.className == 'Group' &&
-            path.parent.name == 'traced path' &&
-            copiedGroups.indexOf(path.parent.id) < 0) {
+        var tracing = paper.getTracedImage(path);
+        // var tracing = [paper.project.activeLayer.children[0], paper.project.activeLayer.children[1]];
+        if(tracing) {
+          var imageId = paper.getRandomInt(0, 10000);
+          _.each(tracing, function(compound){
+            if(copiedGroups.indexOf(compound.id) < 0){
+              var clone = compound.clone(false);
+              clone.position = compound.position;
+              clone.scaling = compound.scaling;
+              clone.rotation = compound.rotation;
+              clone.name = 'traced path';
+              clone.data.imageId = imageId;
 
-          var clone = path.parent.clone();
-          clone.name = 'traced path';
-          _.each(clone.children, function (item) {
-            item.name = 'traced path';
+              _.each(clone.children, function (item){
+                item.name = 'traced path';
+              });
+
+              copiedGroups.push(compound.id);
+              newPaths.push(clone);
+            }
           });
-          copiedGroups.push(path.parent.id);
-          newPaths.push(clone);
         }
         else {
-          newPaths.push(path.clone(true));
+          newPaths.push(path.clone(false));
         }
       });
 
@@ -124,6 +160,7 @@ module.exports = function(paper) {
       paper.deselect();
 
       _.each(newPaths, function(path){
+        project.activeLayer.addChild(path);
         path.translate(new Point(25, 25));
         paper.selectAdd(path);
       });
