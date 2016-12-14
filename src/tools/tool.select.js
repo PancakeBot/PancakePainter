@@ -367,7 +367,7 @@ module.exports = function(paper) {
     var targetImageId = null;
 
     if(!(path instanceof CompoundPath)){
-      if(path.parent.name == 'traced path'){
+      if(path.parent.name === 'traced path'){
         targetImageId = path.parent.data.imageId;
       }
       else {
@@ -375,7 +375,7 @@ module.exports = function(paper) {
       }
     }
     else {
-      if(path.name == 'traced path'){
+      if(path.name === 'traced path'){
         targetImageId = path.data.imageId;
       }
       else {
@@ -384,8 +384,9 @@ module.exports = function(paper) {
     }
 
     var compounds = [];
-    _.each(project.activeLayer.getItems({class: CompoundPath}), function (compound) {
-      if(compound.data.imageId == targetImageId){
+    _.each(project.activeLayer.getItems({class: CompoundPath}),
+     function (compound) {
+      if(compound.data.imageId === targetImageId){
         compounds.push(compound);
       }
     });
@@ -444,7 +445,7 @@ module.exports = function(paper) {
 
   tool.onKeyDown = function (event) {
     if (paper.selectRect) {
-      
+
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
         _.each(paper.selectRect.ppaths, function(path){
@@ -712,10 +713,7 @@ module.exports = function(paper) {
     }
   };
 
-  tool.selectNewSvg = function(tracing) {
-    // _.each(tracing, function (compound) {
-    //   addToSelection(compound);
-    // });
+  tool.selectNewSvg = function() {
     tool.activate();
   };
 

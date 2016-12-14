@@ -685,15 +685,6 @@ paper.importForKmeans = function(filePath) {
             data[i+3] = 255;
           }
 
-          // Don't remove the background color if
-          // there are only 2 colors in the image
-          if(colorCount > 2 &&
-              data[i] === bgColor[0] &&
-              data[i+1] === bgColor[1] &&
-              data[i+2] === bgColor[2]){
-            // continue;
-          }
-
           // [r,g,b] values
           pixel = [data[i],data[i+1],data[i+2]];
           colors.push(pixel);
@@ -973,9 +964,9 @@ paper.centerAndCutImportedSVG = function() {
       ' - Height: ' + bounds.height);
 
   // Cuts the background layer to avoid overlapping
-  var backgroundPaths =  paper.ImportedSVGLayers
-      [0].getItems({ class: PathItem });
-  var backgroundSquare = backgroundPaths[0];
+  // var backgroundPaths =  paper.ImportedSVGLayers
+  //     [0].getItems({ class: PathItem });
+  // var backgroundSquare = backgroundPaths[0];
 
   // First, make all paths closed to make substract() to work
   for (var i = 0; i <  paper.ImportedSVGLayers.length; i++) {

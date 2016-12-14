@@ -130,7 +130,6 @@ module.exports = function(paper) {
 
       _.each(paper.selectRect.ppaths, function(path){
         var tracing = paper.getTracedImage(path);
-        // var tracing = [paper.project.activeLayer.children[0], paper.project.activeLayer.children[1]];
         if(tracing) {
           var imageId = paper.getRandomInt(0, 10000);
           _.each(tracing, function(compound){
