@@ -48,7 +48,7 @@ var printableArea = {
   width: 443,
   height: 210
 };
-var mmPerPX = 52;
+var mmPerPX;
 
 var renderConfig = {
   printArea: { // Print area limitations (in 1 MM increments)
@@ -174,7 +174,7 @@ function initEditor() {
     });
 
     // Scale CleanParameter with the screen resolution
-    paper.CleanParameter = paper.CleanParameterToScale * mmPerPX * mmPerPX;
+    paper.CleanParameter = paper.cleanParameterToScale * mmPerPX * mmPerPX;
     console.log("CleanParameter: " + paper.CleanParameter);
 
     editorLoad(); // Load the editor (if it hasn't already been loaded)
@@ -360,11 +360,11 @@ function buildImageVectorizer() {
       .addClass('tool')
       .attr('id', 'importVectorized')
       .data('cursor-key', 'select')
-      .attr('title', i18n.t('tracing.menutitle'));
+      .attr('title', i18n.t('tracing.title'));
 
-  var $imageDiv =  document.createElement("DIV");
-  $imageDiv.setAttribute("id", "imageDiv");
-  $imageDiv.style.backgroundImage = "url(images/icon-vectorize.png)";
+  var $imageDiv = $('<div>')
+    .attr('id', 'imageDiv')
+    .css('background-image', 'url(images/icon-vectorize.png)');
   $importButton.append($imageDiv);
 
   // CREATE DROPDOWN MENU
@@ -417,7 +417,7 @@ function buildImageVectorizer() {
   areaSlider.setAttribute("min", "0");
   areaSlider.setAttribute("max", "500");
   areaSlider.setAttribute("step", "10");
-  areaSlider.setAttribute("value", "" + paper.CleanParameterToScale);
+  areaSlider.setAttribute("value", "" + paper.cleanParameterToScale);
   $dropdown.appendChild(areaSlider);
 
   $importButton.append($dropdown);
@@ -496,8 +496,8 @@ function buildImageVectorizer() {
   // Even handler for Area Slider
   $("#minimumArea").on("change", function(){
     // Scale CleanParameter with the screen resolution
-    paper.CleanParameterToScale = this.value;
-    paper.CleanParameter = paper.CleanParameterToScale * mmPerPX * mmPerPX;
+    paper.cleanParameterToScale = this.value;
+    paper.CleanParameter = paper.cleanParameterToScale * mmPerPX * mmPerPX;
 
     if(!paper.globalPath) return;
 

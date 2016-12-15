@@ -25,9 +25,6 @@ module.exports = function(paper) {
   var segment, path, selectChangeOnly;
   paper.imageTraceMode = false;
 
-  // Debug
-  // var debugText = null;
-
   // Externalize deselection
   paper.deselect = function(noFinish) {
     if (paper.selectRect) {
@@ -74,34 +71,6 @@ module.exports = function(paper) {
 
     hitOptions = _.extend(hitOptions, options);
     var hitResult = project.hitTest(event.point, hitOptions);
-
-    // // Debugging
-    // if(debugText){
-    //   debugText.remove();
-    // }
-    // function getIndexOfId(id) {
-    //   var items = paper.project.activeLayer.getItems({});
-    //   for(var n = 0; n < items.length; ++n){
-    //     if(items[n].id === id){
-    //       return n;
-    //     }
-    //   }
-    // }
-    // if(hitResult && hitResult.item) {
-    //   debugText = new paper.PointText(new Point(40, 40));
-    //   debugText.fillColor = 'white';
-    //   debugText.content = "Z: " + hitResult.item.data.z +
-    //       " - ID: " + hitResult.item.id +
-    //       " - Index: " + getIndexOfId(hitResult.item.id) +
-    //       " - Color: " + hitResult.item.data.color +
-    //       " - Name: " + hitResult.item.name +
-    //       ' - Clockwise: ' + hitResult.item.clockwise +
-    //       ' - Compound: ' + hitResult.item.data.compound;
-    //
-    //   if(event.modifiers.alt){
-    //     hitResult.item.bringToFront();
-    //   }
-    // }
 
     // Don't select image if not in trace mode
     if (hitResult && !paper.imageTraceMode) {

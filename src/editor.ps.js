@@ -18,12 +18,12 @@ paper.defaultEdgeFidelity = 0;
 paper.ColorAmount = paper.defaultColorAmount;   // From 2 to 4
 paper.EdgeFidelity = paper.defaultEdgeFidelity; // Edge Fidelity
 
-// Same as CleanParameter but this value will be
+// Same as cleanParameter but this value will be
 // scaled with screen resolution and saved in
-// CleanParameter. THIS is the value you want
+// cleanParameter. THIS is the value you want
 // to modify
-paper.CleanParameterToScale = 50;
-paper.CleanParameter = paper.CleanParameterToScale; // Clean little segments
+paper.cleanParameterToScale = 50;
+paper.cleanParameter = paper.cleanParameterToScale; // Clean little segments
 
 paper.ImportedSVGLayers = []; // SVG Layers
 paper.ColorMapping = []; // Color Mapping
@@ -1046,7 +1046,7 @@ paper.centerAndCutImportedSVG = function() {
   _.each(paths, function (path) {
     var area = Math.abs(path.area);
     // Remove if to small
-    if(area < paper.CleanParameter)
+    if(area < paper.cleanParameter)
     {
       path.remove();
       console.log('Removed path ' + path.id + ' due to small area');

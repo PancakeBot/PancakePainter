@@ -74,9 +74,7 @@
     "note" : "Successfully exported \"__file__\" for printing."
   },
   "tracing": {
-    "menutitle": "Import image for tracing…",
-    "title": "Image tracing in progress, please wait…",
-    "start": "Tracing",
+    "title": "Import image for automatic tracing…",
     "wait": "Image tracing in progress, please wait…",
     "note" : "Successfully traced \"__file__\" .",
     "error" : "Error while tracing \"__file__\" ."

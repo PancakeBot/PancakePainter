@@ -1,6 +1,5 @@
 {
 	"globals": {
-		"Image"		: true,
 		"Promise"	: true,
 		"$"			: true,
 		"_"			: true
