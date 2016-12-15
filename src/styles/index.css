@@ -274,25 +274,22 @@ input.fancy[type="checkbox"] {
   right: 0;
   bottom: 0; }
 
-/*ADDED USING CSS ONLY. NEED TO COPY IF YOU COMPILE SCSS */
 /* Slider titles */
 h3 {
   color: #ffffff;
   font-size: 0.7em;
   margin-left: 20px;
-  margin-bottom: 0px;
-}
+  margin-bottom: 0px; }
+
 /* Sliders  */
 #js-rangeslider-0 .rangeslider__handle, #js-rangeslider-1 .rangeslider__handle, #js-rangeslider-2 .rangeslider__handle {
   top: 0px !important;
   height: 20px !important;
   width: 20px !important;
-  margin-top: 0 !important;
-}
+  margin-top: 0 !important; }
 
 #js-rangeslider-0 .rangeslider__fill, #js-rangeslider-1 .rangeslider__fill, #js-rangeslider-2 .rangeslider__fill {
-  background: #e03232 !important;
-}
+  background: #e03232 !important; }
 
 #js-rangeslider-0, #js-rangeslider-1, #js-rangeslider-2 {
   margin: 15px 30px !important;
@@ -300,16 +297,14 @@ h3 {
   margin-bottom: 6px !important;
   height: 22px !important;
   z-index: 1;
-  width: 130px !important;
-}
-/* end Sliders */
+  width: 130px !important; }
 
+/* End Sliders */
 /* The container <div> - needed to position the dropdown content */
 .dropdown {
   position: relative;
   display: inline-block;
-  vertical-align: middle;
-}
+  vertical-align: middle; }
 
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
@@ -318,18 +313,14 @@ h3 {
   background-color: #3A3A3A;
   min-width: 190px;
   min-height: 183px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-}
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); }
 
 /* Links inside the dropdown */
 .dropdown-content a {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
-  display: block;
-}
-
-/* END */
+  display: block; }
 
 div.overlay-window {
   display: none;
@@ -361,12 +352,22 @@ div.overlay-window {
     top: 30px; }
   #toolback .ver {
     top: 41px;
-    transform: translate(296px, 0); } }
+    transform: translate(296px, 0); }
+
+  #tools {
+    left: 52%;
+    top: 9px;
+    zoom: 95%; } }
 @media (max-width: 755px) {
   #toolback #logo {
     height: 20px;
     top: 33px; }
   #toolback .ver {
-    transform: translate(258px, 0); } }
+    transform: translate(258px, 0); }
+
+  #tools {
+    left: 51%;
+    top: 18px;
+    zoom: 80%; } }
 
 /*# sourceMappingURL=index.css.map */
