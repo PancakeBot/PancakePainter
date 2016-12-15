@@ -42,9 +42,6 @@ module.exports = function(paper) {
           _.each(tracing, function(compound){
             if(copiedGroups.indexOf(compound.id) < 0){
               var clone = compound.clone(false);
-              clone.position = compound.position;
-              clone.scaling = compound.scaling;
-              clone.rotation = compound.rotation;
               clone.name = 'traced path';
 
               _.each(clone.children, function (item) {
@@ -89,9 +86,6 @@ module.exports = function(paper) {
           var imageId = paper.getRandomInt(0, 10000);
           _.each(path, function (compound) {
             var compoundCopy = compound.clone(false);
-            compoundCopy.position = compound.position;
-            compoundCopy.scaling = compound.scaling;
-            compoundCopy.rotation = compound.rotation;
             compoundCopy.name = 'traced path';
             compoundCopy.data.imageId = imageId;
             
@@ -135,9 +129,6 @@ module.exports = function(paper) {
           _.each(tracing, function(compound){
             if(copiedGroups.indexOf(compound.id) < 0){
               var clone = compound.clone(false);
-              clone.position = compound.position;
-              clone.scaling = compound.scaling;
-              clone.rotation = compound.rotation;
               clone.name = 'traced path';
               clone.data.imageId = imageId;
 

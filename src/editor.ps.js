@@ -1090,6 +1090,9 @@ paper.centerAndCutImportedSVG = function() {
       return paper.existingIDs.indexOf(id) < 0;
     }
   });
+  _.each(compounds, function (compound) {
+    compound.applyMatrix = true;
+  });
   toolSelect.selectNewSvg(compounds);
 
   // Update view
