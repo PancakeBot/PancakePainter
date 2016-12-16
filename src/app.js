@@ -4,8 +4,7 @@
  * the DOM and all node abilities.
  **/
 /*globals
-  document, window, $, _, toastr, paper, html2canvas, stackBlurCanvasRGB,
-  toolSelect
+  document, window, $, _, toastr, paper, html2canvas, stackBlurCanvasRGB
 */
 "use strict";
 
