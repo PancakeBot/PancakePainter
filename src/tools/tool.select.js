@@ -201,8 +201,10 @@ module.exports = function(paper) {
           return;
         } else {
           // Not shift clicking, not multiselect, globalize the segment so it
-          // can be repositioned.
-          segment = clickResult.segment;
+          // can be repositioned. Don't allow moving segments on traced images.
+          if(segment.path.name !== 'traced path'){
+            segment = clickResult.segment;
+          }
         }
 
       } else if (clickResult.type === 'stroke'){
