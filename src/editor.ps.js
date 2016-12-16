@@ -1097,6 +1097,7 @@ paper.centerAndCutImportedSVG = function() {
 
   // Update view
   paper.view.update();
+  paper.fileChanged();
 
   // Clean lists
   paper.ImportedSVGLayers = []; // SVG Layers
