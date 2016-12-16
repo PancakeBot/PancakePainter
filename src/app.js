@@ -387,21 +387,6 @@ function buildImageVectorizer() {
       .attr('value', '2');
   $dropdown.append($sliderLevels);
 
-  // Fidelity title
-  var $h2 = $('<h3>')
-      .text('Edge Fidelity');
-  $dropdown.append($h2);
-
-  // Fidelity Slider
-  var $sliderFidelity = $('<input>')
-      .attr('type', 'range')
-      .attr('id', 'sliderFidelity')
-      .attr('min', '0')
-      .attr('max', '50')
-      .attr('step', '1')
-      .attr('value', '0');
-  $dropdown.append($sliderFidelity);
-
   // Area filter title
   var $h3 = $('<h3>')
       .text('Minimal Area Filter');
@@ -416,7 +401,7 @@ function buildImageVectorizer() {
       .attr('step', '10')
       .attr('value', '' + paper.cleanParameterToScale);
   $dropdown.append($areaSlider);
-  
+
   $importButton.append($dropdown);
 
   // When hover, show the menu
@@ -441,32 +426,6 @@ function buildImageVectorizer() {
   // Even handler for ColorAmount Slider
   $("#sliderLevels").on("change", function(){
     paper.ColorAmount = this.value;
-    if(!paper.globalPath) return;
-
-    // Throw up the overlay and activate the exporting note.
-    toggleOverlay(true, function(){
-      $('#tracing').fadeIn('slow', function(){
-        // reload file!
-        paper.reloadImportedImage().then(function () {
-          toggleOverlay(false);
-          $('#tracing').fadeOut('slow',function(){
-            // Notify user
-            paper.view.update();
-            toastr.success(i18n.t('tracing.note',
-                {file: path.parse(paper.globalPath).base}));
-          });
-        }).catch(function () {
-          toggleOverlay(false);
-          toastr.error(i18n.t('tracing.error',
-              {file: path.parse(paper.globalPath).base}));
-        });
-      });
-    });
-  });
-
-  // Even handler for EdgeFidelity Slider
-  $("#sliderFidelity").on("change", function(){
-    paper.EdgeFidelity = this.value;
     if(!paper.globalPath) return;
 
     // Throw up the overlay and activate the exporting note.
@@ -700,8 +659,6 @@ function bindControls() {
           // Reset sliders
           $('#sliderLevels').val(paper.defaultColorAmount).change();
           paper.ColorAmount = paper.defaultColorAmount;
-          $('#sliderFidelity').val(paper.defaultEdgeFidelity).change();
-          paper.EdgeFidelity = paper.defaultEdgeFidelity;
         });
         break;
       case 'edit.selectall':
