@@ -426,7 +426,8 @@ function buildImageVectorizer() {
   // Even handler for ColorAmount Slider
   $("#sliderLevels").on("change", function(){
     paper.ColorAmount = this.value;
-    if(!paper.globalPath) return;
+
+    if(!paper.globalPath || paper.traceImage) return;
 
     // Throw up the overlay and activate the exporting note.
     toggleOverlay(true, function(){
@@ -455,7 +456,7 @@ function buildImageVectorizer() {
     paper.cleanParameterToScale = this.value;
     paper.CleanParameter = paper.cleanParameterToScale * mmPerPX * mmPerPX;
 
-    if(!paper.globalPath) return;
+    if(!paper.globalPath || paper.traceImage) return;
 
     // Throw up the overlay and activate the exporting note.
     toggleOverlay(true, function(){
@@ -480,9 +481,8 @@ function buildImageVectorizer() {
 
   // When clicked, trigger import
   $("#imageDiv").on("click", function(){
-    activateToolItem($importButton);
-
     if (!paper.traceImage) {
+      activateToolItem($importButton);
       mainWindow.dialog({
         t: 'OpenDialog',
         title: i18n.t('import.title'),
@@ -518,9 +518,6 @@ function buildImageVectorizer() {
           });
         });
       });
-    } else {
-      // Select the thing and disable other selections
-      toolSelect.imageTraceMode(true);
     }
 
   });
