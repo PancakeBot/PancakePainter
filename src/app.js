@@ -368,58 +368,55 @@ function buildImageVectorizer() {
   $importButton.append($imageDiv);
 
   // CREATE DROPDOWN MENU
-  var $dropdown =  document.createElement("DIV");
-  $dropdown.setAttribute("class", "dropdown-content");
-  $dropdown.setAttribute("id", "dropdownMenu");
+  var $dropdown = $('<div>')
+      .addClass('dropdown-content')
+      .attr('id', 'dropdownMenu');
 
   // Levels title
-  var h1 = document.createElement("H3");
-  var t1 = document.createTextNode("Color Amount");     // Create a text node
-  h1.appendChild(t1);
-  $dropdown.appendChild(h1);
+  var $h1 = $('<h3>')
+      .text('Color Amount');
+  $dropdown.append($h1);
 
   // Levels Slider
-  var sliderLevels = document.createElement("INPUT");
-  sliderLevels.setAttribute("type", "range");
-  sliderLevels.setAttribute("id", "sliderLevels");
-  sliderLevels.setAttribute("min", "2");
-  sliderLevels.setAttribute("max", "4");
-  sliderLevels.setAttribute("step", "1");
-  sliderLevels.setAttribute("value", "2");
-  $dropdown.appendChild(sliderLevels);
+  var $sliderLevels = $('<input>')
+      .attr('type', 'range')
+      .attr('id', 'sliderLevels')
+      .attr('min', '2')
+      .attr('max', '4')
+      .attr('step', '1')
+      .attr('value', '2');
+  $dropdown.append($sliderLevels);
 
   // Fidelity title
-  var h2 = document.createElement("H3");
-  var t2 = document.createTextNode("Edge Fidelity");     // Create a text node
-  h2.appendChild(t2);
-  $dropdown.appendChild(h2);
+  var $h2 = $('<h3>')
+      .text('Edge Fidelity');
+  $dropdown.append($h2);
 
   // Fidelity Slider
-  var sliderFidelity = document.createElement("INPUT");
-  sliderFidelity.setAttribute("type", "range");
-  sliderFidelity.setAttribute("id", "sliderFidelity");
-  sliderFidelity.setAttribute("min", "0");
-  sliderFidelity.setAttribute("max", "50");
-  sliderFidelity.setAttribute("step", "1");
-  sliderFidelity.setAttribute("value", "0");
-  $dropdown.appendChild(sliderFidelity);
+  var $sliderFidelity = $('<input>')
+      .attr('type', 'range')
+      .attr('id', 'sliderFidelity')
+      .attr('min', '0')
+      .attr('max', '50')
+      .attr('step', '1')
+      .attr('value', '0');
+  $dropdown.append($sliderFidelity);
 
   // Area filter title
-  var h3 = document.createElement("H3");
-  var t3 = document.createTextNode("Minimal Area Filter");
-  h3.appendChild(t3);
-  $dropdown.appendChild(h3);
+  var $h3 = $('<h3>')
+      .text('Minimal Area Filter');
+  $dropdown.append($h3);
 
   // Area filter Slider
-  var areaSlider = document.createElement("INPUT");
-  areaSlider.setAttribute("type", "range");
-  areaSlider.setAttribute("id", "minimumArea");
-  areaSlider.setAttribute("min", "0");
-  areaSlider.setAttribute("max", "500");
-  areaSlider.setAttribute("step", "10");
-  areaSlider.setAttribute("value", "" + paper.cleanParameterToScale);
-  $dropdown.appendChild(areaSlider);
-
+  var $areaSlider = $('<input>')
+      .attr('type', 'range')
+      .attr('id', 'minimumArea')
+      .attr('min', '0')
+      .attr('max', '500')
+      .attr('step', '10')
+      .attr('value', '' + paper.cleanParameterToScale);
+  $dropdown.append($areaSlider);
+  
   $importButton.append($dropdown);
 
   // When hover, show the menu
