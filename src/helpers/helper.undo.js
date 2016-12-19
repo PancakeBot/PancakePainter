@@ -93,8 +93,11 @@
      paper.emptyProject();
      project.importJSON(this.data[this.index]);
 
-     paper.imageLayer = project.layers[0];
-     paper.mainLayer = project.layers[1];
+     // Instead of indexes 0 and 1 to get they layers they must be obtained on
+     //  this way because sometimes the undo features seems to create(?)
+     //  a new layer
+     paper.imageLayer = project.layers[project.layers.length-2];
+     paper.mainLayer = project.layers[project.layers.length-1];
      paper.mainLayer.activate();
 
      // Reinstate traceImage, if any.

@@ -63,7 +63,7 @@
     "color3": "Dark"
   },
   "import": {
-    "title": "Import image for tracing…",
+    "title": "Import image for manual tracing…",
     "files": "Web format tracing image"
   },
   "export": {
@@ -72,6 +72,12 @@
     "wait": "Exporting, please wait…",
     "err" : "Error exporting \"__file__\", please report this issue with the problem project file.",
     "note" : "Successfully exported \"__file__\" for printing."
+  },
+  "tracing": {
+    "title": "Import image for automatic tracing…",
+    "wait": "Image tracing in progress, please wait…",
+    "note" : "Successfully traced \"__file__\" .",
+    "error" : "Error while tracing \"__file__\" ."
   },
   "settings": {
     "done": "Done",

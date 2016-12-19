@@ -1,6 +1,10 @@
 {
+	"globals": {
+		"Promise"	: true,
+		"$"			: true,
+		"_"			: true
+	},
     "maxerr"        : 50,
-
     "bitwise"       : true,
     "camelcase"     : true,
     "curly"         : false,
@@ -47,7 +51,7 @@
     "supernew"      : false,
     "validthis"     : false,
 
-    "browser"       : false,
+    "browser"       : true,
     "browserify"    : false,
     "couch"         : false,
     "devel"         : true,

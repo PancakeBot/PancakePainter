@@ -83,7 +83,7 @@ body * {
 
   // Normally this would auto-size fine, but there are wrapping issues that
   // need to be addressed before we can handle more tools.
-  width: 400px;
+  width: 500px;
 
   ul {
     list-style: none;
@@ -139,6 +139,17 @@ body * {
       height: 74px;
       margin-top: -3px;
       width: 85px; // This one likes to be a bit bigger
+    }
+  }
+  #importVectorized {
+    padding: 0;
+    width: 85px;
+    height: 74px;
+    margin-left: 10px; 
+    div {
+      height: 74px;
+      margin-top: -3px;
+      width: 85px; 
     }
   }
 }
@@ -346,6 +357,21 @@ input.fancy[type="checkbox"] {
   cursor: wait;
 }
 
+// Tracing wait message =========================================================
+#tracing {
+  display: none;
+  font-style: italic;
+  position: absolute;
+  background: linear-gradient(to bottom, rgba(224, 225, 226, 0) 0%, #e0e1e2 15%, #e0e1e2 50%, #e0e1e2 85%, rgba(224, 225, 226, 0.04) 99%, rgba(224, 225, 226, 0) 100%);
+  font-size: 3em;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  padding: 0.5em;
+  margin-top: -1em;
+  cursor: wait; 
+}
+
 // General usage overlay "window" ==============================================
 #non-overlay-wrapper {
   position: absolute;
@@ -365,6 +391,61 @@ input.fancy[type="checkbox"] {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+/* Slider titles */
+h3 {
+  color: #ffffff;
+  font-size: 0.7em;
+  margin-left: 20px;
+  margin-bottom: 0px;
+}
+
+/* Sliders  */
+#js-rangeslider-0 .rangeslider__handle, #js-rangeslider-1 .rangeslider__handle {
+  top: 0px !important;
+  height: 20px !important;
+  width: 20px !important;
+  margin-top: 0 !important;
+}
+
+#js-rangeslider-0 .rangeslider__fill, #js-rangeslider-1 .rangeslider__fill {
+  background: #e03232 !important;
+}
+
+#js-rangeslider-0, #js-rangeslider-1 {
+  margin: 15px 30px !important;
+  margin-top: 9px !important;
+  margin-bottom: 6px !important;
+  height: 22px !important;
+  z-index: 1;
+  width: 130px !important;
+}
+/* End Sliders */
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #3A3A3A;
+  min-width: 190px;
+  min-height: 125px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
 }
 
 div.overlay-window {
@@ -408,6 +489,11 @@ div.overlay-window {
       transform: translate(296px, 0);
     }
   }
+  #tools {
+    left: 52%;
+    top: 9px;
+    zoom: 95%;
+  }
 }
 
 @media (max-width: 755px) {
@@ -420,5 +506,10 @@ div.overlay-window {
     .ver {
       transform: translate(258px, 0);
     }
+  }
+  #tools {
+    left: 51%;
+    top: 18px;
+    zoom: 80%;
   }
 }

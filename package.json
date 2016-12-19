@@ -14,6 +14,7 @@
     "test": "jshint **/*.js --exclude=node_modules/*"
   },
   "dependencies": {
+    "clusterfck": "^0.6.0",
     "datauri": "^0.7.1",
     "fs-plus": "^2.8.1",
     "grunt": "^0.4.5",
@@ -22,7 +23,7 @@
     "jquery": "^2.1.4",
     "n-dimensional-flood-fill": "^1.0.0",
     "ndarray": "^1.0.18",
-    "paper": "git://github.com/paperjs/paper.js/#1626c67",
+    "paper": "^0.10.2",
     "rangeslider.js": "^2.1.1",
     "toastr": "^2.1.2",
     "underscore": "^1.8.3"

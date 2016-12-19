@@ -20,11 +20,12 @@ module.exports = function(paper) {
   paper.selectRect = null;
   paper.selectRectLast = null;
   var selectionRectangleScale = null;
+  var previousRatio = 1;
   var selectionRectangleRotation = null;
   var segment, path, selectChangeOnly;
   paper.imageTraceMode = false;
 
-  // Externalize deseletion
+  // Externalize deselection
   paper.deselect = function(noFinish) {
     if (paper.selectRect) {
       // Completely deselect sub paths
@@ -64,6 +65,7 @@ module.exports = function(paper) {
       segments: true,
       stroke: true,
       fill: true,
+      //class: Path,
       tolerance: 5
     };
 
@@ -135,7 +137,7 @@ module.exports = function(paper) {
     return hitResult;
   };
 
-  // User clicks witht he mouse on the canvas:
+  // User clicks with the mouse on the canvas:
   tool.onMouseDown = function(event) {
     segment = path = selectChangeOnly = null;
 
@@ -180,6 +182,7 @@ module.exports = function(paper) {
         // Scale hitbox
         var center = event.point.subtract(paper.selectRect.bounds.center);
         selectionRectangleScale = center.length / path.scaling.x;
+        previousRatio = 1;
       }
     }
 
@@ -198,8 +201,10 @@ module.exports = function(paper) {
           return;
         } else {
           // Not shift clicking, not multiselect, globalize the segment so it
-          // can be repositioned.
-          segment = clickResult.segment;
+          // can be repositioned. Don't allow moving segments on traced images.
+          if(segment.path.name !== 'traced path'){
+            segment = clickResult.segment;
+          }
         }
 
       } else if (clickResult.type === 'stroke'){
@@ -212,7 +217,9 @@ module.exports = function(paper) {
     }
 
     // Move the path to the front.
-    path.bringToFront();
+    if(path.name !== 'traced path') {
+      path.bringToFront();
+    }
 
     // If pressing shift, try to look for paths inside of selection.
     if (event.modifiers.shift) {
@@ -236,20 +243,61 @@ module.exports = function(paper) {
       // Path scale adjustment
       var centerDiff = event.point.subtract(paper.selectRect.bounds.center);
       var ratio = centerDiff.length / selectionRectangleScale;
-      var scaling = new Point(ratio, ratio);
-      paper.selectRect.scaling = scaling;
+
+      // Restore the path to the original size using 1/previousRatio scaling,
+      //  then scale it
+      paper.selectRect.scale(1/previousRatio, paper.selectRect.bounds.center);
+      paper.selectRect.scale(ratio, paper.selectRect.bounds.center);
+      var scaledGroups = [];
+
       _.each(paper.selectRect.ppaths, function(path){
-        path.scaling = scaling;
+        if(path.name !== "traced path"){
+          path.scale(1/previousRatio, paper.selectRect.bounds.center);
+          path.scale(ratio, paper.selectRect.bounds.center);
+        }
+        else {
+          var tracing = paper.getTracedImage(path);
+          if(tracing){
+            _.each(tracing, function (compound) {
+              if(scaledGroups.indexOf(compound.id) < 0){
+                compound.scale(1/previousRatio, paper.selectRect.bounds.center);
+                compound.scale(ratio, paper.selectRect.bounds.center);
+                scaledGroups.push(compound.id);
+              }
+            });
+          }
+        }
       });
 
+      previousRatio = ratio;
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
       var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
-      paper.selectRect.rotation = rotation;
+      var prevRotation = selectionRectangleRotation;
+      selectionRectangleRotation = rotation;
+      rotation = rotation - prevRotation;
+
+      paper.selectRect.rotate(rotation);
+      var rotatedGroups = [];
+
       _.each(paper.selectRect.ppaths, function(path){
-        path.rotation = rotation;
+        if(path.name !== "traced path"){
+          path.rotate(rotation, paper.selectRect.pivot);
+        }
+        else {
+          var tracing = paper.getTracedImage(path);
+          if(tracing){
+            _.each(tracing, function (compound) {
+              if(rotatedGroups.indexOf(compound.id) < 0){
+                compound.rotate(rotation, paper.selectRect.pivot);
+                rotatedGroups.push(compound.id);
+              }
+            });
+          }
+        }
       });
+
       return;
     }
 
@@ -265,15 +313,65 @@ module.exports = function(paper) {
 
       // Path translate position adjustment
       psr.position = psr.position.add(event.delta);
+      var movedGroups = [];
+
       _.each(psr.ppaths, function(path){
-        path.position = psr.position.add(event.delta);
+        if(path.name !== "traced path") {
+          path.translate(event.delta);
+        }
+        else {
+          var tracing = paper.getTracedImage(path);
+          if(tracing){
+            _.each(tracing, function (compound) {
+              if(movedGroups.indexOf(compound.id) < 0){
+                compound.translate(event.delta);
+                movedGroups.push(compound.id);
+              }
+            });
+          }
+        }
       });
     }
+  };
+
+  paper.getTracedImage = function(path) {
+    var targetImageId = null;
+
+    if(!(path instanceof CompoundPath)){
+      if(path.parent.name === 'traced path'){
+        targetImageId = path.parent.data.imageId;
+      }
+      else {
+        return null;
+      }
+    }
+    else {
+      if(path.name === 'traced path'){
+        targetImageId = path.data.imageId;
+      }
+      else {
+        return null;
+      }
+    }
+
+    var compounds = [];
+    _.each(project.activeLayer.getItems({class: CompoundPath}),
+     function (compound) {
+      if(compound.data.imageId === targetImageId){
+        compounds.push(compound);
+      }
+    });
+
+    return compounds;
   };
 
   tool.onMouseMove = function(event) {
     project.activeLayer.selected = false;
     project.activeLayer.fullySelected = false;
+
+    _.each(project.getItems({class: 'Path'}), function (item) {
+      item.selected = false;
+    });
 
     if (paper.selectRect) {
       paper.selectRect.selected = true;
@@ -318,15 +416,35 @@ module.exports = function(paper) {
 
   tool.onKeyDown = function (event) {
     if (paper.selectRect) {
+
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
         _.each(paper.selectRect.ppaths, function(path){
-          path.remove();
+          var tracing = paper.getTracedImage(path);
+          if(false){
+            _.each(tracing, function (compound) {
+              compound.remove();
+            });
+          }
+          else{
+            path.remove();
+          }
         });
 
         if (paper.imageTraceMode) paper.traceImage = null;
         paper.deselect();
 
+        // Check if there are no more items in the project,
+        //  remove the image path
+        var items = project.activeLayer.getItems({});
+        if(items.length === 1) {
+          if(items[0].name === "selection rectangle") {
+            paper.clearImageTracing();
+          }
+        }
+        else if(items.length === 0) {
+          paper.clearImageTracing();
+        }
       }
 
       // Deselect
@@ -381,7 +499,6 @@ module.exports = function(paper) {
     paper.selectRect.ppaths = [path];
     paper.selectRect.ppath.pivot = paper.selectRect.pivot;
   }
-
 
   // Make sure the passed path is selectable, returns null, the path (or parent)
   function ensureSelectable(path, skipType) {
@@ -546,7 +663,7 @@ module.exports = function(paper) {
       }
     });
 
-    // If we're ignoring the select Rect, we want only osmehting selctable.
+    // If we're ignoring the select Rect, we want only something selectable.
     if (ignoreSelectRect) {
       return ensureSelectable(item);
     }
@@ -565,6 +682,10 @@ module.exports = function(paper) {
       path = null;
       paper.deselect();
     }
+  };
+
+  tool.selectNewSvg = function() {
+    tool.activate();
   };
 
   return tool;

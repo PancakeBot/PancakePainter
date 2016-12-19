@@ -18,14 +18,35 @@ module.exports = function(config) {
     var workLayer = paper.project.getActiveLayer().clone();
     var out = getCodeHeader();
     config.noMirror = noMirror;
+    workLayer.activate();
 
-    // Ungroup all the groups in the workLayer
-    var groups = workLayer.getItems({ class: paper.Group });
-    for (var i = 0; i < groups.length; i++) {
-      var group = groups[i];
-      group.parent.insertChildren(group.index, group.removeChildren());
+    // Find traced groups
+    var groupsToRemove = [];
+    _.each(workLayer.children, function (child) {
+      // Found a traced image
+      if(child instanceof paper.Group && child.name.indexOf('traced path') >= 0){
+        var newGroups = [];
+        var children = child.removeChildren();
+        // Separate the children according to their original compound path
+        _.each(children, function (path) {
+          if(!newGroups[path.data.compound]){
+            newGroups[path.data.compound] = new paper.Group();
+            newGroups[path.data.compound].data = _.extend({}, child.data);
+            newGroups[path.data.compound].name = 'traced path';
+          }
+
+          newGroups[path.data.compound].addChild(path);
+        });
+
+        workLayer.addChildren(newGroups);
+        groupsToRemove.push(child);
+      }
+    });
+
+    // Remove groups that were processed
+    _.each(groupsToRemove, function (group) {
       group.remove();
-    }
+    });
 
     // Convert all fill paths in the work layer into fills.
     // Must use a fillList because removing paths changes the children list
@@ -36,7 +57,6 @@ module.exports = function(config) {
       }
     });
 
-    workLayer.activate();
     _.each(fillList, function(path){
       if (config.useLineFill) {
         paper.fillTracePath(path, config);
@@ -439,6 +459,12 @@ module.exports = function(config) {
     return {id: closestID, closestPointIndex: closestPointIndex, dist: closest};
   }
 
+  function saveSVG(pathData, filename) {
+    var text = '<svg width="1000" height="1000" xmlns="http://www.w3.org/2000/svg"><path d="' + pathData + '"/></svg>';
+    var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, filename);
+  }
+
   /**
    * Convert an incoming filled path into a set of cam paths.
    *
@@ -518,15 +544,34 @@ module.exports = function(config) {
     if (cutPaths) {
       var pathString = jscut.cam.toSvgPathData(cutPaths, pxPerInch);
       var camPath = new CompoundPath(pathString);
-      camPath.data = _.extend({}, inPath.data);
+
+      // Assign color. In traced paths the color of the first children is the one we
+      //  must take.
+      if(inPath.name.indexOf('traced path') >= 0) {
+        camPath.data = _.extend({}, inPath.children[0].data);
+      }
+      else {
+        camPath.data = _.extend({}, inPath.data);
+      }
+
       camPath.data.campath = true;
       camPath.bringToFront();
       camPath.scale(1, -1); // Flip vertically (clipper issue)
       camPath.position = new Point(camPath.position.x, -camPath.position.y);
+      console.log(inPath.id + ' has color ' + inPath.children[0].data.color);
+
+      _.each(camPath.children, function (child, index) {
+        saveSVG(child.pathData, "vectorized" + inPath.id + "-" + index + ".svg");
+      });
 
       // Apply data to every child in the CompoundPath
-      _.each(camPath.children, function (child) {
-        child.data = _.extend({}, inPath.data);
+      _.each(camPath.children, function (child, index) {
+        if(inPath.name.indexOf('traced path') >= 0){
+          child.data = _.extend({}, inPath.children[0].data);
+        }
+        else {
+          child.data = _.extend({}, inPath.data);
+        }
       });
       
       if (!options.debug) {

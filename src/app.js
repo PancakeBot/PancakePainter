@@ -47,6 +47,7 @@ var printableArea = {
   width: 443,
   height: 210
 };
+var mmPerPX;
 
 var renderConfig = {
   printArea: { // Print area limitations (in 1 MM increments)
@@ -161,7 +162,7 @@ function initEditor() {
 
     scale = (scale.x < scale.y ? scale.x : scale.y);
 
-    var mmPerPX = $griddle.width() / griddleSize.width;
+    mmPerPX = $griddle.width() / griddleSize.width;
 
     var off = $griddle.offset();
     $editor.css({
@@ -170,6 +171,10 @@ function initEditor() {
       width: printableArea.width * mmPerPX,
       height: printableArea.height * mmPerPX
     });
+
+    // Scale CleanParameter with the screen resolution
+    paper.CleanParameter = paper.cleanParameterToScale * mmPerPX * mmPerPX;
+    console.log("CleanParameter: " + paper.CleanParameter);
 
     editorLoad(); // Load the editor (if it hasn't already been loaded)
     // This must happen after the very first resize, otherwise the canvas
@@ -201,6 +206,7 @@ function editorLoadedInit() { /* jshint ignore:line */
   buildToolbar();
   buildImageImporter();
   buildColorPicker();
+  buildImageVectorizer();
 
   bindControls();
 
@@ -342,10 +348,179 @@ function buildImageImporter() {
 
   $importButton.click(function(){
     activateToolItem($importButton);
-    paper.initImageImport();
+    paper.initImageImport({mode:'trace'});
   });
 
   $('#tools #tool-select').before($importButton);
+}
+
+function buildImageVectorizer() {
+  var $importButton = $('<div>')
+      .addClass('tool')
+      .attr('id', 'importVectorized')
+      .data('cursor-key', 'select')
+      .attr('title', i18n.t('tracing.title'));
+
+  var $imageDiv = $('<div>')
+    .attr('id', 'imageDiv')
+    .css('background-image', 'url(images/icon-vectorize.png)');
+  $importButton.append($imageDiv);
+
+  // CREATE DROPDOWN MENU
+  var $dropdown = $('<div>')
+      .addClass('dropdown-content')
+      .attr('id', 'dropdownMenu');
+
+  // Levels title
+  var $h1 = $('<h3>')
+      .text('Color Amount');
+  $dropdown.append($h1);
+
+  // Levels Slider
+  var $sliderLevels = $('<input>')
+      .attr('type', 'range')
+      .attr('id', 'sliderLevels')
+      .attr('min', '2')
+      .attr('max', '4')
+      .attr('step', '1')
+      .attr('value', '2');
+  $dropdown.append($sliderLevels);
+
+  // Area filter title
+  var $h3 = $('<h3>')
+      .text('Minimal Area Filter');
+  $dropdown.append($h3);
+
+  // Area filter Slider
+  var $areaSlider = $('<input>')
+      .attr('type', 'range')
+      .attr('id', 'minimumArea')
+      .attr('min', '0')
+      .attr('max', '500')
+      .attr('step', '10')
+      .attr('value', '' + paper.cleanParameterToScale);
+  $dropdown.append($areaSlider);
+
+  $importButton.append($dropdown);
+
+  // When hover, show the menu
+  $importButton.hover(
+      // Enter event
+      function(){
+        // Get hidden menu
+        var dropdownMenu = document.getElementById("dropdownMenu");
+        dropdownMenu.style.display = "inline-block";
+      },
+
+      // Leave event
+      function(){
+        // Get hidden menu
+        var dropdownMenu = document.getElementById("dropdownMenu");
+        dropdownMenu.style.display = "none";
+      }
+  );
+
+  $('#tools #tool-select').before($importButton);
+
+  // Even handler for ColorAmount Slider
+  $("#sliderLevels").on("change", function(){
+    paper.ColorAmount = this.value;
+
+    if(!paper.globalPath || paper.traceImage) return;
+
+    // Throw up the overlay and activate the exporting note.
+    toggleOverlay(true, function(){
+      $('#tracing').fadeIn('slow', function(){
+        // reload file!
+        paper.reloadImportedImage().then(function () {
+          toggleOverlay(false);
+          $('#tracing').fadeOut('slow',function(){
+            // Notify user
+            paper.view.update();
+            toastr.success(i18n.t('tracing.note',
+                {file: path.parse(paper.globalPath).base}));
+          });
+        }).catch(function () {
+          toggleOverlay(false);
+          toastr.error(i18n.t('tracing.error',
+              {file: path.parse(paper.globalPath).base}));
+        });
+      });
+    });
+  });
+
+  // Even handler for Area Slider
+  $("#minimumArea").on("change", function(){
+    // Scale CleanParameter with the screen resolution
+    paper.cleanParameterToScale = this.value;
+    paper.CleanParameter = paper.cleanParameterToScale * mmPerPX * mmPerPX;
+
+    if(!paper.globalPath || paper.traceImage) return;
+
+    // Throw up the overlay and activate the exporting note.
+    toggleOverlay(true, function(){
+      $('#tracing').fadeIn('slow', function(){
+        // reload file!
+        paper.reloadImportedImage().then(function () {
+          toggleOverlay(false);
+          $('#tracing').fadeOut('slow',function(){
+            // Notify user
+            paper.view.update();
+            toastr.success(i18n.t('tracing.note',
+                {file: path.parse(paper.globalPath).base}));
+          });
+        }).catch(function () {
+          toggleOverlay(false);
+          toastr.error(i18n.t('tracing.error',
+              {file: path.parse(paper.globalPath).base}));
+        });
+      });
+    });
+  });
+
+  // When clicked, trigger import
+  $("#imageDiv").on("click", function(){
+    if (!paper.traceImage) {
+      activateToolItem($importButton);
+      mainWindow.dialog({
+        t: 'OpenDialog',
+        title: i18n.t('import.title'),
+        filters: [
+          { name: i18n.t('import.files'),
+            extensions: ['jpg', 'jpeg', 'gif', 'png'] }
+        ]
+      }, function(filePath){
+        if (!filePath) {  // Open cancelled
+          paper.finishImageImport();
+          return;
+        }
+
+        paper.globalPath = filePath[0];
+
+        // Throw up the overlay and activate the exporting note.
+        toggleOverlay(true, function(){
+          $('#tracing').fadeIn('slow', function(){
+            // process file!
+            paper.importForKmeans(filePath[0]).then(function () {
+              toggleOverlay(false);
+              $('#tracing').fadeOut('slow',function(){
+                // Notify user
+                paper.view.update();
+                toastr.success(i18n.t('tracing.note',
+                    {file: path.parse(paper.globalPath).base}));
+              });
+            }).catch(function(){
+              toggleOverlay(false);
+              toastr.error(i18n.t('tracing.error',
+                  {file: path.parse(paper.globalPath).base}));
+            });
+          });
+        });
+      });
+    }
+
+  });
+
 }
 
 // When the page is done loading, all the controls in the page can be bound.
@@ -473,7 +648,13 @@ function bindControls() {
       case 'file.close':
         checkFileStatus(function(){
           toastr.info(i18n.t(menu));
+
           paper.newPBP();
+          paper.clearImageTracing();
+
+          // Reset sliders
+          $('#sliderLevels').val(paper.defaultColorAmount).change();
+          paper.ColorAmount = paper.defaultColorAmount;
         });
         break;
       case 'edit.selectall':

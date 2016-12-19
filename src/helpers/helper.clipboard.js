@@ -26,9 +26,38 @@ module.exports = function(paper) {
   clipboard.copy = function(deleteSelection) {
     if (paper.selectRect) {
       clipboard.data = [];
+      var copiedGroups = [];
+
       _.each(paper.selectRect.ppaths, function(path){
-        clipboard.data.push(path.clone(false));
-        if (deleteSelection) path.remove();
+        if(path.name !== 'traced path'){
+          clipboard.data.push(path.clone(false));
+          if (deleteSelection) path.remove();
+        }
+        // If traced path was selected, copy the entire group
+        //  and keep trace of it so we don't copy it more than
+        //  once
+        var tracing = paper.getTracedImage(path);
+        if(tracing) {
+          var newCompounds = [];
+          _.each(tracing, function(compound){
+            if(copiedGroups.indexOf(compound.id) < 0){
+              var clone = compound.clone(false);
+              clone.name = 'traced path';
+
+              _.each(clone.children, function (item) {
+                item.name = 'traced path';
+              });
+
+              copiedGroups.push(compound.id);
+              newCompounds.push(clone);
+
+              if (deleteSelection) compound.remove();
+            }
+          });
+
+          // Push the array with all the compounds of this traced image
+          clipboard.data.push(newCompounds);
+        }
       });
 
       if (deleteSelection) {
@@ -51,10 +80,31 @@ module.exports = function(paper) {
 
       // Clone each path, put in the layer, offset it, and add to selection.
       _.each(clipboard.data, function(path){
-        var pathCopy = path.clone(false);
-        project.activeLayer.addChild(pathCopy);
-        pathCopy.translate(new Point(25, 25));
-        paper.selectAdd(pathCopy);
+        // If this is an array it's a group of compounds
+        //  of a traced image
+        if(path instanceof Array){
+          var imageId = paper.getRandomInt(0, 10000);
+          _.each(path, function (compound) {
+            var compoundCopy = compound.clone(false);
+            compoundCopy.name = 'traced path';
+            compoundCopy.data.imageId = imageId;
+            
+            _.each(compoundCopy.children, function (item) {
+              item.name = 'traced path';
+            });
+            
+            project.activeLayer.addChild(compoundCopy);
+            compoundCopy.translate(new Point(25, 25));
+            paper.selectAdd(compoundCopy);
+          });
+        }
+        else {
+          var pathCopy = path.clone(false);
+
+          project.activeLayer.addChild(pathCopy);
+          pathCopy.translate(new Point(25, 25));
+          paper.selectAdd(pathCopy);
+        }
       });
 
       paper.fileChanged();
@@ -70,14 +120,37 @@ module.exports = function(paper) {
   clipboard.dupe = function() {
     if (paper.selectRect) {
       var newPaths = [];
+      var copiedGroups = [];
+
       _.each(paper.selectRect.ppaths, function(path){
-        newPaths.push(path.clone(true));
+        var tracing = paper.getTracedImage(path);
+        if(tracing) {
+          var imageId = paper.getRandomInt(0, 10000);
+          _.each(tracing, function(compound){
+            if(copiedGroups.indexOf(compound.id) < 0){
+              var clone = compound.clone(false);
+              clone.name = 'traced path';
+              clone.data.imageId = imageId;
+
+              _.each(clone.children, function (item){
+                item.name = 'traced path';
+              });
+
+              copiedGroups.push(compound.id);
+              newPaths.push(clone);
+            }
+          });
+        }
+        else {
+          newPaths.push(path.clone(false));
+        }
       });
 
       // Deselect to clear for selecting the new paths.
       paper.deselect();
 
       _.each(newPaths, function(path){
+        project.activeLayer.addChild(path);
         path.translate(new Point(25, 25));
         paper.selectAdd(path);
       });
