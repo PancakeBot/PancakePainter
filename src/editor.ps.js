@@ -304,9 +304,8 @@ paper.loadPBP = function(filePath){
 
   project.importJSON(fs.readFileSync(filePath, "utf8"));
 
-  paper.imageLayer = project.layers[1];
-  paper.mainLayer = project.layers[2];
-
+  paper.imageLayer = project.layers[project.layers.length-2];
+  paper.mainLayer = project.layers[project.layers.length-1];
   paper.mainLayer.activate();
 
   // Reinstate traceImage, if any.
