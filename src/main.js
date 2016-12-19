@@ -54,22 +54,22 @@ function settingsInit() {
       },
       lastFile: '',
       flatten: 15,          // Flatten curve value (smaller value = more points)
-      shutoff: 20,          // Remaining line length threshold for pump shutoff
-      startwait: 450,       // Time to wait for batter flow begin
+      shutoff: 25,          // Remaining line length threshold for pump shutoff
+      startwait: 600,       // Time to wait for batter flow begin
       endwait: 250,         // Time to wait for batter flow at end of line
-      changewait: 35,       // Number of seconds to wait between shade changes.
+      changewait: 15,       // Number of seconds to wait between shade changes.
       botspeed: 70,         // Locked stepper speed percentage written to GCODE
       usecolorspeed: false, // Whether to use different speeds for colors.
       useshortest: true,   // Whether to travel sort the final layer.
-      botspeedcolor1: 70,   // Light speed.
-      botspeedcolor2: 70,   // Medium speed.
-      botspeedcolor3: 70,   // Medium Dark speed.
-      botspeedcolor4: 70,   // Dark speed.
+      botspeedcolor1: 100,  // Light speed.
+      botspeedcolor2: 80,   // Medium speed.
+      botspeedcolor3: 80,   // Medium Dark speed.
+      botspeedcolor4: 50,   // Dark speed.
       uselinefill: false,   // Whether to use line fill over shape fill.
-      fillspacing: 15,      // Space between each trace fill line
+      fillspacing: 10,      // Space between each trace fill line
       fillangle: 23,        // Angle of line for trace fill
       fillthresh: 27,       // Threshold to group zig zags
-      shapefillwidth: 4     // Effective fill space.
+      shapefillwidth: 3     // Effective fill space.
     },
     clear: function() {
       fs.removeSync(settingsFile);
