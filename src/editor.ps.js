@@ -38,8 +38,9 @@ var toolFill = require('./tools/tool.fill')(paper); /* jshint ignore:line */
 var toolSelect = require('./tools/tool.select')(paper);
 
 // Load Helpers
-paper.undo = require('./helpers/helper.undo')(paper);
-paper.clipboard = require('./helpers/helper.clipboard')(paper);
+_.each(['undo', 'clipboard', 'utils', 'autotrace'], function(helperName) {
+  paper[helperName] = require('./helpers/helper.' + helperName)(paper);
+});
 
 paper.setCursor = function(type) {
   // TODO: Implement cursor change on hover of handles, objects, etc
