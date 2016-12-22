@@ -108,7 +108,12 @@ $(function(){
   $('#griddle').load(initEditor);
 
   // Apply element translation
-  $('[data-i18n=""]').each(function() {
+  i18n.translateElementsIn('body');
+});
+
+// Add translation element helper.
+i18n.translateElementsIn = function(context) {
+  $('[data-i18n=""]', context).each(function() {
     var $node = $(this);
 
     if ($node.text().indexOf('.') > -1 && $node.attr('data-i18n') === "") {
@@ -117,8 +122,7 @@ $(function(){
       $node.text(i18n.t(key));
     }
   });
-
-});
+};
 
 function initEditor() {
   var $griddle = $('#editor-wrapper img');
@@ -176,7 +180,7 @@ function initEditor() {
     $(mainWindow).trigger('move');
 
     if ($('#overlay').is(':visible')) {
-      updateFrosted();
+      mainWindow.overlay.updateFrosted();
     }
   }).resize();
 }
@@ -201,6 +205,10 @@ function editorLoadedInit() { /* jshint ignore:line */
   buildImageImporter();
   buildColorPicker();
 
+  // Initialize overlay modal windows.
+  mainWindow.overlay.initWindows();
+
+  // Bind remaining controls.
   bindControls();
 
   // Load the renderer once paper is ready
@@ -208,6 +216,13 @@ function editorLoadedInit() { /* jshint ignore:line */
   gcRender = gcRender(renderConfig);
 }
 
+
+// Trigger load init only after auto trace has called this function.
+function autoTraceLoadedInit() { /* jshint ignore:line */
+  // TODO: This.
+}
+
+// Build the toolbar DOM dynamically.
 function buildToolbar() {
   var $t = $('<ul>').appendTo('#tools');
 
@@ -376,7 +391,7 @@ function bindControls() {
           }
 
           // Throw up the overlay and activate the exporting note.
-          toggleOverlay(true, function(){
+          mainWindow.overlay.toggleFrostedOverlay(true, function(){
             $('#exporting').fadeIn('slow', function(){
               // Run in a timeout to allow the previous code to run first.
               setTimeout(function() {
@@ -387,7 +402,7 @@ function bindControls() {
                   ); // Write file!
                 } catch(e) {
                   // Catch errors in export.
-                  toggleOverlay(false);
+                  mainWindow.overlay.toggleFrostedOverlay(false);
                   $('#exporting').fadeOut('slow',function(){
                     // Notify user
                     toastr.error(
@@ -396,7 +411,7 @@ function bindControls() {
                   });
                 }
 
-                toggleOverlay(false);
+                mainWindow.overlay.toggleFrostedOverlay(false);
                 $('#exporting').fadeOut('slow',function(){
                   // Notify user
                   toastr.success(
@@ -487,9 +502,7 @@ function bindControls() {
         paper.handleClipboard(menu.split('.')[1]);
         break;
       case 'view.settings':
-        toggleOverlay(true, function(){
-          $('#settings').fadeIn('slow');
-        });
+        mainWindow.overlay.toggleWindow('settings', true);
         break;
       default:
         console.log(menu);
@@ -505,8 +518,7 @@ function bindControls() {
 
   $('#settings button').click(function(){
     if (this.id === 'done') {
-      $('#settings').fadeOut('slow');
-      toggleOverlay(false);
+      mainWindow.overlay.toggleWindow('settings', false);
     } else if (this.id === 'reset') {
       var doReset = mainWindow.dialog({
         t: 'MessageBox',
@@ -597,6 +609,115 @@ window.onbeforeunload = function() {
   return checkFileStatus();
 };
 
+// Overlay modal internal "window" management API ==============================
+mainWindow.overlay = {
+  windowNames: ['export', 'autotrace', 'settings'], // TODO: load automatically.
+  windows: {}, // Placeholder for window module code.
+  toggleWindow: function(name, toggle) {
+    if (this.windowNames.indexOf(name) !== -1) {
+      var $elem = $('#overlay #' + name);
+      if (typeof toggle === 'undefined') {
+        toggle = !$elem.is(':visible');
+      }
+
+      // Show or hide?
+      if (toggle) {
+        this.toggleFrostedOverlay(true, function(){
+          $elem.fadeIn('slow');
+
+          // Show window code trigger.
+          if (mainWindow.overlay.windows[name].show) {
+            mainWindow.overlay.windows[name].show();
+          }
+        });
+      } else {
+        $elem.fadeOut('slow');
+        this.toggleFrostedOverlay(false);
+
+        // Hide window code trigger.
+        if (mainWindow.overlay.windows[name].hide) {
+          mainWindow.overlay.windows[name].hide();
+        }
+      }
+
+    }
+  },
+
+  // Initialize the window content.
+  initWindows: function() {
+    _.each(mainWindow.overlay.windowNames, function(name) {
+      // Append the actual HTML include into the DOM.
+      var htmlFile = path.join('src', 'windows', 'window.' + name + '.html');
+      if (fs.existsSync(htmlFile)) {
+        $('#overlay').append(
+          $('<div>')
+            .attr('id', name)
+            .addClass('overlay-window')
+            .html(fs.readFileSync(htmlFile, 'utf8'))
+        );
+
+        i18n.translateElementsIn('#overlay > div:last');
+      }
+
+      // Load the window specific code into the overlay.windows object.
+      var jsFile = path.join('src', 'windows', 'window.' + name + '.js');
+      if (fs.existsSync(jsFile)) {
+        jsFile = path.join(__dirname, 'windows', 'window.' + name);
+        mainWindow.overlay.windows[name] = require(jsFile)();
+
+        // Initialize code trigger for window.
+        if (mainWindow.overlay.windows[name].init) {
+          mainWindow.overlay.windows[name].init();
+        }
+      } else {
+        mainWindow.overlay.windows[name] = {}; // Empty object if not provided.
+      }
+    });
+
+    // Update the initial frosted overlay.
+    this.updateFrosted();
+  },
+
+  // Show/Hide the fosted glass overlay (disables non-overlay-wrapper controls)
+  toggleFrostedOverlay: function (doShow, callback) {
+    if (typeof doShow === 'undefined') {
+      doShow = !$('#overlay').is(':visible');
+    }
+
+    if (doShow) {
+      $('#overlay').fadeIn('slow');
+      paper.deselect();
+      this.updateFrosted(callback);
+    } else {
+      $('#overlay').fadeOut('slow');
+      if (callback) callback();
+    }
+  },
+
+  // Update the rendered HTML image and reblur it (when resizing the window)
+  updateFrosted: function (callback) {
+    if ($('#overlay').is(':visible')) {
+      html2canvas($("#non-overlay-wrapper"), {
+        background: '#E0E1E2'
+      }).then(function(canvas) {
+        var $frosted = $(canvas);
+        $("#frosted").remove();
+        $frosted.attr('id', 'frosted').appendTo('#overlay');
+        stackBlurCanvasRGB(
+          'frosted',
+          0,
+          0,
+          $frosted.width(),
+          $frosted.height(),
+          20
+        );
+        if (callback) callback();
+      });
+    }
+  }
+
+};
+
 // Check the current file status and alert the user what to do before continuing
 // This is pretty forceful and there's no way to back out.
 function checkFileStatus(callback) {
@@ -655,43 +776,6 @@ function checkFileStatus(callback) {
 }
 
 
-// Show/Hide the fosted glass overlay (disables non-overlay-wrapper controls)
-function toggleOverlay(doShow, callback) {
-  if (typeof doShow === 'undefined') {
-    doShow = !$('#overlay').is(':visible');
-  }
-
-  if (doShow) {
-    $('#overlay').fadeIn('slow');
-    paper.deselect();
-    updateFrosted(callback);
-  } else {
-    $('#overlay').fadeOut('slow');
-    if (callback) callback();
-  }
-}
-
-// Update the rendered HTML image and reblur it (when resizing the window)
-function updateFrosted(callback) {
-  if ($('#overlay').is(':visible')) {
-    html2canvas($("#non-overlay-wrapper"), {
-      background: '#E0E1E2'
-    }).then(function(canvas) {
-      $("#frosted").remove();
-      $("#overlay").append(canvas);
-      $("#overlay canvas").attr('id', 'frosted');
-      stackBlurCanvasRGB(
-        'frosted',
-        0,
-        0,
-        $("#frosted").width(),
-        $("#frosted").height(),
-        20
-      );
-      if (callback) callback();
-    });
-  }
-}
 
 
 // Prevent drag/dropping onto the window (it's really bad!)
