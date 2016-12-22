@@ -44,6 +44,33 @@ body * {
   }
 }
 
+// Autotrace ===================================================================
+#autotrace {
+  width: 90%;
+  height: 70%;
+
+  .overlay-content {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+
+    canvas {
+      border: 2px dashed #6D6060;
+      width: auto;
+      flex-grow: 1;
+      margin-right: 1em;
+      border-radius: 1em;
+      background-color: #444444;
+    }
+
+    & > fieldset {
+      width: 230px;
+      overflow-y: auto;
+    }
+  }
+}
+
 // Toolbar =====================================================================
 #toolback {
   background-color: #3A3A3A;
@@ -187,14 +214,6 @@ body * {
   aside {
     font-size: 0.9em;
     margin-left: 1em;
-  }
-
-  .settings-content {
-    position: fixed;
-    overflow-y: auto;
-    height: 90%;
-    padding-top: 3.5em;
-    box-sizing: border-box;
   }
 
   fieldset {
@@ -390,6 +409,14 @@ div.overlay-window {
     left: 0;
     width: 100%;
     padding: 0 1.5em;
+    box-sizing: border-box;
+  }
+
+  .overlay-content {
+    position: fixed;
+    overflow-y: auto;
+    height: 90%;
+    padding-top: 3.5em;
     box-sizing: border-box;
   }
 }

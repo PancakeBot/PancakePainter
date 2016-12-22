@@ -27,6 +27,25 @@ body * {
   #editor-wrapper #editor.wait {
     cursor: wait !important; }
 
+#autotrace {
+  width: 90%;
+  height: 70%; }
+  #autotrace .overlay-content {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    height: 100%; }
+    #autotrace .overlay-content canvas {
+      border: 2px dashed #6D6060;
+      width: auto;
+      flex-grow: 1;
+      margin-right: 1em;
+      border-radius: 1em;
+      background-color: #444444; }
+    #autotrace .overlay-content > fieldset {
+      width: 230px;
+      overflow-y: auto; }
+
 #toolback {
   background-color: #3A3A3A;
   height: 93px;
@@ -123,12 +142,6 @@ body * {
 #settings aside {
   font-size: 0.9em;
   margin-left: 1em; }
-#settings .settings-content {
-  position: fixed;
-  overflow-y: auto;
-  height: 90%;
-  padding-top: 3.5em;
-  box-sizing: border-box; }
 #settings fieldset legend {
   font-weight: bold;
   font-size: 1.2em; }
@@ -274,6 +287,12 @@ div.overlay-window {
     left: 0;
     width: 100%;
     padding: 0 1.5em;
+    box-sizing: border-box; }
+  div.overlay-window .overlay-content {
+    position: fixed;
+    overflow-y: auto;
+    height: 90%;
+    padding-top: 3.5em;
     box-sizing: border-box; }
 
 @media (max-width: 975px) {

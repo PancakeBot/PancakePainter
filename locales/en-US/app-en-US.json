@@ -11,6 +11,7 @@
     "drawnote": "The design above will resemble the actual pancake once it has been flipped.",
     "button": {
       "cancel": "Cancel",
+      "import": "Import",
       "yes": "Yes",
       "no": "No"
     }
@@ -64,7 +65,49 @@
   },
   "import": {
     "title": "Import image for tracing…",
-    "files": "Web format tracing image"
+    "files": "Web format tracing image",
+    "auto": {
+      "title": "Automatic Trace",
+      "options": {
+        "manual": "Place image in background for manual tracing",
+        "simple": "Automatic trace for logos or cartoons",
+        "complex": "Automatic trace for complex art or photos"
+      },
+      "settings": {
+        "title": "Automatic Trace Settings",
+        "transparent": "Transparent color",
+        "transparent-pick": "Pick color from image",
+        "colors": "Number of colors to limit to",
+        "presets": {
+          "title": "Automatic trace presets",
+          "simple": "Logos/Cartoons",
+          "complex": "Photos/Complex art"
+        },
+        "types": {
+          "title": "Trace type",
+          "options": {
+            "mixed": {
+              "title": "Dynamic Lines/Fills",
+              "desc": "Good for logos and cartoons. Bad for photos or complex art."
+            },
+            "fills": {
+              "title": "Fills/shapes only",
+              "desc": "Better for photos and complex art. Bad for line art and cartoons."
+            },
+            "lines": {
+              "title": "Lines only",
+              "desc": "Good for simple line/coloring book art. Bad for cartoons, photos or complex art."
+            }
+          }
+        },
+        "outline": "Outline fills in darker shade",
+        "invert": "Invert colors before tracing",
+        "blur": {
+          "title": "Blur amount",
+          "desc": "Preprocess image blur, removes and smoothes small detail artifacts that can't be printed. Bad for line art."
+        }
+      }
+    }
   },
   "export": {
     "title": "Export creation for printing…",
@@ -102,6 +145,10 @@
       "pixels": {
         "label": " dv/px",
         "title": "device pixels"
+      },
+      "px": {
+        "label": "px",
+        "title": "pixels"
       },
       "degrees": {
         "label": "°",
