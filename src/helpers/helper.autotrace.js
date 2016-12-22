@@ -44,7 +44,7 @@ module.exports = function(paper) {
      *   Resolved promise returns string data of completed SVG.
      */
     getImageLines: function(img, options) {
-      options = _.extend(options || {}, {centerline: true});
+      options = _.extend({}, options, {centerline: true});
       return this.getImageFills(img, options);
     },
 
@@ -69,7 +69,12 @@ module.exports = function(paper) {
           if (err) {
             reject(Error(err));
           } else {
-            resolve(paper.autotrace.getTraceData());
+            var data = paper.autotrace.getTraceData();
+            if (data) {
+              resolve(data);
+            } else {
+              reject(Error("Null result from autotrace"));
+            }
           }
         });
       });
