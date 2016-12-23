@@ -4,7 +4,7 @@
  * placed into the editor.
  */
  /* globals
-   _, paper, Layer, Group, Raster, view, project, autoTraceLoadedInit,
+   _, paper, Layer, Group, Raster, view, project, autoTraceLoadedInit, app,
    Shape, Point, mainWindow
  */
 

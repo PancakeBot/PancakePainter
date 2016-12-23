@@ -7,7 +7,7 @@
  * We have full access to globals loaded in the mainWindow as needed, just
  * reference them below.
  **/
- /*globals paper, $, path, app, mainWindow */
+ /*globals window, paper, $, path, app, mainWindow, i18n, _ */
 
 module.exports = function(context) {
   // Central window detail object returned for windows[autotrace] object.
@@ -167,7 +167,7 @@ module.exports = function(context) {
   // Window hide event.
   autotrace.hide = function() {
     // Re-activate the default editor paperscope .
-    paper.activate();
+    mainWindow.editorPaperScope.activate();
   };
 
   return autotrace;
