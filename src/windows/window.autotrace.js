@@ -109,6 +109,13 @@ module.exports = function(context) {
       }
     }).change(); // Trigger initial change to save data.
 
+    // Bind change for changing type description.
+    $('select[name=tracetype]', context).change(function() {
+      $(this).siblings('aside').text(
+        i18n.t('import.auto.settings.types.options.' + $(this).val() + '.desc')
+      );
+    });
+
     setByPreset = false; // Ready for updates.
   }
 
@@ -135,6 +142,14 @@ module.exports = function(context) {
         case 'transparent-pick':
           // TODO: add colorpicker
           break;
+      }
+    });
+
+    // Bind ESC key exit.
+    // TODO: Build this off data attr global bind thing.
+    $(window).keydown(function(e){
+      if (e.keyCode === 27) { // Global escape key exit window
+        $('button[name=cancel]', context).click();
       }
     });
   }
