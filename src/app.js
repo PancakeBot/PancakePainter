@@ -648,6 +648,7 @@ mainWindow.overlay = {
     _.each(mainWindow.overlay.windowNames, function(name) {
       // Append the actual HTML include into the DOM.
       var htmlFile = path.join('src', 'windows', 'window.' + name + '.html');
+      var context; // Placeholder for context of newly added element.
       if (fs.existsSync(htmlFile)) {
         $('#overlay').append(
           $('<div>')
@@ -656,14 +657,15 @@ mainWindow.overlay = {
             .html(fs.readFileSync(htmlFile, 'utf8'))
         );
 
-        i18n.translateElementsIn('#overlay > div:last');
+        context = $('#overlay > div:last');
+        i18n.translateElementsIn(context);
       }
 
       // Load the window specific code into the overlay.windows object.
       var jsFile = path.join('src', 'windows', 'window.' + name + '.js');
       if (fs.existsSync(jsFile)) {
         jsFile = path.join(__dirname, 'windows', 'window.' + name);
-        mainWindow.overlay.windows[name] = require(jsFile)();
+        mainWindow.overlay.windows[name] = require(jsFile)(context);
 
         // Initialize code trigger for window.
         if (mainWindow.overlay.windows[name].init) {
