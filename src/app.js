@@ -190,7 +190,7 @@ var editorLoaded = false;
 function editorLoad() {
   if (!editorLoaded) {
     editorLoaded = true;
-    paper.PaperScript.load($('<script>').attr({
+    mainWindow.editorPaperScope = paper.PaperScript.load($('<script>').attr({
       type:"text/paperscript",
       src: "editor.ps.js",
       canvas: "editor"
