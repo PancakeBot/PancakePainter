@@ -21,6 +21,7 @@ module.exports = function(paper) {
   paper.selectRectLast = null;
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
+  var lastScaleRatio = 1;
   var segment, path, selectChangeOnly;
   paper.imageTraceMode = false;
 
@@ -180,6 +181,7 @@ module.exports = function(paper) {
         // Scale hitbox
         var center = event.point.subtract(paper.selectRect.bounds.center);
         selectionRectangleScale = center.length / path.scaling.x;
+        lastScaleRatio = 1;
       }
     }
 
@@ -236,19 +238,26 @@ module.exports = function(paper) {
       // Path scale adjustment
       var centerDiff = event.point.subtract(paper.selectRect.bounds.center);
       var ratio = centerDiff.length / selectionRectangleScale;
-      var scaling = new Point(ratio, ratio);
-      paper.selectRect.scaling = scaling;
+      paper.selectRect.scale(1/lastScaleRatio, paper.selectRect.bounds.center);
+      paper.selectRect.scale(ratio, paper.selectRect.bounds.center);
+
       _.each(paper.selectRect.ppaths, function(path){
-        path.scaling = scaling;
+        path.scale(1/lastScaleRatio, paper.selectRect.bounds.center);
+        path.scale(ratio, paper.selectRect.bounds.center);
       });
 
+      lastScaleRatio = ratio;
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
       var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
-      paper.selectRect.rotation = rotation;
+      var lastRotation = selectionRectangleRotation;
+      selectionRectangleRotation = rotation;
+      rotation = rotation - lastRotation;
+
+      paper.selectRect.rotate(rotation);
       _.each(paper.selectRect.ppaths, function(path){
-        path.rotation = rotation;
+        path.rotate(rotation, paper.selectRect.pivot);
       });
       return;
     }
