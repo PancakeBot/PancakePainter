@@ -13,8 +13,26 @@ module.exports = function(context) {
   // Central window detail object returned for windows[autotrace] object.
   var autotrace = {
     settings: {},
+    defaults: {
+      tracetype: 'mixed',
+      posterize: 2,
+      transparent: '#FFFFFF',
+      blur: 0,
+      outline: false,
+      invert: false,
+    },
+    presets: { // Applied over the top of defaults
+      simple: {},
+      complex: {
+        tracetype: "fills",
+        blur: 3,
+        posterize: 5,
+        transparent: "#00FF00",
+      },
+    },
     paper: {}, // PaperScope for auto trace preview
-    source: '/home/techninja/web/pancake/testimages/rams.png',
+    preset: 'simple', // Preset window opens with.
+    source: '', // Source file to be loaded.
     intermediary: path.join(app.getPath('temp'), 'pp_tempraster.png'),
     tracebmp: path.join(app.getPath('temp'), 'pp_tracesource.bmp'),
   };
@@ -100,9 +118,11 @@ module.exports = function(context) {
     $('button', context).click(function() {
       switch(this.name) {
         case 'simple':
-          break;
-
         case 'complex':
+          applySettings(_.extend({},
+            autotrace.defaults,
+            autotrace.presets[this.name]
+          ));
           break;
 
         case 'cancel':
@@ -129,9 +149,15 @@ module.exports = function(context) {
   // Window show event.
   autotrace.show = function() {
     autoTraceLoad();
+
     // Activate the trace preview paperscope.
     autotrace.paper.activate();
 
+    // Apply given preset settings.
+    applySettings(_.extend({},
+      autotrace.defaults,
+      autotrace.presets[autotrace.preset]
+    ));
     // Init load and build the images
     autotrace.paper.loadTraceImage()
       .then(autotrace.paper.renderTraceImage)
