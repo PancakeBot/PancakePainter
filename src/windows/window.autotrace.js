@@ -9,7 +9,7 @@
  **/
  /*globals paper, $, path, app, mainWindow */
 
-module.exports = function() {
+module.exports = function(context) {
   // Central window detail object returned for windows[autotrace] object.
   var autotrace = {
     settings: {},
@@ -39,7 +39,7 @@ module.exports = function() {
   // Bind the window's settings inputs into a single object on change.
   function bindSettings() {
     setByPreset = true; // Ignore updates for initial bind.
-    $('input, select', '#autotrace').change(function() {
+    $('input, select', context).change(function() {
       // Save each setting based on name attribute.
       if (this.type === 'checkbox') {
         autotrace.settings[this.name] = $(this).prop('checked');
@@ -64,7 +64,7 @@ module.exports = function() {
 
   // Bind the buttons on the window.
   function bindButtons() {
-    $('button', '#autotrace').click(function() {
+    $('button', context).click(function() {
       switch(this.name) {
         case 'simple':
           break;
