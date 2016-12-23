@@ -39,9 +39,21 @@ function start() {
 var mainWindow = null;
 
 /**
- * Initialize the settings & defaults
+ * Initialize the settings, constants & defaults
  */
 function settingsInit() {
+  // Global application constants (set and referenced from here only!)
+  // TODO: Gather more of these from around the app.
+  app.constants = {
+    pancakeShades: [
+      '#ffea7e',
+      '#e2bc15',
+      '#a6720e',
+      '#714a00'
+    ],
+  };
+
+  // Global user configurable settings.
   var settingsFile = appPath + 'settings.json';
   app.settings = {
     v: {}, // Values are saved to/from here
@@ -123,7 +135,7 @@ function windowInit() {
       sendMissingTo: 'fallback|current|all', // Send missing values to
       lng: 'en-US'
     }, function(){
-
+      // Setup main window.
       var windowSettings = {
         minWidth: 680,
         minHeight: 420,

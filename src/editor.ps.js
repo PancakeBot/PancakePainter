@@ -3,7 +3,7 @@
  * all importing/exporting of its data.
  */
  /* globals
-   window, mainWindow, _, toastr, i18n, paper, view, project, scale,
+   window, mainWindow, _, toastr, i18n, paper, view, project, scale, app,
    Raster, Group, Point, Path, Layer, currentFile, path, fs, editorLoadedInit
  */
 
@@ -17,12 +17,7 @@ paper.imageLayer = project.getActiveLayer(); // Behind the active layer
 paper.mainLayer = new Layer(); // Everything is drawn on here by default now
 
 // Hold onto the base colors for the palette (also custom)
-paper.pancakeShades = [
-  '#ffea7e',
-  '#e2bc15',
-  '#a6720e',
-  '#714a00'
-];
+paper.pancakeShades = app.constants.pancakeShades;
 
 // Handy translated color names
 paper.pancakeShadeNames = [];
@@ -38,6 +33,7 @@ var toolFill = require('./tools/tool.fill')(paper); /* jshint ignore:line */
 var toolSelect = require('./tools/tool.select')(paper);
 
 // Load Helpers
+// TODO: Load via files in dir, API style.
 _.each(['undo', 'clipboard', 'utils', 'autotrace'], function(helperName) {
   paper[helperName] = require('./helpers/helper.' + helperName)(paper);
 });
