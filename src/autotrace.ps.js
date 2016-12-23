@@ -59,7 +59,7 @@ paper.loadTraceImage = function() {
       paper.traceImg.img.onLoad = function() {
         // Size the image down
         var scale = {
-          x: (view.bounds.width * 0.5) / this.width,
+          x: (view.bounds.width * 0.4) / this.width,
           y: (view.bounds.height * 0.8) / this.height
         };
 
