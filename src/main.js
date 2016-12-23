@@ -65,7 +65,7 @@ function settingsInit() {
         x: 'center'
       },
       lastFile: '',
-      flatten: 15,          // Flatten curve value (smaller value = more points)
+      flatten: 2,          // Flatten curve value (smaller value = more points)
       shutoff: 25,          // Remaining line length threshold for pump shutoff
       startwait: 600,       // Time to wait for batter flow begin
       endwait: 250,         // Time to wait for batter flow at end of line
