@@ -36,6 +36,39 @@ module.exports = function(context) {
     }
   }
 
+  /**
+   * Apply a flat key:value object to the elements as input values.
+   * @param  {Object} settings
+   *   An object with keys matching the names and values matching the target
+   *   values to set the elements to.
+   */
+  function applySettings(settings) {
+    setByPreset = true; // Block updates.
+    _.each(settings, function(value, name){
+      var $elem = $('[name=' + name + ']');
+      var type = $elem.attr('type') || $elem.prop('tagName').toLowerCase();
+      switch (type) {
+        case 'color':
+        case 'range':
+        case 'select':
+          $elem.val(value);
+          break;
+        case 'checkbox':
+          $elem.prop('checked', value);
+          break;
+        case 'radio':
+          $elem.filter('[value=' + value + ']').prop('checked', true);
+          break;
+        default:
+      }
+      $elem.change();
+    });
+
+    // Force update here.
+    autotrace.renderUpdate();
+    setByPreset = false; // Ready for updates.
+  }
+
   // Bind the window's settings inputs into a single object on change.
   function bindSettings() {
     setByPreset = true; // Ignore updates for initial bind.
