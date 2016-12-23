@@ -131,12 +131,15 @@ module.exports = function(context) {
           ));
           break;
 
+        case 'import':
+          // Actually import the data from this paper to the griddle editor.
+          var json = autotrace.paper.svgLayer.exportJSON();
+          mainWindow.editorPaperScope.activate();
+          mainWindow.editorPaperScope.mainLayer.importJSON(json);
+          /* falls through */
+
         case 'cancel':
           mainWindow.overlay.toggleWindow('autotrace', false);
-          break;
-
-        case 'import':
-          // TODO: Import content into main paper context.
           break;
 
         case 'transparent-pick':
