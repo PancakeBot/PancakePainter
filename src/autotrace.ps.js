@@ -25,11 +25,15 @@ var tempLayer = new Layer(); // Hidden Temporary layer.
 tempLayer.visible = false;
 
 var svgLayer = new Layer(); // Everything is drawn here to output
+paper.svgLayer = svgLayer;
 
 // Load Salient Helpers
 _.each(['utils', 'autotrace'], function(helperName) {
   paper[helperName] = require('./helpers/helper.' + helperName)(paper);
 });
+
+// Initialize the colors to snap to based on the pancake shades.
+paper.utils.snapColorSetup(app.constants.pancakeShades);
 
 // ============================================================================
 // How should this work:
@@ -129,6 +133,7 @@ paper.renderTraceVector = function() {
   }
 };
 
+
 paper.renderMixedVector = function() {
   var lines, fills, mask;
   var options = {
@@ -151,12 +156,12 @@ paper.renderMixedVector = function() {
     mask = fills.clone();
 
     // Negative offset fills to destroy thin shapes.
-    mask = paper.utils.offsetPath(mask.children[0], -offset, 3);
+    mask = paper.utils.offsetPath(mask.children[0], -offset, 5);
 
     // Only if there's a result from the destructive process above...
     if (mask) {
       // Then unoffset the same fill to use as a mask.
-      mask = paper.utils.offsetPath(mask, offset, 3);
+      mask = paper.utils.offsetPath(mask, offset, 5);
       paper.tracedGroup.addChild(mask);
     }
 
@@ -166,6 +171,8 @@ paper.renderMixedVector = function() {
     // Remove any previous work and append built data to svgLayer.
     svgLayer.removeChildren();
     svgLayer.addChild(paper.tracedGroup);
+
+    paper.normalizeSVG();
   });
 };
 
@@ -188,6 +195,8 @@ paper.renderFillsVector = function() {
     // Remove any previous work and append built data to svgLayer.
     svgLayer.removeChildren();
     svgLayer.addChild(paper.tracedGroup);
+
+    paper.normalizeSVG();
   });
 };
 
@@ -201,6 +210,7 @@ paper.renderLinesVector = function() {
   var img = autotrace.tracebmp;
   paper.autotrace.getImageLines(img, options).then(function(data) {
     lines = tempLayer.importSVG(data);
+    lines.strokeWidth = 5;
     autotrace.paper.activate();
     paper.tracedGroup = lines;
 
@@ -210,10 +220,16 @@ paper.renderLinesVector = function() {
     // Remove any previous work and append built data to svgLayer.
     svgLayer.removeChildren();
     svgLayer.addChild(paper.tracedGroup);
+
+    paper.normalizeSVG();
   });
 };
 
-
+paper.normalizeSVG = function() {
+  autotrace.paper.activate();
+  paper.utils.ungroupAllGroups(svgLayer);
+  paper.utils.autoColor(svgLayer);
+};
 
 
 // Autotrace preview should be done loading, trigger loadInit
