@@ -105,8 +105,7 @@ module.exports = function(context) {
       }
 
       if (!setByPreset) {
-        autotrace.paper.renderTraceImage()
-          .then(autotrace.paper.renderTraceVector);
+        autotrace.renderUpdate();
       }
     }).change(); // Trigger initial change to save data.
 
@@ -158,10 +157,18 @@ module.exports = function(context) {
       autotrace.defaults,
       autotrace.presets[autotrace.preset]
     ));
+
     // Init load and build the images
-    autotrace.paper.loadTraceImage()
-      .then(autotrace.paper.renderTraceImage)
+    autotrace.paper.loadTraceImage().then(autotrace.renderUpdate);
+  };
+
+  // Trigger the normal trace render update.
+  autotrace.renderUpdate = function () {
+    // TODO: Rate limit/queue this.
+    if (autoTraceLoaded) {
+      autotrace.paper.renderTraceImage()
       .then(autotrace.paper.renderTraceVector);
+    }
   };
 
   // Window hide event.
