@@ -350,13 +350,65 @@ function buildImageImporter() {
     .attr('id', 'import')
     .data('cursor-key', 'select')
     .attr('title', i18n.t('import.title'));
+
   $importButton.append(
-    $('<div>').css('background-image', 'url(images/icon-import.png)')
+    $('<nav>')
+    .focus(function(){
+      console.log('FOCUS');
+    })
+    .addClass('menu').append(
+      $('<input>')
+        .attr({
+          type: 'checkbox',
+          href: '#',
+          class: 'menu-open',
+          name: 'menu-open',
+          id: 'menu-open',
+        }),
+      $('<label>')
+        .addClass('menu-open-button').attr('for', 'menu-open'),
+      $('<a>')
+        .attr('title', i18n.t('import.auto.options.complex'))
+        .addClass('menu-item').append($('<i>').addClass('complex')),
+      $('<a>')
+        .attr('title', i18n.t('import.auto.options.simple'))
+        .addClass('menu-item').append($('<i>').addClass('simple')),
+      $('<a>')
+        .attr('title', i18n.t('import.auto.options.manual'))
+        .addClass('menu-item').append($('<i>').addClass('manual'))
+    )
   );
 
-  $importButton.click(function(){
-    activateToolItem($importButton);
-    paper.initImageImport();
+  $importButton.find('a').click(function(){
+    var option = $('i', this).attr('class');
+    $importButton.find('input').prop('checked', false); // Hide the menu.
+
+    switch (option) {
+      case 'manual':
+        activateToolItem($importButton);
+        paper.initImageImport();
+        break;
+      case 'simple':
+      case 'complex':
+        mainWindow.dialog({
+          t: 'OpenDialog',
+          title: i18n.t('import.title'),
+          filters: [{
+            name: i18n.t('import.files'),
+            extensions: ['jpg', 'jpeg', 'gif', 'png', 'bmp']
+          }]
+        }, function(filePath){
+          if (!filePath) {  // Open cancelled
+            return;
+          }
+
+          // Lets hope the file is good! pass to the window.
+          mainWindow.overlay.windows.autotrace.source = filePath;
+          mainWindow.overlay.windows.autotrace.preset = option;
+          mainWindow.overlay.toggleWindow('autotrace', true);
+        });
+    }
+
   });
 
   $('#tools #tool-select').before($importButton);
