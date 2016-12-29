@@ -1,0 +1,11 @@
+prefix=/usr/local/Cellar/autotrace/0.31.1_2
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Autotrace
+Description: a utility that converts bitmap to vector graphics
+Version: 0.31.1
+Requires: 
+Libs: -L${exec_prefix}/lib -lautotrace    
+Cflags: -I${prefix}/include
