@@ -1,0 +1,656 @@
+<?xml version="1.0"?>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIAL.TTF" fullname="Arial" name="Arial" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIALBD.TTF" fullname="Arial Fett" name="Arial-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIALBI.TTF" fullname="Arial Fett Kursiv" name="Arial-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIALI.TTF" fullname="Arial Kursiv" name="Arial-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\COUR.TTF" fullname="Courier New" name="Courier-New" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\COURBD.TTF" fullname="Courier New Fett" name="Courier-New-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\COURBI.TTF" fullname="Courier New Fett Kursiv" name="Courier-New-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\COURI.TTF" fullname="Courier New Kursiv" name="Courier-New-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\LUCON.TTF" fullname="Lucida Console" name="Lucida-Console" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\L_10646.TTF" fullname="Lucida Sans Unicode" name="Lucida-Sans-Unicode" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TIMES.TTF" fullname="Times New Roman" name="Times-New-Roman" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TIMESBD.TTF" fullname="Times New Roman Fett" name="Times-New-Roman-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TIMESBI.TTF" fullname="Times New Roman Fett Kursiv" name="Times-New-Roman-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TIMESI.TTF" fullname="Times New Roman Kursiv" name="Times-New-Roman-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\WINGDING.TTF" fullname="WingDings" name="WingDings" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SYMBOL.TTF" fullname="Symbol" name="Symbol" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\VERDANA.TTF" fullname="Verdana" name="Verdana" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\VERDANAB.TTF" fullname="Verdana Fett" name="Verdana-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\VERDANAI.TTF" fullname="Verdana Kursiv" name="Verdana-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\VERDANAZ.TTF" fullname="Verdana Fett Kursiv" name="Verdana-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIBLK.TTF" fullname="Arial Black" name="Arial-Black" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\comic.TTF" fullname="Comic Sans MS" name="Comic-Sans-MS" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\comicbd.TTF" fullname="Comic Sans MS Fett" name="Comic-Sans-MS-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\impact.TTF" fullname="Impact" name="Impact" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\georgia.TTF" fullname="Georgia" name="Georgia" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\georgiab.TTF" fullname="Georgia Fett" name="Georgia-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\georgiaz.TTF" fullname="Georgia Fett Kursiv" name="Georgia-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\georgiai.TTF" fullname="Georgia Kursiv" name="Georgia-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\pala.TTF" fullname="Palatino Linotype" name="Palatino-Linotype" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\palab.TTF" fullname="Palatino Linotype Fett" name="Palatino-Linotype-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\palabi.TTF" fullname="Palatino Linotype Fett Kursiv" name="Palatino-Linotype-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\palai.TTF" fullname="Palatino Linotype Kursiv" name="Palatino-Linotype-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TAHOMABD.TTF" fullname="Tahoma Fett" name="Tahoma-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\trebuc.TTF" fullname="Trebuchet MS" name="Trebuchet-MS" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\trebucbd.TTF" fullname="Trebuchet MS Fett" name="Trebuchet-MS-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\trebucbi.TTF" fullname="Trebuchet MS Fett Kursiv" name="Trebuchet-MS-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\trebucit.TTF" fullname="Trebuchet MS Kursiv" name="Trebuchet-MS-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\webdings.TTF" fullname="Webdings" name="Webdings" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TAHOMA.TTF" fullname="Tahoma" name="Tahoma" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\MICROSS.TTF" fullname="Microsoft Sans Serif Regular" name="Microsoft-Sans-Serif-Regular" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\21205___.TTF" fullname="Jokerman LET Plain:1.0" name="Jokerman-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\2120A___.TTF" fullname="Jokerman Alts LET Plain:1.0" name="Jokerman-Alts-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\35191___.TTF" fullname="John Handy LET Plain:1.0" name="John-Handy-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\40240___.TTF" fullname="Orange LET Plain:1.0" name="Orange-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\46152___.TTF" fullname="Academy Engraved LET Plain:1.0" name="Academy-Engraved-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\50416___.TTF" fullname="University Roman LET Plain:1.0" name="University-Roman-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\5041A___.TTF" fullname="University Roman Alts LET Plain:1.0" name="University-Roman-Alts-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\51253___.TTF" fullname="Victorian LET Plain:1.0" name="Victorian-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\52162___.TTF" fullname="Milano LET" name="Milano-LET" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\54151___.TTF" fullname="Smudger LET Plain:1.0" name="Smudger-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\5415A___.TTF" fullname="Smudger Alts LET Plain:1.0" name="Smudger-Alts-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\57930___.TTF" fullname="Westwood LET Plain:1.0" name="Westwood-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\57961___.TTF" fullname="Ruach LET Plain:1.0" name="Ruach-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\59250___.TTF" fullname="Rage Italic LET Plain:1.0" name="Rage-Italic-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\63193___.TTF" fullname="La Bamba LET Plain:1.0" name="La-Bamba-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\65659___.TTF" fullname="Quixley LET Plain:1.0" name="Quixley-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\70214___.TTF" fullname="Pump Demi Bold LET Plain:1.0" name="Pump-Demi-Bold-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\70729___.TTF" fullname="Tiranti Solid LET Plain:1.0" name="Tiranti-Solid-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\75678___.TTF" fullname="Mekanik LET Plain:" name="Mekanik-LET-Plain:" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\75749___.TTF" fullname="One Stroke Script LET Plain:" name="One-Stroke-Script-LET-Plain:" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\78640___.TTF" fullname="Highlight LET Plain:1.0" name="Highlight-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\78936___.TTF" fullname="Odessa LET Plain:1.0" name="Odessa-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\89198___.TTF" fullname="Scruff LET Plain:1.0" name="Scruff-LET-Plain:1.0" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT0131M_.TTF" fullname="Broadway BT" name="Broadway-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT0246M_.TTF" fullname="Square 721 BT" name="Square-721-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT0362M_.TTF" fullname="Park Avenue BT" name="Park-Avenue-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT0952M_.TTF" fullname="Cataneo BT" name="Cataneo-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT1044M_.TTF" fullname="Blackletter 686 BT" name="Blackletter-686-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT1139M_.TTF" fullname="Calligraphic 421 BT" name="Calligraphic-421-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT1221M_.TTF" fullname="Mister Earl BT" name="Mister-Earl-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT7009M_.TTF" fullname="Old Dreadful No.7 BT" name="Old-Dreadful-No.7-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\TT9832L_.TTF" fullname="Holiday Pi BT" name="Holiday-Pi-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\AMAZB___.TTF" fullname="Amaze Bold" name="Amaze-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\AMAZI___.TTF" fullname="Amaze Italic" name="Amaze-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\AMAZR___.TTF" fullname="Amaze Normal" name="Amaze-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BANGB___.TTF" fullname="Bangle Bold" name="Bangle-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BANGI___.TTF" fullname="Bangle Italic" name="Bangle-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BANGN___.TTF" fullname="Bangle Normal" name="Bangle-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BARTB___.TTF" fullname="Bart Bold" name="Bart-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BARTI___.TTF" fullname="Bart Italic" name="Bart-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BARTN___.TTF" fullname="Bart Normal" name="Bart-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BIMINB__.TTF" fullname="Bimini Bold" name="Bimini-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BIMINI__.TTF" fullname="Bimini Italic" name="Bimini-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BIMINR__.TTF" fullname="Bimini Normal" name="Bimini-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\CHASB___.TTF" fullname="Chasm Bold" name="Chasm-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\CHASI___.TTF" fullname="Chasm Italic" name="Chasm-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\CHASN___.TTF" fullname="Chasm Normal" name="Chasm-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\DOLPHB__.TTF" fullname="Dolphin Bold" name="Dolphin-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\DOLPHI__.TTF" fullname="Dolphin Italic" name="Dolphin-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\DOLPHR__.TTF" fullname="Dolphin Normal" name="Dolphin-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\EURAB___.TTF" fullname="Eurasia Bold" name="Eurasia-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\EURAI___.TTF" fullname="Eurasia Italic" name="Eurasia-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\EURAN___.TTF" fullname="Eurasia Normal" name="Eurasia-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\FLATBB__.TTF" fullname="Flat Brush Bold" name="Flat-Brush-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\FLATBI__.TTF" fullname="Flat Brush Italic" name="Flat-Brush-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\FLATBN__.TTF" fullname="Flat Brush Normal" name="Flat-Brush-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GALAB___.TTF" fullname="Galant Bold" name="Galant-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GALAI___.TTF" fullname="Galant Italic" name="Galant-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GALAN___.TTF" fullname="Galant Normal" name="Galant-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GAZEB___.TTF" fullname="Gaze Bold" name="Gaze-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GAZEI___.TTF" fullname="Gaze Italic" name="Gaze-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GAZEN___.TTF" fullname="Gaze Normal" name="Gaze-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\KELTB___.TTF" fullname="Kelt Bold" name="Kelt-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\KELTI___.TTF" fullname="Kelt Italic" name="Kelt-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\KELTN___.TTF" fullname="Kelt Normal" name="Kelt-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\LIBEB___.TTF" fullname="Liberate Bold" name="Liberate-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\LIBEN___.TTF" fullname="Liberate Normal" name="Liberate-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\LYNDCB__.TTF" fullname="Lynda Cursive Bold" name="Lynda-Cursive-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\LYNDCN__.TTF" fullname="Lynda Cursive Normal" name="Lynda-Cursive-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\MIRRB___.TTF" fullname="Mirror Bold" name="Mirror-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\MIRRI___.TTF" fullname="Mirror Italic" name="Mirror-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\MIRRN___.TTF" fullname="Mirror Normal" name="Mirror-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\NOTESR__.TTF" fullname="Notes Normal" name="Notes-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\PARISB__.TTF" fullname="Paris Bold" name="Paris-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\PARISI__.TTF" fullname="Paris Italic" name="Paris-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\PARISR__.TTF" fullname="Paris Normal" name="Paris-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SHORHB__.TTF" fullname="Short Hand Bold" name="Short-Hand-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SHORHI__.TTF" fullname="Short Hand Italic" name="Short-Hand-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SHORHN__.TTF" fullname="Short Hand Normal" name="Short-Hand-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SIGNSR__.TTF" fullname="Signs Normal" name="Signs-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SIMPB___.TTF" fullname="Simpson Bold" name="Simpson-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SIMPI___.TTF" fullname="Simpson Italic" name="Simpson-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SIMPN___.TTF" fullname="Simpson Normal" name="Simpson-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SURFB___.TTF" fullname="Surfer Bold" name="Surfer-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SURFI___.TTF" fullname="Surfer Italic" name="Surfer-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\SURFN___.TTF" fullname="Surfer Normal" name="Surfer-Normal" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\E:\WINNT\SYSTEM\MSREF1.TTF" fullname="MS Reference 1" name="MS-Reference-1" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\E:\WINNT\SYSTEM\MSREF2.TTF" fullname="MS Reference 2" name="MS-Reference-2" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIALN.TTF" fullname="Arial Narrow" name="Arial-Narrow" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BKANT.TTF" fullname="Book Antiqua" name="Book-Antiqua" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BOOKOS.TTF" fullname="Bookman Old Style" name="Bookman-Old-Style" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GOTHIC.TTF" fullname="Century Gothic" name="Century-Gothic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GARA.TTF" fullname="Garamond" name="Garamond" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ANTQUAB.TTF" fullname="Book Antiqua Fett" name="Book-Antiqua-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ANTQUABI.TTF" fullname="Book Antiqua Fett Kursiv" name="Book-Antiqua-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ANTQUAI.TTF" fullname="Book Antiqua Kursiv" name="Book-Antiqua-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARBLI___.TTF" fullname="Arial Black Kursiv" name="Arial-Black-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIALNB.TTF" fullname="Arial Narrow Fett" name="Arial-Narrow-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIALNBI.TTF" fullname="Arial Narrow Fett Kursiv" name="Arial-Narrow-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\ARIALNI.TTF" fullname="Arial Narrow Kursiv" name="Arial-Narrow-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BOOKOSB.TTF" fullname="Bookman Old Style Fett" name="Bookman-Old-Style-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BOOKOSBI.TTF" fullname="Bookman Old Style Fett Kursiv" name="Bookman-Old-Style-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\BOOKOSI.TTF" fullname="Bookman Old Style Kursiv" name="Bookman-Old-Style-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GARABD.TTF" fullname="Garamond Fett" name="Garamond-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GARAIT.TTF" fullname="Garamond Kursiv" name="Garamond-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GOTHICB.TTF" fullname="Century Gothic Fett" name="Century-Gothic-Fett" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GOTHICBI.TTF" fullname="Century Gothic Fett Kursiv" name="Century-Gothic-Fett-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\GOTHICI.TTF" fullname="Century Gothic Kursiv" name="Century-Gothic-Kursiv" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\tt0156m_.ttf" fullname="Avant Garde Medium BT" name="Avant-Garde-Medium-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\tt0157m_.ttf" fullname="Avant Garde Medium Oblique BT" name="Avant-Garde-Medium-Oblique-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\AVGARDNI.TTF" fullname="Avant Garde Book Oblique BT" name="Avant-Garde-Book-Oblique-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\AVGARDN.TTF" fullname="Avant Garde Book BT" name="Avant-Garde-Book-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\COMBULN.TTF" fullname="CommonBullets" name="CommonBullets" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\STAC222N.TTF" fullname="Staccato 222 BT" name="Staccato-222-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\F:\PFiles\Common\MSShared\Datamap\MAPSYM.TTF" fullname="MapSymbols" name="MapSymbols" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\supef___.ttf" fullname="SuperFrench" name="SuperFrench" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\monosbi.ttf" fullname="Monospace 821 Bold Italic BT" name="Monospace-821-Bold-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisscki.ttf" fullname="Swiss 721 Black Condensed Italic BT" name="Swiss-721-Black-Condensed-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissck.ttf" fullname="Swiss 721 Black Condensed BT" name="Swiss-721-Black-Condensed-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissci.ttf" fullname="Swiss 721 Condensed Italic BT" name="Swiss-721-Condensed-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisscbo.ttf" fullname="Swiss 721 Bold Condensed Outline BT" name="Swiss-721-Bold-Condensed-Outline-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisscbi.ttf" fullname="Swiss 721 Bold Condensed Italic BT" name="Swiss-721-Bold-Condensed-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisscb.ttf" fullname="Swiss 721 Bold Condensed BT" name="Swiss-721-Bold-Condensed-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissc.ttf" fullname="Swiss 721 Condensed BT" name="Swiss-721-Condensed-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissbo.ttf" fullname="Swiss 721 Bold Outline BT" name="Swiss-721-Bold-Outline-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissbi.ttf" fullname="Swiss 721 Bold Italic BT" name="Swiss-721-Bold-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisscli.ttf" fullname="Swiss 721 Light Condensed Italic BT" name="Swiss-721-Light-Condensed-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swiss.ttf" fullname="Swiss 721 BT" name="Swiss-721-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisse.ttf" fullname="Swiss 721 Extended BT" name="Swiss-721-Extended-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\stylu.ttf" fullname="Stylus BT" name="Stylus-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\sansso__.ttf" fullname="SansSerif Oblique" name="SansSerif-Oblique" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\sanssbo_.ttf" fullname="SansSerif BoldOblique" name="SansSerif-BoldOblique" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\sanssb__.ttf" fullname="SansSerif Bold" name="SansSerif-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\sanss___.ttf" fullname="SansSerif" name="SansSerif" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\romantic.ttf" fullname="Romantic" name="Romantic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\romai___.ttf" fullname="Romantic Italic" name="Romantic-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\romab___.ttf" fullname="Romantic Bold" name="Romantic-Bold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\panroman.ttf" fullname="PanRoman" name="PanRoman" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissb.ttf" fullname="Swiss 721 Bold BT" name="Swiss-721-Bold-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\techl___.ttf" fullname="TechnicLite" name="TechnicLite" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\isocpeui.ttf" fullname="ISOCPEUR Italic" name="ISOCPEUR-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\isocteur.ttf" fullname="ISOCTEUR" name="ISOCTEUR" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\isocpeur.ttf" fullname="ISOCPEUR" name="ISOCPEUR" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\vinet.ttf" fullname="Vineta BT" name="Vineta-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\umath.ttf" fullname="Universal Math 1 BT" name="Universal-Math-1-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisscl.ttf" fullname="Swiss 721 Light Condensed BT" name="Swiss-721-Light-Condensed-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\technic_.ttf" fullname="Technic" name="Technic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\monosb.ttf" fullname="Monospace 821 Bold BT" name="Monospace-821-Bold-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\techb___.ttf" fullname="TechnicBold" name="TechnicBold" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissli.ttf" fullname="Swiss 721 Light Italic BT" name="Swiss-721-Light-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissl.ttf" fullname="Swiss 721 Light BT" name="Swiss-721-Light-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissko.ttf" fullname="Swiss 721 Black Outline BT" name="Swiss-721-Black-Outline-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisski.ttf" fullname="Swiss 721 Black Italic BT" name="Swiss-721-Black-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissk.ttf" fullname="Swiss 721 Black BT" name="Swiss-721-Black-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissi.ttf" fullname="Swiss 721 Italic BT" name="Swiss-721-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissel.ttf" fullname="Swiss 721 Light Extended BT" name="Swiss-721-Light-Extended-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swissek.ttf" fullname="Swiss 721 Black Extended BT" name="Swiss-721-Black-Extended-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\swisseb.ttf" fullname="Swiss 721 Bold Extended BT" name="Swiss-721-Bold-Extended-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\monosi.ttf" fullname="Monospace 821 Italic BT" name="Monospace-821-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\compi.ttf" fullname="Commercial Pi BT" name="Commercial-Pi-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\monos.ttf" fullname="Monospace 821 BT" name="Monospace-821-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\eurro___.ttf" fullname="EuroRoman Oblique" name="EuroRoman-Oblique" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\eurr____.ttf" fullname="EuroRoman" name="EuroRoman" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\dutchi.ttf" fullname="Dutch 801 Italic BT" name="Dutch-801-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\dutcheb.ttf" fullname="Dutch 801 Extra Bold BT" name="Dutch-801-Extra-Bold-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\dutchbi.ttf" fullname="Dutch 801 Bold Italic BT" name="Dutch-801-Bold-Italic-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\dutchb.ttf" fullname="Dutch 801 Bold BT" name="Dutch-801-Bold-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\dutch.ttf" fullname="Dutch 801 Roman BT" name="Dutch-801-Roman-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\comsc.ttf" fullname="Commercial Script BT" name="Commercial-Script-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\isocteui.ttf" fullname="ISOCTEUR Italic" name="ISOCTEUR-Italic" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\cityb___.ttf" fullname="CityBlueprint" name="CityBlueprint" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\bgothm.ttf" fullname="Bank Gothic Medium BT" name="Bank-Gothic-Medium-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\bgothl.ttf" fullname="Bank Gothic Light BT" name="Bank-Gothic-Light-BT" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\counb___.ttf" fullname="CountryBlueprint" name="CountryBlueprint" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\MTCORSVA.TTF" fullname="Monotype Corsiva" name="Monotype-Corsiva" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\WINGDNG2.TTF" fullname="Wingdings 2" name="Wingdings-2" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\WINGDNG3.TTF" fullname="Wingdings 3" name="Wingdings-3" />
+</fontmap>
+<fontmap>
+  <font format="truetype" glyphs="%SystemRoot%\Fonts\gdt_____.ttf" fullname="GDT" name="GDT" />
+</fontmap>
+</xml>
