@@ -334,13 +334,20 @@ module.exports = function(paper) {
      *   triplet array [r,g,b] or jQuery RGB string like "rgb(0,0,0)"
      * @param {Array} colors
      *   Array of colorset objects defining colors.
+     * @param {Number} limit
+     *   How many colors to limit to, cuts off darker shades.
      * @return {Number}
      *   The index in the colors array that best matches the incoming color, -1
      *   if white/background color is best match.
      */
-    snapColor: function(source){
+    snapColor: function(source, limit){
       // Clone colors so we don't mess with the global colors
       var colors = _.extend([], this.snapColors);
+
+      // If a limit given, slice the array to just that amount.
+      if (limit) {
+        colors = colors.slice(0, limit);
+      }
 
       if (typeof source === 'string'){
         source = this.colorStringToArray(source);
@@ -382,7 +389,7 @@ module.exports = function(paper) {
      * @param  {paper.Layer} layer
      *   Layer to check for top level groups.
      * @return {Boolean}
-     *   
+     *
      */
     layerContainsGroups: function (layer) {
       for(var i in layer.children) {
@@ -411,20 +418,22 @@ module.exports = function(paper) {
 
     /**
      * Snap colors for every path/item in a given layer.
-     * @param  {paper.Layer} layer
+     * @param {paper.Layer} layer
      *   Paper layer to effect.
+     * @param {Number} limit
+     *   How many colors to limit to, cuts off darker shades.
      */
-    autoColor: function(layer) {
+    autoColor: function(layer, limit) {
       var t = this;
       _.each(layer.children, function(item) {
         var colorIndex = 0;
         if (item.strokeColor) {
-          colorIndex = t.snapColor(item.strokeColor.toCSS());
+          colorIndex = t.snapColor(item.strokeColor.toCSS(), limit);
           item.strokeColor = t.snapColors[colorIndex].color.HEX;
           item.data.color = colorIndex;
         }
         if (item.fillColor) {
-          colorIndex = t.snapColor(item.fillColor.toCSS());
+          colorIndex = t.snapColor(item.fillColor.toCSS(), limit);
           item.fillColor = t.snapColors[colorIndex].color.HEX;
           item.data.color = colorIndex;
           item.data.fill = true;
