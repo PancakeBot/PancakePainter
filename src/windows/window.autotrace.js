@@ -191,6 +191,9 @@ module.exports = function(context) {
 
   // Window hide event.
   autotrace.hide = function() {
+    // Cleanup the window.
+    autotrace.paper.cleanup();
+
     // Re-activate the default editor paperscope .
     mainWindow.editorPaperScope.activate();
   };
