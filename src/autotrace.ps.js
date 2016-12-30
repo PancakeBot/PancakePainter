@@ -4,7 +4,7 @@
  * placed into the editor.
  */
  /* globals
-   _, paper, Layer, Group, Raster, view, project, autoTraceLoadedInit, app,
+   $, _, paper, Layer, Group, Raster, view, project, autoTraceLoadedInit, app,
    Shape, Point, mainWindow
  */
  var jimp = require('jimp');
@@ -134,6 +134,15 @@ paper.renderTraceVector = function() {
     case 'lines':
       return renderLinesVector();
   }
+};
+
+/**
+ * Cleanup the image specific bits so we don't see them on next load.
+ */
+paper.cleanup = function() {
+  svgLayer.removeChildren();
+  imageLayer.removeChildren();
+  $('div.trace-preview img.trace').remove();
 };
 
 
