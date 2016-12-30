@@ -10,6 +10,7 @@
  /*globals window, paper, $, path, app, mainWindow, i18n, _ */
 
 module.exports = function(context) {
+
   // Central window detail object returned for windows[autotrace] object.
   var autotrace = {
     settings: {},
@@ -30,6 +31,7 @@ module.exports = function(context) {
         transparent: "#00FF00",
       },
     },
+    cloneCount: 1, // Number of items to copy import/place.
     paper: {}, // PaperScope for auto trace preview
     preset: 'simple', // Preset window opens with.
     source: '', // Source file to be loaded.
@@ -87,6 +89,128 @@ module.exports = function(context) {
     setByPreset = false; // Ready for updates.
   }
 
+
+  /**
+   * Display the current clone setup with live preview image.
+   */
+  function clonePreview() {
+    var $tp = $('div.trace-preview');
+
+    // Clear out any trace images at start.
+    $tp.find('img.trace').remove();
+
+    var zoom = 7.5;
+    var layout = autotrace.getCloneLayout();
+    _.each(layout.positions, function(pos) {
+      var $t = $('<img>', {class: 'trace', src: autotrace.previewRasterData});
+      $t.css({
+        left: (pos[0] / zoom) + 14,
+        top: (pos[1] / zoom) + 14,
+        transform: "translate(-50%, -50%) scale(" + (layout.scale / zoom) + ")",
+      });
+      $tp.append($t);
+    });
+  }
+
+
+  /**
+   * Figure out what the center positions and scales should be for cloneCount
+   * and the currently traced image dimensions.
+   * @return {Object}
+   *   Contains array of positions (in x,y array format) and scale key.
+   */
+  autotrace.getCloneLayout = function() {
+    var out = {scale: 1, positions: []};
+    var count = autotrace.cloneCount;
+    var traceBounds = autotrace.paper.svgLayer.bounds;
+
+    if (!traceBounds.width) return out;
+
+    var griddleBounds = mainWindow.editorPaperScope.view.bounds;
+    var griddleAspect = griddleBounds.height / griddleBounds.width;
+    var traceAspect = traceBounds.height / traceBounds.width;
+    var landscape = traceAspect < griddleAspect;
+
+    // Every cloned item has the same size regardless of count.
+    var fillPercent;
+    var q = {width: griddleBounds.width / 4, height: griddleBounds.height / 4};
+
+    // How many?
+    switch (count) {
+      case 1: // 1 item, center, 80% fill.
+        fillPercent = 80;
+        out.positions = [[q.width * 2, q.height * 2]];
+        break;
+      case 2: // 2 items, 90% of 50% width/height. SBS or TB
+        fillPercent = 50;
+
+        if (landscape) { // SBS
+          out.positions = [
+            [q.width * 2, q.height],     // Center Top.
+            [q.width * 2, q.height * 3], // Center Bottom.
+          ];
+        } else { // Top/Bottom
+          out.positions = [
+            [q.width, q.height * 2],     // Left Middle.
+            [q.width * 3, q.height * 2], // Right Middle.
+          ];
+        }
+        break;
+      case 4: // 4 items, 92% of 25% width/height. Simple Quadrant
+        fillPercent = 35;
+        out.positions = [
+          [q.width, q.height],         // Top Left.
+          [q.width * 3, q.height],     // Top Right.
+          [q.width, q.height * 3],     // Bottom Left.
+          [q.width * 3, q.height * 3], // Bottom Right.
+        ];
+        break;
+      case 8: // 8 items, 95% of 12.5% width/height. SBS or TB 4x grouping.
+        fillPercent = 25;
+        // Eighth measurement.
+        var e = {width: q.width / 2, height: q.height / 2};
+
+        if (landscape) { // SBS 4 rows of 2.
+          out.positions = [
+            [q.width, e.height],         // A Left.
+            [q.width * 3, e.height],     // A Right.
+
+            [q.width, e.height * 3],     // B Left.
+            [q.width * 3, e.height * 3], // B Right.
+
+            [q.width, e.height * 5],     // C Left.
+            [q.width * 3, e.height * 5], // C Right.
+
+            [q.width, e.height * 7],     // D Left.
+            [q.width * 3, e.height * 7], // D Right.
+          ];
+        } else { // Top/Bottom 2 rows of 4.
+          out.positions = [
+            [e.width, q.height],         // Top Left a.
+            [e.width * 3, q.height],     // Top Left b.
+            [e.width * 5, q.height],     // Top Right a.
+            [e.width * 7, q.height],     // Top Right b.
+
+            [e.width, q.height * 3],     // Bottom Left a.
+            [e.width * 3, q.height * 3], // Bottom Left b.
+            [e.width * 5, q.height * 3], // Bottom Right a.
+            [e.width * 7, q.height * 3], // Bottom Right b.
+          ];
+        }
+        break;
+    }
+
+    fillPercent /= 100;
+    var scale = {
+      x: (griddleBounds.width * fillPercent) / traceBounds.width,
+      y: (griddleBounds.height * fillPercent) / traceBounds.height
+    };
+
+    out.scale = (scale.x < scale.y ? scale.x : scale.y);
+    return out;
+  };
+
+
   // Bind the window's settings inputs into a single object on change.
   function bindSettings() {
     setByPreset = true; // Ignore updates for initial bind.
@@ -119,6 +243,44 @@ module.exports = function(context) {
     setByPreset = false; // Ready for updates.
   }
 
+
+  /**
+   * Place/import the traced SVG data from this paperscope to the editor.
+   */
+  function importTrace() {
+    var json = autotrace.paper.svgLayer.exportJSON();
+    mainWindow.editorPaperScope.activate();
+
+    // Import the JSON of the SVG trace layer into a temporary layer,
+    // then group the contents of that layer, and ditch the layer.
+    var tmpLayer = new mainWindow.editorPaperScope.Layer();
+    var group = new mainWindow.editorPaperScope.Group(
+      tmpLayer.importJSON(json).removeChildren()
+    );
+    tmpLayer.remove();
+
+    // Position each group into the correct clone layout position, then remove
+    // it from its group (just used for positioning).
+    var layout = autotrace.getCloneLayout();
+    _.each(layout.positions, function(pos) {
+      var g = group.clone();
+      g.scale(layout.scale);
+      g.position = new mainWindow.editorPaperScope.Point(pos);
+      var items = g.removeChildren();
+      mainWindow.editorPaperScope.mainLayer.addChildren(items);
+
+      // Select added items if only one being cloned.
+      if (autotrace.cloneCount === 1) {
+        mainWindow.editorPaperScope.selectAll(items);
+      }
+      g.remove();
+    });
+    group.remove();
+
+    // Trigger a history change state.
+    mainWindow.editorPaperScope.fileChanged();
+  }
+
   // Bind the buttons on the window.
   function bindButtons() {
     $('button', context).click(function() {
@@ -132,10 +294,7 @@ module.exports = function(context) {
           break;
 
         case 'import':
-          // Actually import the data from this paper to the griddle editor.
-          var json = autotrace.paper.svgLayer.exportJSON();
-          mainWindow.editorPaperScope.activate();
-          mainWindow.editorPaperScope.mainLayer.importJSON(json);
+          importTrace();
           /* falls through */
 
         case 'cancel':
@@ -144,6 +303,14 @@ module.exports = function(context) {
 
         case 'transparent-pick':
           // TODO: add colorpicker
+          break;
+
+        case 'clone-1':
+        case 'clone-2':
+        case 'clone-4':
+        case 'clone-8':
+          autotrace.cloneCount = parseInt(this.name.split('-')[1]);
+          clonePreview();
           break;
       }
     });
@@ -176,6 +343,9 @@ module.exports = function(context) {
       autotrace.presets[autotrace.preset]
     ));
 
+    // Default to 1x.
+    $('button[name=clone-1]').click();
+
     // Init load and build the images
     autotrace.paper.loadTraceImage().then(autotrace.renderUpdate);
   };
@@ -185,7 +355,8 @@ module.exports = function(context) {
     // TODO: Rate limit/queue this.
     if (autoTraceLoaded) {
       autotrace.paper.renderTraceImage()
-      .then(autotrace.paper.renderTraceVector);
+      .then(autotrace.paper.renderTraceVector)
+      .then(clonePreview);
     }
   };
 
