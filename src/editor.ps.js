@@ -115,13 +115,13 @@ paper.finishImageImport = function() {
 };
 
 // Shortcut for deferring logic to paperscript from app.js.
-paper.selectAll = function() {
+paper.selectAll = function(items) {
   if (paper.tool.name !== "tools.select") {
     window.activateToolItem('#tool-select');
     toolSelect.activate();
   }
 
-  toolSelect.selectAll();
+  toolSelect.selectAll(items);
 };
 
 // Clear the existing project workspace/file (no confirmation)

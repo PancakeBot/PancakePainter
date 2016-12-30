@@ -506,11 +506,16 @@ module.exports = function(paper) {
   }
 
   // Select all top level items.
-  tool.selectAll = function() {
+  tool.selectAll = function(items) {
     paper.deselect();
 
+    // Use mainLayer or passed items argument.
+    if (typeof items !== 'object') {
+      items = paper.mainLayer.children;
+    }
+
     var paths = [];
-    _.each(project.activeLayer.children, function(path){
+    _.each(items, function(path){
       if (path instanceof paper.Path || path instanceof paper.CompoundPath) {
         paths.push(path);
       }
