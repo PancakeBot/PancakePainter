@@ -282,13 +282,18 @@ function normalizeSVG() {
   autotrace.paper.activate();
   paper.utils.ungroupAllGroups(svgLayer);
 
-};
   // Limit available autocolors for 1 color (2p) traces to the lightest shade.
   var limit = 4;
   if (autotrace.settings.posterize === '2') {
     limit = 1;
   }
   paper.utils.autoColor(svgLayer, limit);
+
+  // Generate raster preview.
+  var previewRaster = svgLayer.rasterize(72);
+  autotrace.previewRasterData = previewRaster.toDataURL();
+  previewRaster.remove();
+}
 
 
 // Autotrace preview should be done loading, trigger loadInit
