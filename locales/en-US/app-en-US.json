@@ -11,7 +11,7 @@
     "drawnote": "The design above will resemble the actual pancake once it has been flipped.",
     "button": {
       "cancel": "Cancel",
-      "import": "Import",
+      "import": "Place",
       "yes": "Yes",
       "no": "No"
     }
@@ -72,6 +72,9 @@
         "manual": "Place image in background for manual tracing",
         "simple": "Automatic trace for logos or cartoons",
         "complex": "Automatic trace for complex art or photos"
+      },
+      "place": {
+        "title": "Import/Placement options"
       },
       "settings": {
         "title": "Automatic Trace Settings",
