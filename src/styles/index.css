@@ -42,9 +42,36 @@ body * {
       margin-right: 1em;
       border-radius: 1em;
       background-color: #444444; }
-    #autotrace .overlay-content > fieldset {
+    #autotrace .overlay-content div.sidebar {
       width: 230px;
-      overflow-y: auto; }
+      display: flex;
+      flex-flow: column; }
+      #autotrace .overlay-content div.sidebar fieldset {
+        overflow-y: auto;
+        position: relative; }
+      #autotrace .overlay-content div.sidebar fieldset.preview {
+        overflow: hidden;
+        height: 315px; }
+        #autotrace .overlay-content div.sidebar fieldset.preview button[name=import] {
+          transform: translate(50%);
+          position: relative;
+          top: -14px; }
+        #autotrace .overlay-content div.sidebar fieldset.preview .options button {
+          display: inline-block;
+          width: 23%; }
+        #autotrace .overlay-content div.sidebar fieldset.preview .trace-preview {
+          position: relative;
+          width: 196px;
+          height: 104px;
+          box-sizing: border-box;
+          padding-top: 14px;
+          padding-bottom: 10px;
+          padding-left: 14px;
+          padding-right: 11px;
+          background-image: url("../images/griddle.svg");
+          background-size: contain; }
+          #autotrace .overlay-content div.sidebar fieldset.preview .trace-preview img.trace {
+            position: absolute; }
 
 #toolback {
   background-color: #3A3A3A;
@@ -248,6 +275,24 @@ body * {
   color: red;
   text-decoration: underline;
   cursor: pointer; }
+
+button.fancy {
+  display: inline-block;
+  border: 1px solid #439E2C;
+  color: #fff;
+  border-radius: 10px 10px 11px 9px;
+  font-family: Verdana;
+  width: auto;
+  height: auto;
+  font-size: 16px;
+  padding: 3px 20px;
+  box-shadow: 0px 3px 11px 0 #000;
+  background-image: linear-gradient(to top, #1D612F, #36943F);
+  background-color: #409C4F; }
+  button.fancy:hover, button.fancy:active {
+    border: 1px solid #5D7FBC;
+    color: #fff;
+    background-color: #97A8C7; }
 
 input.fancy[type="checkbox"] {
   position: absolute;
