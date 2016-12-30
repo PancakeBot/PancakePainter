@@ -275,11 +275,20 @@ function renderMixedVector() {
   });
 }
 
-paper.normalizeSVG = function() {
+/**
+ * Normalize, cleanup & colorize the SVG created by the trace functions.
+ */
+function normalizeSVG() {
   autotrace.paper.activate();
   paper.utils.ungroupAllGroups(svgLayer);
-  paper.utils.autoColor(svgLayer);
+
 };
+  // Limit available autocolors for 1 color (2p) traces to the lightest shade.
+  var limit = 4;
+  if (autotrace.settings.posterize === '2') {
+    limit = 1;
+  }
+  paper.utils.autoColor(svgLayer, limit);
 
 
 // Autotrace preview should be done loading, trigger loadInit
