@@ -683,13 +683,14 @@ mainWindow.overlay = {
           }
         });
       } else {
-        $elem.fadeOut('slow');
+        $elem.fadeOut('slow', function() {
+          // Hide window code trigger.
+          if (mainWindow.overlay.windows[name].hide) {
+            mainWindow.overlay.windows[name].hide();
+          }
+        });
         this.toggleFrostedOverlay(false);
 
-        // Hide window code trigger.
-        if (mainWindow.overlay.windows[name].hide) {
-          mainWindow.overlay.windows[name].hide();
-        }
       }
 
     }
