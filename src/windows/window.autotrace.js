@@ -43,6 +43,8 @@ module.exports = function(context) {
   // Avoids update thrashing cause by mass updates.
   var setByPreset = false;
 
+  var $loadingBar = $('.bar-loader', context);
+
   // Load the auto trace PaperScript (only when the canvas is ready).
   var autoTraceLoaded = false;
   function autoTraceLoad() {
@@ -354,9 +356,13 @@ module.exports = function(context) {
   autotrace.renderUpdate = function () {
     // TODO: Rate limit/queue this.
     if (autoTraceLoaded) {
+      $loadingBar.css('opacity', 100);
       autotrace.paper.renderTraceImage()
       .then(autotrace.paper.renderTraceVector)
-      .then(clonePreview);
+      .then(clonePreview)
+      .then(function() {
+        $loadingBar.css('opacity', 0);
+      });
     }
   };
 

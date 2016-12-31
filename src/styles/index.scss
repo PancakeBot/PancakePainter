@@ -45,6 +45,7 @@ body * {
 }
 
 // Autotrace ===================================================================
+
 #autotrace {
   width: 90%;
   height: 70%;
@@ -54,6 +55,16 @@ body * {
     position: relative;
     overflow: hidden;
     height: 100%;
+
+    .loader {
+      //visibility: hidden;
+      position: absolute;
+      width: 33%;
+      bottom: 1.5em;
+      left: 42%;
+      transition: opacity .3s;
+      opacity: 0;
+    }
 
     canvas {
       border: 2px dashed #6D6060;
@@ -214,6 +225,9 @@ body * {
 
 // Fancy trace option dropdown =================================================
 @import 'trace-menu';
+
+// Fancy Loader animations =====================================================
+@import 'loaders';
 
 // Color Picker ================================================================
 #color {
