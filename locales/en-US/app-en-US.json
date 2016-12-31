@@ -7,6 +7,7 @@
   },
   "common": {
     "done": "Done",
+    "loading": "Loading…",
     "complete": "Complete",
     "drawnote": "The design above will resemble the actual pancake once it has been flipped.",
     "button": {
