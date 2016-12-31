@@ -135,6 +135,58 @@ module.exports = function(paper) {
     },
 
     /**
+     * Flatten a given Paper layer into technically non-overlapping
+     * self-subtracted paths and compound paths.
+     * @param  {Paper.Layer} layer
+     *   Layer to work on. All children of the layer will be effected.
+     *   Ensure no groups are in the layer before running this.
+     * @return {undefined}
+     *   Works directly on the layer and its children.
+     */
+    flattenSubtractLayer: function(layer) {
+      for (var srcIndex = 0; srcIndex < layer.children.length; srcIndex++) {
+        var srcPath = layer.children[srcIndex];
+
+        // Ungroup any source child item before continuing.
+        if (srcPath instanceof paper.Group) {
+          var group = srcPath;
+          group.remove(); // Remove from the layer.
+          srcPath = group.removeChildren(1); // Set to child
+        }
+
+        srcPath.data.processed = true;
+
+        // Replace this path with a subtract for every intersecting path,
+        // starting at the current index (lower paths don't subtract from
+        // higher ones)
+        var tmpLen = layer.children.length;
+        for (var destIndex = srcIndex; destIndex < tmpLen ; destIndex++) {
+          var destPath = layer.children[destIndex];
+          if (destIndex !== srcIndex) {
+            var tmpPath = srcPath; // Hold onto the original path
+
+            if (srcPath instanceof paper.Group) {
+              var g = srcPath;
+              g.remove(); // Remove from the layer.
+              srcPath = g.removeChildren(1); // Set to child
+            }
+
+            // Dead path? we're done.
+            if (srcPath.length === 0) {
+              break;
+            }
+
+            // Set srcPath to the subtracted one inserted at the same index.
+            srcPath = layer.insertChild(srcIndex, srcPath.subtract(destPath));
+            srcPath.data = _.extend({}, tmpPath.data);
+
+            tmpPath.remove(); // Remove the old srcPath
+          }
+        }
+      }
+    },
+
+    /**
      * Save a raster image directly as a local file (PNG).
      *
      * @param  {Paper.Raster} raster
