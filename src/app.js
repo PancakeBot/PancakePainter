@@ -113,6 +113,16 @@ $(function(){
 
 // Add translation element helper.
 i18n.translateElementsIn = function(context) {
+  // For data-i18n tagged elements with value set
+  $('[data-i18n][data-i18n!=""]', context).each(function() {
+    var $node = $(this);
+    var data = $node.attr('data-i18n').replace('[title]', '');
+
+    // TODO: This is a hack and should use native i18n translation utils :/
+    $node.attr('title', i18n.t(data));
+  });
+
+  // For data-i18n tagged items without value set...
   $('[data-i18n=""]', context).each(function() {
     var $node = $(this);
 
