@@ -254,6 +254,23 @@ module.exports = function(paper) {
         }
       }
     },
+
+    /**
+     * Get Data URI of any rasterizable paper object.
+     * @param  {Paper.*} item
+     *   Any paper object that supports rasterization.
+     * @param  {Number} dpi
+     *   Resolution for intermediary rasterization.
+     * @return {String}
+     *   Data URI representing the PNG image of the object.
+     */
+    getDataURI: function(item, dpi = 72) {
+      var tempRaster = item.rasterize(dpi);
+      var dataURI = tempRaster.toDataURL();
+      tempRaster.remove();
+      return dataURI;
+    },
+
      * Save a raster image directly as a local file (PNG).
      *
      * @param  {Paper.Raster} raster
