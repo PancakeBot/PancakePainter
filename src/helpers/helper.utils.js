@@ -19,11 +19,13 @@ module.exports = function(paper) {
      *   The amount to offset by.
      * @param {Number} flattenResolution
      *   Resolution to flatten to polygons.
+     * @param {Boolean} doReplace
+     *   Optional, defaults to false. Pass true to replace the passed object.
      * @return {Path}
      *   Reference to the path object created, false if the output of the path
      *   resulted in the eradication of the path.
      */
-    offsetPath: function(inPath, amount, flattenResolution) {
+    offsetPath: function(inPath, amount, flattenResolution, doReplace = false) {
       var ClipperLib = require('../libs/clipper');
       var scale = 100;
       if (!amount) amount = 0;
@@ -103,7 +105,11 @@ module.exports = function(paper) {
           fillColor: inPath.fillColor
         });
 
-        inPath.remove();
+        if (doReplace) {
+          inPath.replaceWith(inset);
+        } else {
+          inPath.remove();
+        }
         return inset;
       } else {
         inPath.remove();
