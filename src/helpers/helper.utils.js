@@ -193,6 +193,32 @@ module.exports = function(paper) {
     },
 
     /**
+     * Destroy all "thin" fill paths/compounds on a given layer, removing or
+     * replacing them with simplified approximations via competing offsets.
+     * @param  {Paper.Layer}  layer
+     *   Paper layer (or item with children) to apply to.
+     * @param  {Number}  amount
+     *   Amount to offset, represents the smallest feature to be absorbed.
+     * @param  {Boolean} [clone=false]
+     *   Whether to clone the input objects before running the process.
+     */
+    destroyThinFeatures: function(layer, amount, clone = false) {
+      var resolution = 2; // Distance between each point during flattening.
+      var items = _.extend([], layer.children);
+      _.each(items, function(item) {
+        var mask = clone ? item.clone() : item;
+        mask = paper.utils.offsetPath(mask, -amount, resolution);
+
+        // Only if there's a result from the destructive process above...
+        if (mask) {
+          // Then unoffset the same fill to use as a mask.
+          mask = paper.utils.offsetPath(mask, amount, resolution);
+
+          // Add the final object back into the layer.
+          layer.addChild(mask);
+        }
+      });
+    },
      * Save a raster image directly as a local file (PNG).
      *
      * @param  {Paper.Raster} raster
