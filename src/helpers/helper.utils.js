@@ -219,6 +219,41 @@ module.exports = function(paper) {
         }
       });
     },
+
+    /**
+     * Move through every child in the given passed paper object and remove any
+     * base level children with a path length less than a minimum.
+     * @param  {Paper.*} item
+     *   Paper object with at least one child, or item to be checked for length.
+     * @param  {Number} minLength
+     *   Minimum length, below which any path will be removed.
+     */
+    recursiveLengthCull: function(item, minLength) {
+      // Bad item? Skip it.
+      if (typeof item === 'undefined') {
+        return;
+      }
+
+      // Parent or bottom level child?
+      if (typeof item.children !== 'undefined') {
+        if (item.children.length) {
+          // Remember! If you mess with a parent's children, you must operate on
+          // a copy of the array, otherwise it will shrink in front of you.
+          var childList = _.extend([], item.children);
+          _.each(childList, function(i) {
+            paper.utils.recursiveLengthCull(i, minLength);
+          });
+        } else {
+          // Empty parent level item.
+          item.remove();
+        }
+      } else {
+        // Bottom level child, cull if below length.
+        if (item.length < minLength) {
+          item.remove();
+        }
+      }
+    },
      * Save a raster image directly as a local file (PNG).
      *
      * @param  {Paper.Raster} raster
