@@ -271,19 +271,20 @@ module.exports = function(paper) {
       return dataURI;
     },
 
+    /**
      * Save a raster image directly as a local file (PNG).
      *
-     * @param  {Paper.Raster} raster
-     *   Raster object to be saved
+     * @param  {Paper.item} item
+     *   Paper item (Group|Layer|Raster|Path|CompoundPath) object to be saved.
      * @param {Number} dpi
      *   DPI to rasterize to.
      * @param  {String} dest
      *   Destination file to be saved.
      * @return {Promise}
-     *   Fulfilled promise returns fs.stat (size, name, etc).
+     *   Fulfilled promise returns final destination file path.
      */
-    saveRasterImage: function(raster, dpi, dest) {
-      var exportRaster = raster.rasterize(dpi);
+    saveRasterImage: function(item, dpi, dest) {
+      var exportRaster = item.rasterize(dpi);
       return new Promise(function(resolve, reject) {
         var b = canvasBuffer(exportRaster.canvas, 'image/png');
         fs.writeFile(dest, b, function(err) {
@@ -291,7 +292,7 @@ module.exports = function(paper) {
           if (err) {
             reject(Error(err));
           } else {
-            resolve(fs.statSync(dest));
+            resolve(dest);
           }
         });
       });
