@@ -24,7 +24,7 @@ module.exports = function(grunt) {
     'build/tasks',
     'build/package.json',
     'build/Gruntfile.js',
-    'node_modules/electron-*',
+    'node_modules/electron-prebuilt',
     'node_modules/grunt*'
   ].join('|');
 
