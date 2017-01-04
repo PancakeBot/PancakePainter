@@ -302,6 +302,30 @@ function normalizeSVG() {
   var previewRaster = svgLayer.rasterize(72);
   autotrace.previewRasterData = previewRaster.toDataURL();
   previewRaster.remove();
+// HOVER/CLICK REMOVE ==========================================================
+// =============================================================================
+var hitOptions = {
+  stroke: true,
+  fill: true,
+  tolerance: 5
+};
+
+function onMouseDown(event) { /* jshint ignore:line */
+  var hitResult = project.hitTest(event.point, hitOptions);
+  if (!hitResult) return;
+
+  if (hitResult) {
+    hitResult.item.remove();
+    paper.renderPreviewRaster();
+    autotrace.clonePreview();
+  }
+}
+
+function onMouseMove(event) { /* jshint ignore:line */
+  svgLayer.selected = false;
+  if (event.item && event.item.parent === svgLayer) {
+    event.item.selected = true;
+  }
 }
 
 
