@@ -5,7 +5,7 @@
  */
  /* globals
    $, _, paper, Layer, Group, Raster, view, project, autoTraceLoadedInit, app,
-   Shape, Point, mainWindow
+   Shape, Point, mainWindow, CompoundPath
  */
  var jimp = require('jimp');
 
