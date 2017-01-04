@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "license": "Apache-2.0",
   "author": "techninja",
+  "description": "Build system for PancakePainter releases",
   "dependencies": {
     "fs-plus": "2.x",
     "grunt": "~0.4.5",
@@ -18,5 +19,8 @@
   "optionalDependencies": {
     "grunt-appdmg": "^0.3.1",
     "grunt-electron-installer": "^2.1.0"
+  },
+  "scripts": {
+    "start": "grunt"
   }
 }

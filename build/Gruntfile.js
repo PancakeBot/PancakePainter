@@ -98,5 +98,5 @@ module.exports = function(grunt) {
 
 
   // Default task(s).
-  grunt.registerTask('default', ['pre-build']);
+  grunt.registerTask('default', ['build']);
 };

@@ -10,6 +10,22 @@ module.exports = function(grunt) {
   var fsp = require('fs-plus');
   var path = require('path');
 
+
+  grunt.registerTask('build', 'Build the release for the current system.', function(){
+    // If we're on Win32, go ahead and run create-windows-installer
+    switch (process.platform) {
+      case 'win32':
+        grunt.task.run('build-win');
+        break;
+      case 'darwin':
+        grunt.task.run('build-mac');
+        break;
+      case 'linux':
+        grunt.task.run('build-linux');
+        break;
+    }
+  });
+
   grunt.registerTask('build-win', 'Build the release application for windows.', function(){
     log('Running electon-packager for win build...');
     grunt.task.run('electron:winbuild', 'build-win-icon');
