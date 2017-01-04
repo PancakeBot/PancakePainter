@@ -350,7 +350,7 @@ function onMouseDown(event) { /* jshint ignore:line */
   var hitResult = project.hitTest(event.point, hitOptions);
   if (!hitResult) return;
 
-  if (hitResult) {
+  if (hitResult && hitResult.item.parent === svgLayer) {
     hitResult.item.remove();
     paper.renderPreviewRaster();
     autotrace.clonePreview();
