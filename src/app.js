@@ -4,7 +4,7 @@
  * the DOM and all node abilities.
  **/
 /*globals
-  document, window, $, _, toastr, paper, html2canvas, stackBlurCanvasRGB
+  document, window, $, _, toastr, paper
 */
 "use strict";
 
@@ -188,10 +188,6 @@ function initEditor() {
     // This must happen after the very first resize, otherwise the canvas
     // doesn't have the correct dimensions for Paper to size to.
     $(mainWindow).trigger('move');
-
-    if ($('#overlay').is(':visible')) {
-      mainWindow.overlay.updateFrosted();
-    }
   }).resize();
 }
 
@@ -738,9 +734,6 @@ mainWindow.overlay = {
         mainWindow.overlay.windows[name] = {}; // Empty object if not provided.
       }
     });
-
-    // Update the initial frosted overlay.
-    this.updateFrosted();
   },
 
   // Show/Hide the fosted glass overlay (disables non-overlay-wrapper controls)
@@ -749,38 +742,19 @@ mainWindow.overlay = {
       doShow = !$('#overlay').is(':visible');
     }
 
+    // Blur (or unblur) the non-overlay content.
+    var blur = doShow ? 'blur(20px)' : 'blur(0)';
+    $('#non-overlay-wrapper').css('-webkit-filter', blur);
+
     if (doShow) {
       $('#overlay').fadeIn('slow');
       paper.deselect();
-      this.updateFrosted(callback);
+      if (callback) callback();
     } else {
       $('#overlay').fadeOut('slow');
       if (callback) callback();
     }
   },
-
-  // Update the rendered HTML image and reblur it (when resizing the window)
-  updateFrosted: function (callback) {
-    if ($('#overlay').is(':visible')) {
-      html2canvas($("#non-overlay-wrapper"), {
-        background: '#E0E1E2'
-      }).then(function(canvas) {
-        var $frosted = $(canvas);
-        $("#frosted").remove();
-        $frosted.attr('id', 'frosted').appendTo('#overlay');
-        stackBlurCanvasRGB(
-          'frosted',
-          0,
-          0,
-          $frosted.width(),
-          $frosted.height(),
-          20
-        );
-        if (callback) callback();
-      });
-    }
-  }
-
 };
 
 // Check the current file status and alert the user what to do before continuing

@@ -448,6 +448,7 @@ input.fancy[type="checkbox"] {
 
 // General usage overlay "window" ==============================================
 #non-overlay-wrapper {
+  transition: -webkit-filter 0.75s;
   position: absolute;
   z-index: 1;
   top: 0;
