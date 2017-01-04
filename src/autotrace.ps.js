@@ -264,7 +264,7 @@ function renderLinesVector() {
  *   When promise is resolved, tracing is complete.
  */
 function renderMixedVector() {
-  var lines, fills, mask;
+  var lines, fills;
   var options = {
     backgroundColor: autotrace.settings.transparent.substr(1),
     colorCount: autotrace.settings.posterize,
@@ -276,11 +276,10 @@ function renderMixedVector() {
       lines = tempLayer.importSVG(data);
       autotrace.paper.activate();
       paper.tracedGroup = new Group([lines]);
-
       lines.strokeWidth = 5;
+      paper.utils.recursiveLengthCull(lines, 8); // Clean up noise lines.
       return paper.autotrace.getImageFills(img, options);
     }).then(function(data) {
-      var offset = 6;
       fills = tempLayer.importSVG(data);
 
       // Reject the promise at this point as we have no lines or fills.
@@ -288,17 +287,9 @@ function renderMixedVector() {
         reject(Error('No data returned from trace.'));
       }
 
-      mask = fills.clone();
-
-      // Negative offset fills to destroy thin shapes.
-      mask = paper.utils.offsetPath(mask.children[0], -offset, 5);
-
-      // Only if there's a result from the destructive process above...
-      if (mask) {
-        // Then unoffset the same fill to use as a mask.
-        mask = paper.utils.offsetPath(mask, offset, 5);
-        paper.tracedGroup.addChild(mask);
-      }
+      paper.utils.flattenSubtractLayer(fills);
+      paper.utils.destroyThinFeatures(fills, autotrace.offset);
+      paper.tracedGroup.addChildren(fills.children);
 
       paper.tracedGroup.position.y = view.center.y;
       paper.tracedGroup.position.x = (view.bounds.width / 4) * 3;
