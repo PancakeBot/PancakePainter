@@ -15,7 +15,7 @@
     "watch": "sass --watch src/styles/index.scss:src/styles/index.css"
   },
   "dependencies": {
-    "autotrace": "0.0.1",
+    "autotrace": "git://github.com/techninja/node-autotrace.git#5defe6b6",
     "datauri": "^0.7.1",
     "electron-canvas-to-buffer": "^2.0.0",
     "fs-plus": "^2.8.1",
