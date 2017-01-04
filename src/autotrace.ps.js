@@ -209,6 +209,8 @@ function renderFillsVector() {
         // Normalize & recolor the final trace.
         normalizeSVG();
 
+        paper.utils.flattenSubtractLayer(svgLayer);
+
         // Resolve the promise.
         resolve();
       } else {
