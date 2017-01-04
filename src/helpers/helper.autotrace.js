@@ -31,6 +31,7 @@ module.exports = function(paper) {
       preserveWidth: true, // Preserve line width before thinning?
       removeAdjacentCorners: true,
       tangentSurround: 3, // Consider adjacent points when computing tangent.
+      customBin: getBinaryPath(), // Binary path for the system.
     },
 
     /**
@@ -93,11 +94,42 @@ module.exports = function(paper) {
       var svg = fs.readFileSync(this.settings.outputFile, 'utf8');
       return svg.replace('<svg ', '<svg ' + svgns);
     }
-
-
   };
 
+  /**
+   * [getBinaryPath description]
+   * @return {String}
+   *   Full path to the AutoTrace executable for the specific OS.
+   */
+  function getBinaryPath() {
+    var path = 'autotrace'; // Default to system install in $PATH.
 
+    switch (process.platform) {
+      case 'win32':
+        path = path.join(
+          app.getAppPath(),
+          'resources',
+          'win32',
+          'bin',
+          'autotrace',
+          'autotrace.exe'
+        );
+        break;
+      case 'darwin':
+        path = path.join(
+          app.getAppPath(),
+          'resources',
+          'darwin',
+          'bin',
+          'autotrace',
+          'bin',
+          'autotrace'
+        );
+        break;
+    }
+
+    return path;
+  }
 
   // Give the main object back to the parent module.
   return autotrace;
