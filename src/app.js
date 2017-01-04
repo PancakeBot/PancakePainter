@@ -184,6 +184,12 @@ function initEditor() {
       height: printableArea.height * mmPerPX
     });
 
+    // Resize functionality for the autotrace window.
+    //if (mainWindow.overlay.windows.autotrace.isOpen) {
+      if (mainWindow.overlay.windows.autotrace) {
+        mainWindow.overlay.windows.autotrace.resize();
+      }
+
     editorLoad(); // Load the editor (if it hasn't already been loaded)
     // This must happen after the very first resize, otherwise the canvas
     // doesn't have the correct dimensions for Paper to size to.
@@ -682,6 +688,8 @@ mainWindow.overlay = {
       if (toggle) {
         this.toggleFrostedOverlay(true, function(){
           $elem.fadeIn('slow');
+          $(window).resize();
+          mainWindow.overlay.windows[name].isOpen = true;
 
           // Show window code trigger.
           if (mainWindow.overlay.windows[name].show) {
@@ -690,6 +698,8 @@ mainWindow.overlay = {
         });
       } else {
         $elem.fadeOut('slow', function() {
+          mainWindow.overlay.windows[name].isOpen = false;
+
           // Hide window code trigger.
           if (mainWindow.overlay.windows[name].hide) {
             mainWindow.overlay.windows[name].hide();
