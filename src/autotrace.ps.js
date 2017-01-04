@@ -309,24 +309,34 @@ function renderMixedVector() {
   });
 }
 
+
 /**
  * Normalize, cleanup & colorize the SVG created by the trace functions.
+ * @param  {Paper.Layer} [layer=svgLayer]
+ *   Layer to normalize, otherwise defaults to svgLayer.
  */
-function normalizeSVG() {
+function normalizeSVG(layer = svgLayer) {
   autotrace.paper.activate();
-  paper.utils.ungroupAllGroups(svgLayer);
+  paper.utils.ungroupAllGroups(layer);
 
   // Limit available autocolors for 1 color (2p) traces to the lightest shade.
   var limit = 4;
   if (autotrace.settings.posterize === '2') {
     limit = 1;
   }
-  paper.utils.autoColor(svgLayer, limit);
+  paper.utils.autoColor(layer, limit);
+  paper.renderPreviewRaster();
+}
 
+/**
+ * Render the raster data of the svgLayer for clone preivew.
+ */
+paper.renderPreviewRaster = function(){
   // Generate raster preview.
-  var previewRaster = svgLayer.rasterize(72);
-  autotrace.previewRasterData = previewRaster.toDataURL();
-  previewRaster.remove();
+  autotrace.previewRasterData = paper.utils.getDataURI(svgLayer);
+};
+
+
 // HOVER/CLICK REMOVE ==========================================================
 // =============================================================================
 var hitOptions = {
