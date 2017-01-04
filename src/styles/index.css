@@ -30,39 +30,113 @@ body * {
 #autotrace {
   width: 90%;
   height: 70%; }
+  #autotrace .overlay-title h2 {
+    margin: 0.5em 0 0; }
+  #autotrace .overlay-title button[name=cancel] {
+    cursor: pointer;
+    position: absolute;
+    right: 0.5em;
+    top: 0.5em;
+    border: none;
+    font-size: 1.3em;
+    color: #E21A1A;
+    font-weight: bold; }
+  #autotrace .overlay-title .presets {
+    position: absolute;
+    right: 2em;
+    top: 8px; }
+    #autotrace .overlay-title .presets button {
+      margin-right: 0.7em;
+      background-size: cover;
+      background-repeat: no-repeat;
+      width: 70px;
+      height: 35px;
+      border-radius: 13px;
+      box-shadow: #333 2px 2px 4px; }
+    #autotrace .overlay-title .presets button[name=simple] {
+      background-image: url("../images/icon-autotrace-simple.png"); }
+    #autotrace .overlay-title .presets button[name=complex] {
+      background-image: url("../images/icon-autotrace-complex.png"); }
   #autotrace .overlay-content {
-    display: flex;
     position: relative;
     overflow: hidden;
-    height: 100%; }
+    height: 100%;
+    padding-top: 2em; }
     #autotrace .overlay-content .loader {
       position: absolute;
-      width: 33%;
       bottom: 1.5em;
-      left: 42%;
       transition: opacity .3s;
       opacity: 0; }
     #autotrace .overlay-content canvas {
+      float: left;
       border: 2px dashed #6D6060;
-      width: auto;
-      flex-grow: 1;
       margin-right: 1em;
       border-radius: 1em;
       background-color: #444444; }
     #autotrace .overlay-content div.sidebar {
-      width: 230px;
-      display: flex;
-      flex-flow: column; }
+      position: absolute;
+      right: 0;
+      height: 100%;
+      width: 230px; }
       #autotrace .overlay-content div.sidebar fieldset {
-        overflow-y: auto;
-        position: relative; }
+        overflow: hidden; }
+        #autotrace .overlay-content div.sidebar fieldset legend {
+          font-weight: bolder; }
+      #autotrace .overlay-content div.sidebar fieldset.settings {
+        position: relative;
+        padding: 0;
+        margin-bottom: 1em; }
+        #autotrace .overlay-content div.sidebar fieldset.settings .wrapper {
+          overflow-y: auto;
+          padding: 0 0.5em;
+          height: 92%; }
+          #autotrace .overlay-content div.sidebar fieldset.settings .wrapper > div {
+            margin-bottom: 1em; }
+        #autotrace .overlay-content div.sidebar fieldset.settings aside {
+          font-size: 0.8em;
+          font-style: italic; }
+        #autotrace .overlay-content div.sidebar fieldset.settings b {
+          float: right;
+          font-style: italic; }
+        #autotrace .overlay-content div.sidebar fieldset.settings .rangeslider {
+          margin: 0.5em 0; }
+          #autotrace .overlay-content div.sidebar fieldset.settings .rangeslider, #autotrace .overlay-content div.sidebar fieldset.settings .rangeslider .rangeslider__fill {
+            height: 12px; }
+        #autotrace .overlay-content div.sidebar fieldset.settings .rangeslider__handle {
+          transform: translate(-4px, -4px) scale(0.6); }
+        #autotrace .overlay-content div.sidebar fieldset.settings label {
+          font-weight: bold; }
+        #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector input {
+          display: none; }
+          #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector input:active + label {
+            opacity: .9; }
+          #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector input:checked + label {
+            -webkit-filter: none; }
+        #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select {
+          cursor: pointer;
+          background-size: contain;
+          background-repeat: no-repeat;
+          display: inline-block;
+          width: 42px;
+          height: 42px;
+          transition: all 100ms ease-in;
+          -webkit-filter: brightness(1.8) grayscale(1) opacity(0.7); }
+          #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select:hover {
+            -webkit-filter: brightness(1.2) grayscale(0.5) opacity(0.9); }
+          #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-1] {
+            background-image: url("../images/icon-autotrace-color-2.png"); }
+          #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-2] {
+            background-image: url("../images/icon-autotrace-color-3.png"); }
+          #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-3] {
+            background-image: url("../images/icon-autotrace-color-4.png"); }
+          #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-4] {
+            background-image: url("../images/icon-autotrace-color-5.png"); }
       #autotrace .overlay-content div.sidebar fieldset.preview {
-        overflow: hidden;
-        height: 315px; }
+        height: 150px; }
         #autotrace .overlay-content div.sidebar fieldset.preview button[name=import] {
-          transform: translate(50%);
           position: relative;
-          top: -14px; }
+          top: -9px;
+          margin-left: 28%; }
         #autotrace .overlay-content div.sidebar fieldset.preview .options button {
           display: inline-block;
           width: 23%; }
@@ -321,6 +395,7 @@ body * {
   cursor: pointer; }
 
 button.fancy {
+  cursor: pointer;
   display: inline-block;
   border: 1px solid #439E2C;
   color: #fff;
@@ -412,6 +487,7 @@ input.fancy[type="checkbox"] {
   cursor: wait; }
 
 #non-overlay-wrapper {
+  transition: -webkit-filter 0.75s;
   position: absolute;
   z-index: 1;
   top: 0;

@@ -75,15 +75,15 @@
         "complex": "Automatic trace for complex art or photos"
       },
       "place": {
-        "title": "Import/Placement options"
+        "title": "Placement options"
       },
       "settings": {
         "title": "Settings",
         "transparent": "Transparent color",
         "transparent-pick": "Pick color from image",
-        "colors": "Number of colors to limit to",
+        "colors": "Shade Limit (1-4)",
         "presets": {
-          "title": "Automatic trace presets",
+          "title": "Presets:",
           "simple": "Logos/Cartoons",
           "complex": "Photos/Complex art"
         },
@@ -104,12 +104,12 @@
             }
           }
         },
+        "preprocess": "Preprocessing",
         "outline": "Outline fills in darker shade",
-        "invert": "Invert colors before tracing",
-        "blur": {
-          "title": "Blur amount",
-          "desc": "Preprocess image blur, removes and smoothes small detail artifacts that can't be printed. Bad for line art."
-        }
+        "invert": "Invert colors",
+        "contrast": "Contrast",
+        "brightness": "Brightness",
+        "blur": "Blur"
       }
     }
   },

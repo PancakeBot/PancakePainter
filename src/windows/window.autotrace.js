@@ -17,10 +17,12 @@ module.exports = function(context) {
     defaults: {
       tracetype: 'mixed',
       posterize: 2,
-      transparent: '#FFFFFF',
+      transparent: "#00FF00",
       blur: 0,
       outline: false,
       invert: false,
+      contrast: 0,
+      brightness: 0,
     },
     presets: { // Applied over the top of defaults
       simple: {},
@@ -380,6 +382,29 @@ module.exports = function(context) {
 
     // Re-activate the default editor paperscope .
     mainWindow.editorPaperScope.activate();
+  };
+
+  // Window resize event.
+  var $atWindow = $('#autotrace');
+  autotrace.resize = function() {
+    var sidebarWidth = 230;
+    var previewWidth = $atWindow.width() - sidebarWidth - 20;
+    $('#autotrace-preview').css({
+      width: previewWidth,
+      height: $atWindow.height() - 40,
+    });
+
+    // Loading wait bar.
+    $('.loader', context).css({
+      width: previewWidth/2 - 50,
+      left: previewWidth/2 + 30,
+    });
+
+    // Settings sidebar
+    var prevHeight = $('.sidebar .preview', context).height();
+    $('.sidebar .settings').css({
+      height: $atWindow.height() - prevHeight - 80,
+    });
   };
 
   return autotrace;

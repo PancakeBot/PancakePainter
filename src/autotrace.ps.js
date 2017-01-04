@@ -5,7 +5,7 @@
  */
  /* globals
    $, _, paper, Layer, Group, Raster, view, project, autoTraceLoadedInit, app,
-   Shape, Point, mainWindow, CompoundPath
+   Path, Point, mainWindow
  */
  var jimp = require('jimp');
 
@@ -15,16 +15,19 @@ paper.strokeWidth = 5; // Custom
 
 // Layer Management
 var sepLayer = project.getActiveLayer();
-var shape = new Shape.Rectangle(
+var separator = new Path.Line(
   new Point(view.center.x, 0),
-  new Point(view.center.x+2, view.bounds.height)
+  new Point(view.center.x, view.bounds.height)
 );
-shape.fillColor = 'white';
+separator.strokeColor = 'white';
+separator.strokeWidth = 3;
+
 
 var imageLayer = new Layer(); // Behind the active layer
 var tempLayer = new Layer(); // Hidden Temporary layer.
 tempLayer.visible = false;
 
+paper.imageLayer = imageLayer;
 var svgLayer = new Layer(); // Everything is drawn here to output
 paper.svgLayer = svgLayer;
 
@@ -35,6 +38,15 @@ _.each(['utils', 'autotrace'], function(helperName) {
 
 // Initialize the colors to snap to based on the pancake shades.
 paper.utils.snapColorSetup(app.constants.pancakeShades);
+
+
+function onResize(event) {
+  separator.firstSegment.point = new Point(view.center.x, 0);
+  separator.lastSegment.point = new Point(view.center.x, view.bounds.height);
+
+  imageLayer.position = new Point(view.center.x/2, view.center.y);
+  svgLayer.position = new Point((view.center.x/2) * 3, view.center.y);
+}
 
 /**
  * Initially load and size the input trace image, rasterizing and outputting
@@ -115,6 +127,16 @@ paper.renderTraceImage = function(sourceFile, extraOptions) {
       // Blur.
       if (autotrace.settings.blur !== '0') {
         img.blur(parseInt(autotrace.settings.blur));
+      }
+
+      // Brightness.
+      if (autotrace.settings.brightness !== '0') {
+        img.brightness(parseFloat(autotrace.settings.brightness));
+      }
+
+      // Contrast.
+      if (autotrace.settings.contrast !== '0') {
+        img.contrast(parseFloat(autotrace.settings.contrast));
       }
 
       // Invert
