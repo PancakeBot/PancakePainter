@@ -95,6 +95,7 @@ module.exports = function(context) {
   /**
    * Display the current clone setup with live preview image.
    */
+  autotrace.clonePreview = clonePreview;
   function clonePreview() {
     var $tp = $('div.trace-preview');
 
