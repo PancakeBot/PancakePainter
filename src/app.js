@@ -716,7 +716,7 @@ mainWindow.overlay = {
   initWindows: function() {
     _.each(mainWindow.overlay.windowNames, function(name) {
       // Append the actual HTML include into the DOM.
-      var htmlFile = path.join('src', 'windows', 'window.' + name + '.html');
+      var htmlFile = path.join(app.getAppPath(), 'src', 'windows', 'window.' + name + '.html');
       var context; // Placeholder for context of newly added element.
       if (fs.existsSync(htmlFile)) {
         $('#overlay').append(
