@@ -237,6 +237,7 @@ function renderLinesVector() {
       if (lines) {
         lines.strokeWidth = 5;
         autotrace.paper.activate();
+        paper.utils.recursiveLengthCull(lines, 8);
         paper.tracedGroup = lines;
 
         paper.tracedGroup.position.y = view.center.y;
