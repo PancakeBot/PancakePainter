@@ -92,10 +92,9 @@ paper.loadTraceImage = function() {
  * @return {Promise}
  *   When promise is resolved, autotrace.tracebmp is saved & ready.
  */
-paper.renderTraceImage = function(
-  sourceFile = autotrace.intermediary,
-  extraOptions = {}
-) {
+paper.renderTraceImage = function(sourceFile, extraOptions) {
+  sourceFile = sourceFile ? sourceFile : autotrace.intermediary;
+  extraOptions = extraOptions ? extraOptions : {};
 
   return new Promise(function(resolve) {
     jimp.read(sourceFile)
@@ -315,7 +314,9 @@ function renderMixedVector() {
  * @param  {Paper.Layer} [layer=svgLayer]
  *   Layer to normalize, otherwise defaults to svgLayer.
  */
-function normalizeSVG(layer = svgLayer) {
+function normalizeSVG(layer) {
+  layer = layer ? layer : svgLayer;
+
   autotrace.paper.activate();
   paper.utils.ungroupAllGroups(layer);
 
