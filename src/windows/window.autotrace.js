@@ -31,6 +31,7 @@ module.exports = function(context) {
         transparent: "#00FF00",
       },
     },
+    offset: 6, // Amount to offset paths for line conversion.
     cloneCount: 1, // Number of items to copy import/place.
     paper: {}, // PaperScope for auto trace preview
     preset: 'simple', // Preset window opens with.
