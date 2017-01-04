@@ -78,7 +78,7 @@
         "title": "Import/Placement options"
       },
       "settings": {
-        "title": "Automatic Trace Settings",
+        "title": "Settings",
         "transparent": "Transparent color",
         "transparent-pick": "Pick color from image",
         "colors": "Number of colors to limit to",
