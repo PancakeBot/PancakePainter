@@ -364,6 +364,9 @@ module.exports = function(context) {
       .then(clonePreview)
       .then(function() {
         $loadingBar.css('opacity', 0);
+      }).catch(function() {
+        // Catch any errors in the process.
+        $loadingBar.css('opacity', 0);
       });
     }
   };
