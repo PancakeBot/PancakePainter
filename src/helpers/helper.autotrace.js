@@ -102,11 +102,11 @@ module.exports = function(paper) {
    *   Full path to the AutoTrace executable for the specific OS.
    */
   function getBinaryPath() {
-    var path = 'autotrace'; // Default to system install in $PATH.
+    var binPath = 'autotrace'; // Default to system install in $PATH.
 
     switch (process.platform) {
       case 'win32':
-        path = path.join(
+        binPath = path.join(
           app.getAppPath(),
           'resources',
           'win32',
@@ -116,7 +116,7 @@ module.exports = function(paper) {
         );
         break;
       case 'darwin':
-        path = path.join(
+        binPath = path.join(
           app.getAppPath(),
           'resources',
           'darwin',
@@ -128,7 +128,7 @@ module.exports = function(paper) {
         break;
     }
 
-    return path;
+    return binPath;
   }
 
   // Give the main object back to the parent module.
