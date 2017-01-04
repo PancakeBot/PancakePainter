@@ -84,36 +84,67 @@ paper.loadTraceImage = function() {
 /**
  * Render the trace raster intermediary image through jimp for extra processing
  * to create the final raster for tracing.
+ * @param {String} [sourceFile=autotrace.intermediary]
+ *   Souce input file to be converted to output BMP for tracing. If not given,
+ *   will default to autotrace.intermediary.
+ * @param {Object} [extraOptions={}]
+ *   Optional extra options to be added for output.
  * @return {Promise}
  *   When promise is resolved, autotrace.tracebmp is saved & ready.
  */
-paper.renderTraceImage = function() {
-  return new Promise(function(resolve, reject) {
-    try {
-      jimp.read(autotrace.intermediary).then(function(img) {
-        // Background color
-        var intColor = parseInt(
-          autotrace.settings.transparent.replace('#', '0x') + 'FF'
-        );
-        img.background(intColor);
+paper.renderTraceImage = function(
+  sourceFile = autotrace.intermediary,
+  extraOptions = {}
+) {
 
-        // Blur.
-        if (autotrace.settings.blur !== '0') {
-          img.blur(parseInt(autotrace.settings.blur));
-        }
+  return new Promise(function(resolve) {
+    jimp.read(sourceFile)
+    .then(function(img){
+      if (extraOptions.mask) {
+        return paper.maskImage(img, extraOptions.mask);
+      } else {
+        return img;
+      }
+    })
+    .then(function(img) {
+      // Background color
+      var intColor = parseInt(
+        autotrace.settings.transparent.replace('#', '0x') + 'FF'
+      );
+      img.background(intColor);
 
-        // Invert
-        if (autotrace.settings.invert) {
-          img.invert();
-        }
+      // Blur.
+      if (autotrace.settings.blur !== '0') {
+        img.blur(parseInt(autotrace.settings.blur));
+      }
 
-        img.write(autotrace.tracebmp, function() {
-          resolve();
-        });
+      // Invert
+      if (autotrace.settings.invert) {
+        img.invert();
+      }
+
+      // Write final file.
+      img.write(autotrace.tracebmp, function() {
+        resolve();
       });
-    } catch(e) {
-      reject(Error(e));
-    }
+    });
+  });
+};
+
+/**
+ * Given a JIMP image, mask transparency given a bw/image given in mask object.
+ * @param  {JIMP.image} img
+ *   Image to be masked.
+ * @param  {Object} mask
+ *   Object containing offset {x, y} & mask.image JIMP image.
+ * @return {Promise}
+ *   Resolved promise returns image with mask applied.
+ */
+paper.maskImage = function(img, mask) {
+  return new Promise(function(resolve) {
+    jimp.read(mask.image).then(function(maskImg) {
+      resolve(img.mask(maskImg, mask.offset.x, mask.offset.y));
+    });
   });
 };
 
