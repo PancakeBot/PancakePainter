@@ -80,6 +80,8 @@ module.exports = function(config) {
           console.log('Bad path!', path);
         }
         pathCount++;
+
+        if (config.debug) console.log(pathCount + '/' + numPaths, path.data);
         out += [
           gc(
             'note',
