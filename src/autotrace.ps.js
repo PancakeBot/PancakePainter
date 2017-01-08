@@ -259,6 +259,7 @@ function renderLinesVector() {
       lines = tempLayer.importSVG(data);
       if (lines) {
         lines.strokeWidth = 5;
+        lines.strokeCap = 'round';
         autotrace.paper.activate();
         paper.utils.recursiveLengthCull(lines, 8);
         paper.tracedGroup = lines;
@@ -301,6 +302,7 @@ function renderMixedVector() {
       autotrace.paper.activate();
       paper.tracedGroup = new Group([lines]);
       lines.strokeWidth = 5;
+      lines.strokeCap = 'round';
       paper.utils.recursiveLengthCull(lines, 8); // Clean up noise lines.
       return paper.autotrace.getImageFills(img, options);
     }).then(function(data) {
