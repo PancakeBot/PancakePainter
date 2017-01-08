@@ -83,9 +83,11 @@ module.exports = function(config) {
         out += [
           gc(
             'note',
-            'Starting path #' + pathCount + '/' + numPaths + ', segments: ' +
-            path.segments.length + ', length: ' + Math.round(path.length) +
-            ', color #' + (path.data.color + 1)
+            'Starting ' + (path.data.fill ? 'fill' : 'stroke') + ' path #' +
+            pathCount + '/' + numPaths + ', segments: ' + path.segments.length +
+            ', length: ' + Math.round(path.length) + ', color #' +
+            (path.data.color + 1) +
+            (path.data.toosmall ? ', too small to fill, outline only' : '')
           ),
           renderPath(path),
           gc(
@@ -519,8 +521,9 @@ module.exports = function(config) {
 
       paper.view.update();
     } else {
-      // Too small to be filled.
-      if (!options.debug) inPath.remove();
+      // Too small to be filled, leave the inPath untouched to allow it to
+      // become an unfilled closed outline path.
+      inPath.data.toosmall = true;
       return null;
     }
   }
