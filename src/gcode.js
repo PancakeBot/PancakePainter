@@ -18,6 +18,10 @@ module.exports = function(config) {
     var workLayer = paper.project.getActiveLayer().clone();
     var out = getCodeHeader();
     config.noMirror = noMirror;
+    workLayer.activate();
+
+    // Empty Path Cleanup.
+    cleanAllPaths(workLayer);
 
     // Convert all fill paths in the work layer into fills.
     // Must use a fillList because removing paths changes the children list
@@ -28,7 +32,6 @@ module.exports = function(config) {
       }
     });
 
-    workLayer.activate();
     _.each(fillList, function(path){
       if (config.useLineFill) {
         paper.fillTracePath(path, config);
@@ -277,6 +280,26 @@ module.exports = function(config) {
         path.closed = false;
         path.add(path.firstSegment.point);
       }
+    });
+  }
+
+  // Quick cleanup helper to get rid of unexpected cruft that can break things.
+  function cleanAllPaths(layer) {
+    // Move through and delete anything useless or out of the ordinary.
+    var items = _.extend([], layer.children);
+    _.each(items, function(item) {
+      if (item.children) {
+        if (item.children.length === 0) {
+          if (config.debug) console.log('child culling', item);
+          item.remove();
+          return;
+        }
+      } else if (!item.length || item.segments.length < 2) {
+        if (config.debug) console.log('length culling', item);
+        item.remove();
+        return;
+      }
+
     });
   }
 
