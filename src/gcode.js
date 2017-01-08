@@ -40,7 +40,6 @@ module.exports = function(config) {
       }
     });
 
-    var numPaths = workLayer.children.length;
     var colorGroups = [];
 
     // Flatten all compound paths into single paths.
@@ -51,6 +50,8 @@ module.exports = function(config) {
 
     // Travel sort the work layer to get everything in the right order.
     travelSortLayer(workLayer);
+
+    var numPaths = workLayer.children.length;
 
     // Move through each path on the worklayer, and group them in reverse order
     // by color shade, 0-3, darker first (indicated in the path data.color).
