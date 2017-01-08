@@ -445,19 +445,8 @@ module.exports = function(config) {
         });
       });
     } else { // Single path
-      // With no path length, we're done.
-      if (p.length) {
-        p.remove();
-        inPath.remove();
-        return;
-      }
-
       geometries[0] = [];
-      if (p.length) {
-        p.remove();
-        inPath.remove();
-        return;
-      }
+
       p.flatten(config.flattenResolution);
       _.each(p.segments, function(s){
         geometries[0].push({
