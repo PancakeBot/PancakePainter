@@ -36,6 +36,8 @@ module.exports = function(context) {
     },
     offset: 6, // Amount to offset paths for line conversion.
     cloneCount: 1, // Number of items to copy import/place.
+    renderUpdateRunning: false, // Whether we're currently rendering an update.
+    imageInitLoaded: false, // Whether we've initialized the current image.
     paper: {}, // PaperScope for auto trace preview
     preset: 'simple', // Preset window opens with.
     sourceImage: {}, // Source file image (passed by app.js).
@@ -354,21 +356,29 @@ module.exports = function(context) {
     $('button[name=clone-1]').click();
 
     // Init load and build the images
-    autotrace.paper.loadTraceImage().then(autotrace.renderUpdate);
+    autotrace.paper.loadTraceImage().then(function() {
+      autotrace.imageInitLoaded = true;
+      autotrace.renderUpdate();
+    });
   };
 
   // Trigger the normal trace render update.
   autotrace.renderUpdate = function () {
-    // TODO: Rate limit/queue this.
-    if (autoTraceLoaded) {
+    if (autoTraceLoaded &&
+        !autotrace.renderUpdateRunning &&
+        autotrace.imageInitLoaded) {
+      autotrace.renderUpdateRunning = true;
       $loadingBar.css('opacity', 100);
+
       autotrace.paper.renderTraceImage()
       .then(autotrace.paper.renderTraceVector)
       .then(clonePreview)
       .then(function() {
+        autotrace.renderUpdateRunning = false;
         $loadingBar.css('opacity', 0);
       }).catch(function() {
         // Catch any errors in the process.
+        autotrace.renderUpdateRunning = false;
         $loadingBar.css('opacity', 0);
       });
     }
@@ -379,6 +389,8 @@ module.exports = function(context) {
     if (autoTraceLoaded) {
       // Cleanup the window.
       autotrace.paper.cleanup();
+      autotrace.renderUpdateRunning = false;
+      autotrace.imageInitLoaded = false;
     }
 
     // Re-activate the default editor paperscope .
