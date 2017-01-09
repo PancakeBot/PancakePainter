@@ -150,8 +150,9 @@ module.exports = function(paper) {
      *   Works directly on the layer and its children.
      */
     flattenSubtractLayer: function(layer) {
-      for (var srcIndex = 0; srcIndex < layer.children.length; srcIndex++) {
-        var srcPath = layer.children[srcIndex];
+      var children = _.extend([], layer.children);
+      for (var srcIndex = 0; srcIndex < children.length; srcIndex++) {
+        var srcPath = children[srcIndex];
 
         // Ungroup any source child item before continuing.
         if (srcPath instanceof paper.Group) {
