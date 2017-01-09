@@ -55,10 +55,14 @@ paper.loadTraceImage = function() {
     var tempPng = autotrace.intermediary;
     autotrace.sourceImage.contain(512, 512).write(tempPng, function() {
       var buster = Math.random().toString(36).substr(2, 5);
+      autotrace.paper.activate();
       paper.traceImg = new Group([new Raster({
         source: autotrace.intermediary + "?cachebust=" + buster,
         position: view.center
       })]);
+
+      // Really Paper? I shouldn't have to be so explicit.
+      imageLayer.addChild(paper.traceImg);
 
       paper.traceImg.img = paper.traceImg.children[0];
 
