@@ -14,6 +14,7 @@ window.$ = window.jQuery = require('jquery');
 window.toastr = require('toastr');
 window._ = require('underscore');
 var path = require('path');
+
 // GCODE renderer (initialized after paper is setup)
 var gcRender = require('./gcode.js');
 
@@ -225,12 +226,6 @@ function editorLoadedInit() { /* jshint ignore:line */
   // Load the renderer once paper is ready
   renderConfig.paper = paper;
   gcRender = gcRender(renderConfig);
-}
-
-
-// Trigger load init only after auto trace has called this function.
-function autoTraceLoadedInit() { /* jshint ignore:line */
-  // TODO: This.
 }
 
 // Build the toolbar DOM dynamically.

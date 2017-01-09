@@ -389,6 +389,3 @@ function onMouseMove(event) { /* jshint ignore:line */
   paper.utils.fitScale(svgLayer, view, 0.4);
   svgLayer.position = new Point((view.center.x/2) * 3, view.center.y);
 }
-
-// Autotrace preview should be done loading, trigger loadInit
-autoTraceLoadedInit();
