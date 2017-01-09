@@ -39,15 +39,6 @@ _.each(['utils', 'autotrace'], function(helperName) {
 // Initialize the colors to snap to based on the pancake shades.
 paper.utils.snapColorSetup(app.constants.pancakeShades);
 
-
-function onResize(event) {
-  separator.firstSegment.point = new Point(view.center.x, 0);
-  separator.lastSegment.point = new Point(view.center.x, view.bounds.height);
-
-  imageLayer.position = new Point(view.center.x/2, view.center.y);
-  svgLayer.position = new Point((view.center.x/2) * 3, view.center.y);
-}
-
 /**
  * Initially load and size the input trace image, rasterizing and outputting
  * an intermediary file at a fixed size.
@@ -362,7 +353,7 @@ paper.renderPreviewRaster = function(){
 };
 
 
-// HOVER/CLICK REMOVE ==========================================================
+// Native Paper.JS PaperScript Events ==========================================
 // =============================================================================
 var hitOptions = {
   stroke: true,
@@ -381,6 +372,10 @@ function onMouseDown(event) { /* jshint ignore:line */
   }
 }
 
+function onResize() {
+  // Move the separator back to the center.
+  separator.firstSegment.point = new Point(view.center.x, 0);
+  separator.lastSegment.point = new Point(view.center.x, view.bounds.height);
 function onMouseMove(event) { /* jshint ignore:line */
   svgLayer.selected = false;
   if (event.item && event.item.parent === svgLayer) {
@@ -388,6 +383,12 @@ function onMouseMove(event) { /* jshint ignore:line */
   }
 }
 
+  // Move and scale the layers.
+  paper.utils.fitScale(imageLayer, view, 0.4);
+  imageLayer.position = new Point(view.center.x/2, view.center.y);
+  paper.utils.fitScale(svgLayer, view, 0.4);
+  svgLayer.position = new Point((view.center.x/2) * 3, view.center.y);
+}
 
 // Autotrace preview should be done loading, trigger loadInit
 autoTraceLoadedInit();
