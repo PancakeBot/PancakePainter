@@ -279,7 +279,7 @@ body * {
     list-style: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
     float: left;
   }
 
@@ -287,6 +287,7 @@ body * {
     cursor: pointer;
     float: left;
     padding: 0.5em;
+    position: relative;
 
     &.active div {
       background-position-x: 100%;
@@ -321,10 +322,13 @@ body * {
   }
 
   #import {
+    overflow: visible;
     padding: 0;
     width: 85px;
     height: 74px;
     margin-left: 10px;
+    z-index: 1;
+
     div {
       height: 74px;
       margin-top: -3px;

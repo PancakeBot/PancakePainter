@@ -359,8 +359,19 @@ function buildImageImporter() {
 
   $importButton.append(
     $('<nav>')
-    .focus(function(){
-      console.log('FOCUS');
+    .on('mouseout click', function(e){
+      // Hide when mouseout on anything but a child element, or itself.
+      var doHide = !$(this).has(e.toElement).length && e.toElement !== this;
+
+      // Hide on click when clicking only the element.
+      if (e.type === 'click') {
+        doHide = e.toElement === this;
+      }
+
+      // Hide menu when mouse moves outside nav box.
+      if (doHide) {
+        $(this).removeClass('nav-open').find('input').prop('checked', false);
+      }
     })
     .addClass('menu').append(
       $('<input>')
@@ -372,7 +383,8 @@ function buildImageImporter() {
           id: 'menu-open',
         }),
       $('<label>')
-        .addClass('menu-open-button').attr('for', 'menu-open'),
+        .addClass('menu-open-button').attr('for', 'menu-open')
+        .click(function() { $('#import nav.menu').addClass('nav-open'); }),
       $('<a>')
         .attr('title', i18n.t('import.auto.options.complex'))
         .addClass('menu-item').append($('<i>').addClass('complex')),

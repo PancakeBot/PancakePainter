@@ -189,12 +189,13 @@ body * {
     list-style: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
     float: left; }
   #tools .tool {
     cursor: pointer;
     float: left;
-    padding: 0.5em; }
+    padding: 0.5em;
+    position: relative; }
     #tools .tool.active div {
       background-position-x: 100%; }
   #tools div {
@@ -211,10 +212,12 @@ body * {
   #tools.color-3 .tool.color-change div {
     background-position-y: 100%; }
   #tools #import {
+    overflow: visible;
     padding: 0;
     width: 85px;
     height: 74px;
-    margin-left: 10px; }
+    margin-left: 10px;
+    z-index: 1; }
     #tools #import div {
       height: 74px;
       margin-top: -3px;
@@ -239,6 +242,12 @@ body * {
   box-sizing: border-box;
   font-size: 20px;
   text-align: left; }
+
+.menu.nav-open {
+  width: 280px;
+  height: 210px;
+  margin-left: -100px;
+  padding-left: 100px; }
 
 .menu-item {
   overflow: hidden; }
