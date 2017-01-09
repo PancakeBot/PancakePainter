@@ -34,7 +34,7 @@ module.exports = function(context) {
         transparent: "#00FF00",
       },
     },
-    offset: 6, // Amount to offset paths for line conversion.
+    offset: 3, // Amount to offset paths for line conversion.
     cloneCount: 1, // Number of items to copy import/place.
     renderUpdateRunning: false, // Whether we're currently rendering an update.
     imageInitLoaded: false, // Whether we've initialized the current image.
@@ -319,7 +319,7 @@ module.exports = function(context) {
         case 'clone-4':
         case 'clone-8':
           autotrace.cloneCount = parseInt(this.name.split('-')[1]);
-          clonePreview();
+          autotrace.renderUpdate();
           break;
       }
     });

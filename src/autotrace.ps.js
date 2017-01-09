@@ -296,7 +296,10 @@ function renderMixedVector() {
       }
 
       paper.utils.flattenSubtractLayer(fills);
-      paper.utils.destroyThinFeatures(fills, autotrace.offset);
+
+      // Calculate offset based on scale approximation and constant offset.
+      var offset = autotrace.offset * (autotrace.cloneCount / 2);
+      paper.utils.destroyThinFeatures(fills, offset);
       paper.tracedGroup.addChildren(fills.children);
 
       // Remove any previous work and append built data to svgLayer.
