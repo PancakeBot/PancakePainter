@@ -4,8 +4,8 @@
  * placed into the editor.
  */
  /* globals
-   $, _, paper, Layer, Group, Raster, view, project, autoTraceLoadedInit, app,
-   Path, Point, mainWindow
+   $, _, paper, Layer, Group, Raster, view, project, app, Path, Point,
+   mainWindow
  */
  var jimp = require('jimp');
 
@@ -21,7 +21,6 @@ var separator = new Path.Line(
 );
 separator.strokeColor = 'white';
 separator.strokeWidth = 3;
-
 
 var imageLayer = new Layer(); // Behind the active layer
 var tempLayer = new Layer(); // Hidden Temporary layer.
@@ -46,14 +45,18 @@ paper.utils.snapColorSetup(app.constants.pancakeShades);
  *   When promise is resolved, autotrace.tracebmp is saved & ready.
  */
 paper.loadTraceImage = function() {
+  autotrace.paper.activate();
   imageLayer.removeChildren();
   imageLayer.activate();
 
   // Return promise to manage execution/failure.
-  return new Promise(function(resolve, reject) {
-    try {
+  return new Promise(function(resolve) {
+    // Resize source image to max 512px on a side, save it to intermediary.
+    var tempPng = autotrace.intermediary;
+    autotrace.sourceImage.contain(512, 512).write(tempPng, function() {
+      var buster = Math.random().toString(36).substr(2, 5);
       paper.traceImg = new Group([new Raster({
-        source: autotrace.source,
+        source: autotrace.intermediary + "?cachebust=" + buster,
         position: view.center
       })]);
 
@@ -61,26 +64,16 @@ paper.loadTraceImage = function() {
 
       // When the image actually loads...
       paper.traceImg.img.onLoad = function() {
-        // Size the image down
-        var scale = {
-          x: (view.bounds.width * 0.4) / this.width,
-          y: (view.bounds.height * 0.8) / this.height
-        };
-
         paper.traceImg.pInitialBounds = this.bounds;
 
-        // Use the smallest scale.
-        scale = (scale.x < scale.y ? scale.x : scale.y);
-        paper.traceImg.scale(scale);
+        // Scale image and set center position on the left.
+        paper.utils.fitScale(this, view, 0.4);
         paper.traceImg.position.x = view.bounds.width / 4;
 
-        // Finish off by saving the image out as a base resized PNG.
-        var tmpFile = autotrace.intermediary;
-        paper.utils.saveRasterImage(paper.traceImg, 72, tmpFile).then(resolve);
+        // All done.
+        resolve();
       };
-    } catch(e) {
-      reject(Error(e));
-    }
+    });
   });
 };
 
@@ -136,9 +129,7 @@ paper.renderTraceImage = function(sourceFile, extraOptions) {
       }
 
       // Write final file.
-      img.write(autotrace.tracebmp, function() {
-        resolve();
-      });
+      img.write(autotrace.tracebmp, resolve);
     });
   });
 };
@@ -211,9 +202,6 @@ function renderFillsVector() {
         autotrace.paper.activate();
         paper.tracedGroup = fills;
 
-        paper.tracedGroup.position.y = view.center.y;
-        paper.tracedGroup.position.x = (view.bounds.width / 4) * 3;
-
         // Remove any previous work and append built data to svgLayer.
         svgLayer.removeChildren();
         svgLayer.addChild(paper.tracedGroup);
@@ -221,6 +209,7 @@ function renderFillsVector() {
         // Normalize & recolor the final trace.
         normalizeSVG();
 
+        // Flatten and subtract all fills together to ensure no underlapping.
         paper.utils.flattenSubtractLayer(svgLayer);
 
         // Resolve the promise.
@@ -255,9 +244,6 @@ function renderLinesVector() {
         paper.utils.recursiveLengthCull(lines, 8);
         paper.tracedGroup = lines;
 
-        paper.tracedGroup.position.y = view.center.y;
-        paper.tracedGroup.position.x = (view.bounds.width / 4) * 3;
-
         // Remove any previous work and append built data to svgLayer.
         svgLayer.removeChildren();
         svgLayer.addChild(paper.tracedGroup);
@@ -291,25 +277,27 @@ function renderMixedVector() {
     paper.autotrace.getImageLines(img, options).then(function(data) {
       lines = tempLayer.importSVG(data);
       autotrace.paper.activate();
-      paper.tracedGroup = new Group([lines]);
-      lines.strokeWidth = 5;
-      lines.strokeCap = 'round';
-      paper.utils.recursiveLengthCull(lines, 8); // Clean up noise lines.
+      paper.tracedGroup = new Group();
+
+      if (lines) {
+        paper.tracedGroup.addChild(lines);
+        lines.strokeWidth = 5;
+        lines.strokeCap = 'round';
+        paper.utils.recursiveLengthCull(lines, 8); // Clean up noise lines.
+      }
+
       return paper.autotrace.getImageFills(img, options);
     }).then(function(data) {
       fills = tempLayer.importSVG(data);
 
       // Reject the promise at this point as we have no lines or fills.
       if (!fills && !lines) {
-        reject(Error('No data returned from trace.'));
+        reject(Error('No data returned from line or fill trace.'));
       }
 
       paper.utils.flattenSubtractLayer(fills);
       paper.utils.destroyThinFeatures(fills, autotrace.offset);
       paper.tracedGroup.addChildren(fills.children);
-
-      paper.tracedGroup.position.y = view.center.y;
-      paper.tracedGroup.position.x = (view.bounds.width / 4) * 3;
 
       // Remove any previous work and append built data to svgLayer.
       svgLayer.removeChildren();
@@ -333,6 +321,12 @@ function normalizeSVG(layer) {
   layer = layer ? layer : svgLayer;
 
   autotrace.paper.activate();
+
+  // Scale vectors and set center position on the right.
+  paper.utils.fitScale(layer, view, 0.4);
+  layer.position.y = view.center.y;
+  layer.position.x = (view.bounds.width / 4) * 3;
+
   paper.utils.ungroupAllGroups(layer);
 
   // Limit available autocolors for 1 color (2p) traces to the lightest shade.
@@ -341,6 +335,7 @@ function normalizeSVG(layer) {
     limit = 1;
   }
   paper.utils.autoColor(layer, limit);
+
   paper.renderPreviewRaster();
 }
 

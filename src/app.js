@@ -387,38 +387,57 @@ function buildImageImporter() {
 
   $importButton.find('a').click(function(){
     var option = $('i', this).attr('class');
-    $importButton.find('input').prop('checked', false); // Hide the menu.
-
-    switch (option) {
-      case 'manual':
-        activateToolItem($importButton);
-        paper.initImageImport();
-        break;
-      case 'simple':
-      case 'complex':
-        mainWindow.dialog({
-          t: 'OpenDialog',
-          title: i18n.t('import.title'),
-          filters: [{
-            name: i18n.t('import.files'),
-            extensions: ['jpg', 'jpeg', 'gif', 'png', 'bmp']
-          }]
-        }, function(filePath){
-          if (!filePath) {  // Open cancelled
-            return;
-          }
-
-          // Lets hope the file is good! pass to the window.
-          mainWindow.overlay.windows.autotrace.source = filePath;
-          mainWindow.overlay.windows.autotrace.preset = option;
-          mainWindow.overlay.toggleWindow('autotrace', true);
-        });
-    }
-
+    setImageImport(option);
   });
 
   $('#tools #tool-select').before($importButton);
 }
+
+function setImageImport(option) {
+  var $importButton = $('#import');
+
+  switch (option) {
+    case 'manual':
+      activateToolItem($importButton);
+      paper.initImageImport();
+      break;
+    case 'simple':
+    case 'complex':
+      $importButton.find('input').prop('checked', false); // Hide the menu.
+      mainWindow.dialog({
+        t: 'OpenDialog',
+        title: i18n.t('import.autotitle.' + option),
+        filters: [{
+          name: i18n.t('import.files'),
+          extensions: ['jpg', 'jpeg', 'gif', 'png', 'bmp']
+        }]
+      }, function(filePath){
+        if (!filePath) {  // Open cancelled
+          return;
+        }
+
+        // Convert array of files to just the first one.
+        filePath = filePath[0];
+        var autotrace = mainWindow.overlay.windows.autotrace;
+
+        // Gifs must be converted as JIMP doesn't have support for them :(
+        if (path.parse(filePath).ext.toLowerCase() === '.gif') {
+          var img = new paper.Raster(filePath);
+          img.onLoad = function() {
+            var temp = path.join(app.getPath('temp'), 'pp_tempconvert.png');
+            paper.utils.saveRasterImage(img, 72, temp).then(function() {
+              img.remove();
+              autotrace.imageTransfer(temp, option);
+            });
+          };
+        } else {
+          autotrace.imageTransfer(filePath, option);
+        }
+      });
+  }
+}
+
+
 
 // When the page is done loading, all the controls in the page can be bound.
 function bindControls() {

@@ -10,6 +10,7 @@
  /*globals window, paper, $, path, app, mainWindow, i18n, _ */
 
 module.exports = function(context) {
+  var jimp = require('jimp');
 
   // Central window detail object returned for windows[autotrace] object.
   var autotrace = {
@@ -37,7 +38,7 @@ module.exports = function(context) {
     cloneCount: 1, // Number of items to copy import/place.
     paper: {}, // PaperScope for auto trace preview
     preset: 'simple', // Preset window opens with.
-    source: '', // Source file to be loaded.
+    sourceImage: {}, // Source file image (passed by app.js).
     intermediary: path.join(app.getPath('temp'), 'pp_tempraster.png'),
     tracebmp: path.join(app.getPath('temp'), 'pp_tracesource.bmp'),
   };
@@ -382,6 +383,40 @@ module.exports = function(context) {
 
     // Re-activate the default editor paperscope .
     mainWindow.editorPaperScope.activate();
+  };
+
+  /**
+   * Transfer an image path to the autotraceWindow and open the window.
+   * This is how the autotrace window is technically opened.
+   * @param  {String} filePath
+   *   Full path string of image file to load.
+   * @param  {String} preset
+   *   Option for loading a preset on window show.
+   */
+  autotrace.imageTransfer = function(file, preset) {
+    // Load the image, if good, open the window. Otherwise, fail out!
+    jimp.read(file).then(function(image) {
+      autotrace.sourceImage = image;
+      autotrace.preset = preset;
+      mainWindow.overlay.toggleWindow('autotrace', true);
+    }).catch(function (err) {
+      var tryAgain = mainWindow.dialog({
+        t: 'MessageBox',
+        type: 'error',
+        title: i18n.t('import.err.title'),
+        message: i18n.t('import.err.message', {file: path.parse(file).base}),
+        detail: i18n.t('import.err.desc', {err: err.toString()}),
+        buttons: [
+          i18n.t('common.button.cancel'),
+          i18n.t('import.err.button'),
+        ],
+      });
+
+      // Try to find another file?
+      if (tryAgain !== 0) {
+        window.setImageImport(preset);
+      }
+    });
   };
 
   // Window resize event.
