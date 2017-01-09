@@ -350,20 +350,32 @@ paper.renderPreviewRaster = function(){
 
 // Native Paper.JS PaperScript Events ==========================================
 // =============================================================================
-var hitOptions = {
-  stroke: true,
-  fill: true,
-  tolerance: 5
-};
+function onMouseMove(event) { /* jshint ignore:line */
+  svgLayer.selected = false;
+  if (event.item && event.item.parent === svgLayer) {
+    event.item.selected = true;
+  }
+}
 
 function onMouseDown(event) { /* jshint ignore:line */
-  var hitResult = project.hitTest(event.point, hitOptions);
+  var hitResult = project.hitTest(event.point, {
+    stroke: true,
+    segments: true,
+    fill: true,
+    tolerance: 5
+  });
   if (!hitResult) return;
 
-  if (hitResult && hitResult.item.parent === svgLayer) {
+  var rightParent = hitResult.item.parent === svgLayer;
+  if (!rightParent) {
+    rightParent = hitResult.item.parent.parent === svgLayer;
+  }
+
+  if (hitResult && rightParent) {
     hitResult.item.remove();
     paper.renderPreviewRaster();
     autotrace.clonePreview();
+    onResize();
   }
 }
 
@@ -371,12 +383,6 @@ function onResize() {
   // Move the separator back to the center.
   separator.firstSegment.point = new Point(view.center.x, 0);
   separator.lastSegment.point = new Point(view.center.x, view.bounds.height);
-function onMouseMove(event) { /* jshint ignore:line */
-  svgLayer.selected = false;
-  if (event.item && event.item.parent === svgLayer) {
-    event.item.selected = true;
-  }
-}
 
   // Move and scale the layers.
   paper.utils.fitScale(imageLayer, view, 0.4);
