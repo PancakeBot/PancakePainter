@@ -554,6 +554,33 @@ module.exports = function(paper) {
     },
 
     /**
+     * Fit a given object within the given view or object bounds, given a
+     * fill percentage  between 0.1 and 1.
+     * @param  {[type]} object
+     *   Object to scale within view bounds.
+     * @param  {[type]} view
+     *   View or object with .bounds property to size against/fill inside of.
+     * @param  {Number} [fillWidth=0.8]
+     *   Width to fill to maximum percentage of available view bounds.
+     * @param  {Number} [fillHeight=0.8]
+     *   Height to fill to maximum percentage of available view bounds.
+     * @return {Number}
+     *   Float used to scale the object to fit within the view.
+     */
+    fitScale: function (object, view, fillWidth = 0.8, fillHeight = 0.8) {
+      // Size object based on view scales.
+      var scale = {
+        x: (view.bounds.width * fillWidth) / object.bounds.width,
+        y: (view.bounds.height * fillHeight) / object.bounds.height
+      };
+
+      // Use the smallest scale.
+      scale = (scale.x < scale.y ? scale.x : scale.y);
+      object.scale(scale);
+      return scale;
+    },
+
+    /**
      * Snap colors for every path/item in a given layer.
      * @param {paper.Layer} layer
      *   Paper layer to effect.
