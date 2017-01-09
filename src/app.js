@@ -185,10 +185,9 @@ function initEditor() {
     });
 
     // Resize functionality for the autotrace window.
-    //if (mainWindow.overlay.windows.autotrace.isOpen) {
-      if (mainWindow.overlay.windows.autotrace) {
-        mainWindow.overlay.windows.autotrace.resize();
-      }
+    if (mainWindow.overlay.windows.autotrace) {
+      mainWindow.overlay.windows.autotrace.resize();
+    }
 
     editorLoad(); // Load the editor (if it hasn't already been loaded)
     // This must happen after the very first resize, otherwise the canvas
