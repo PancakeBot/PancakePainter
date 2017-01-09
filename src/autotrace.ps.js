@@ -14,7 +14,7 @@ var autotrace = mainWindow.overlay.windows.autotrace;
 paper.strokeWidth = 5; // Custom
 
 // Layer Management
-var sepLayer = project.getActiveLayer();
+paper.sepLayer = project.getActiveLayer();
 var separator = new Path.Line(
   new Point(view.center.x, 0),
   new Point(view.center.x, view.bounds.height)
