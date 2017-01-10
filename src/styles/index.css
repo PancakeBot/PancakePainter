@@ -108,6 +108,11 @@ body * {
           font-weight: bold; }
         #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector input {
           display: none; }
+          #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector input:disabled + label {
+            opacity: .5;
+            background-color: black; }
+            #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector input:disabled + label:hover {
+              -webkit-filter: none; }
           #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector input:active + label {
             opacity: .9; }
           #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector input:checked + label {

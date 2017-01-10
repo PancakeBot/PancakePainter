@@ -168,6 +168,14 @@ body * {
           input {
             display: none;
 
+            &:disabled + label {
+              &:hover {
+                -webkit-filter: none;
+              }
+              opacity: .5;
+              background-color: black;
+            }
+
             &:active + label { opacity: .9; }
             &:checked + label {
               -webkit-filter: none;

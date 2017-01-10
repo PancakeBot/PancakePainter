@@ -337,6 +337,19 @@ module.exports = function(context) {
         $('button[name=cancel]', context).click();
       }
     });
+
+    // Bind special action on outline checkbox.
+    $('input[name=outline]').change(function() {
+      if ($(this).prop('checked')) {
+        if (autotrace.settings.posterize === '5') {
+          autotrace.settings.posterize = 4;
+          applySettings(autotrace.settings);
+        }
+        $('#posterize-4').prop('disabled', true);
+      } else {
+        $('#posterize-4').prop('disabled', false);
+      }
+    });
   }
 
   // Init after build event.

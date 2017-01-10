@@ -210,11 +210,12 @@ function renderFillsVector() {
         svgLayer.removeChildren();
         svgLayer.addChild(paper.tracedGroup);
 
+        // Flatten and subtract all fills together to ensure no underlapping.
+        paper.utils.ungroupAllGroups(svgLayer);
+        paper.utils.flattenSubtractLayer(svgLayer);
+
         // Normalize & recolor the final trace.
         normalizeSVG();
-
-        // Flatten and subtract all fills together to ensure no underlapping.
-        paper.utils.flattenSubtractLayer(svgLayer);
 
         // Resolve the promise.
         resolve();
@@ -341,7 +342,7 @@ function normalizeSVG(layer) {
   if (autotrace.settings.posterize === '2') {
     limit = 1;
   }
-  paper.utils.autoColor(layer, limit);
+  paper.utils.autoColor(layer, limit, autotrace.settings.outline);
 
   paper.renderPreviewRaster();
 }

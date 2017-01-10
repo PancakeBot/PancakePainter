@@ -587,23 +587,52 @@ module.exports = function(paper) {
      *   Paper layer to effect.
      * @param {Number} limit
      *   How many colors to limit to, cuts off darker shades.
+     * @param {Boolean} outline
+     *   Outline every fill with a darker shade.
      */
-    autoColor: function(layer, limit) {
+    autoColor: function(layer, limit, outline = false) {
       var t = this;
+
+      // If running darker shade outlines, force limit to one below shade limit)
+      if (outline) {
+        limit = t.snapColors.length - 1;
+      }
+
+      var outlines = [];
       _.each(layer.children, function(item) {
         var colorIndex = 0;
+
+        // Match stroke color and set details.
         if (item.strokeColor) {
           colorIndex = t.snapColor(item.strokeColor.toCSS(), limit);
           item.strokeColor = t.snapColors[colorIndex].color.HEX;
           item.data.color = colorIndex;
         }
+
+        // Match fill color and set details.
         if (item.fillColor) {
           colorIndex = t.snapColor(item.fillColor.toCSS(), limit);
           item.fillColor = t.snapColors[colorIndex].color.HEX;
           item.data.color = colorIndex;
           item.data.fill = true;
+
+          // Add a darker outline.
+          if (outline) {
+            var outlineItem = item.clone({insert: false});
+            outlineItem.strokeColor = t.snapColors[colorIndex + 1].color.HEX;
+            outlineItem.strokeWidth = 5;
+            outlineItem.fillColor = null;
+            outlineItem.data.fill = false;
+            outlineItem.data.color = colorIndex + 1;
+            outlines.push(outlineItem);
+          }
         }
       });
+
+      // Add the outlines back on top of the layer if any.
+      if (outlines.length) {
+        layer.addChildren(outlines);
+      }
     }
   };
 
