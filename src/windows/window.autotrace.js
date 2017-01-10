@@ -319,7 +319,13 @@ module.exports = function(context) {
         case 'clone-4':
         case 'clone-8':
           autotrace.cloneCount = parseInt(this.name.split('-')[1]);
-          autotrace.renderUpdate();
+
+          // Only mixed tracetype needs to re-render the trace.
+          if (autotrace.settings.tracetype === 'mixed') {
+            autotrace.renderUpdate();
+          } else {
+            clonePreview();
+          }
           break;
       }
     });
