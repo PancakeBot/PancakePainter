@@ -4,9 +4,12 @@
  * the DOM and all node abilities.
  **/
 /*globals
-  document, window, $, _, toastr, paper
+  document, window, $, _, toastr, paper, Promise
 */
 "use strict";
+
+// Add Promise done polyfill.
+"function"!=typeof Promise.prototype.done&&(Promise.prototype.done=function(t,n){var o=arguments.length?this.then.apply(this,arguments):this;o.then(null,function(t){setTimeout(function(){throw t},0)})}); /* jshint ignore: line */
 
 // Libraries ==============================================---------------------
 // Must use require syntax for including these libs because of node duality.

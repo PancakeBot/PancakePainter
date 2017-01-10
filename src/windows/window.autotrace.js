@@ -392,16 +392,17 @@ module.exports = function(context) {
       autotrace.paper.renderTraceImage()
       .then(autotrace.paper.renderTraceVector)
       .then(clonePreview)
-      .then(function() {
-        autotrace.renderUpdateRunning = false;
-        $loadingBar.css('opacity', 0);
-      }).catch(function() {
-        // Catch any errors in the process.
-        autotrace.renderUpdateRunning = false;
-        $loadingBar.css('opacity', 0);
-      });
+      .done(renderUpdateComplete);
     }
   };
+
+  /**
+   * Everything that has to happen to wrap up the render update.
+   */
+  function renderUpdateComplete() {
+    autotrace.renderUpdateRunning = false;
+    $loadingBar.css('opacity', 0);
+  }
 
   // Window hide event.
   autotrace.hide = function() {
