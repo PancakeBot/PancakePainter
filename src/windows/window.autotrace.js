@@ -7,7 +7,7 @@
  * We have full access to globals loaded in the mainWindow as needed, just
  * reference them below.
  **/
- /*globals window, paper, $, path, app, mainWindow, i18n, _ */
+ /*globals window, $, path, app, mainWindow, i18n, _ */
 
 module.exports = function(context) {
   var jimp = require('jimp');
@@ -24,6 +24,7 @@ module.exports = function(context) {
       invert: false,
       contrast: 0,
       brightness: 0,
+      cloneCount: 1, // Number of items to copy import/place.
     },
     presets: { // Applied over the top of defaults
       simple: {},
@@ -34,15 +35,14 @@ module.exports = function(context) {
         transparent: "#00FF00",
       },
     },
-    offset: 3, // Amount to offset paths for line conversion.
-    cloneCount: 1, // Number of items to copy import/place.
-    renderUpdateRunning: false, // Whether we're currently rendering an update.
+    autoTraceLoaded: false, // Set to true when the webview is fully loaded.
     imageInitLoaded: false, // Whether we've initialized the current image.
-    paper: {}, // PaperScope for auto trace preview
+    renderUpdateRunning: false, // Whether we're currently rendering an update.
     preset: 'simple', // Preset window opens with.
-    sourceImage: {}, // Source file image (passed by app.js).
     intermediary: path.join(app.getPath('temp'), 'pp_tempraster.png'),
-    tracebmp: path.join(app.getPath('temp'), 'pp_tracesource.bmp'),
+    $webview: {}, // Placeholder for jQuery object of webview DOM.
+    exportJSON: "", // Placeholder string for the exported JSON from renderer.
+    svgLayerBounds: {}, // Placeholder for data transfer of bounds.
   };
 
   // Switch for detecting if a setting was changed by preset or by hand.
@@ -50,19 +50,6 @@ module.exports = function(context) {
   var setByPreset = false;
 
   var $loadingBar = $('.bar-loader', context);
-
-  // Load the auto trace PaperScript (only when the canvas is ready).
-  var autoTraceLoaded = false;
-  function autoTraceLoad() {
-    if (!autoTraceLoaded) {
-      autoTraceLoaded = true;
-      autotrace.paper = paper.PaperScript.load($('<script>').attr({
-        type:"text/paperscript",
-        src: "autotrace.ps.js",
-        canvas: "autotrace-preview"
-      })[0]);
-    }
-  }
 
   /**
    * Apply a flat key:value object to the elements as input values.
@@ -73,23 +60,25 @@ module.exports = function(context) {
   function applySettings(settings) {
     setByPreset = true; // Block updates.
     _.each(settings, function(value, name){
-      var $elem = $('[name=' + name + ']');
-      var type = $elem.attr('type') || $elem.prop('tagName').toLowerCase();
-      switch (type) {
-        case 'color':
-        case 'range':
-        case 'select':
+      var $elem = $('[name=' + name + ']', context);
+      if ($elem.length) {
+        var type = $elem.attr('type') || $elem.prop('tagName').toLowerCase();
+        switch (type) {
+          case 'color':
+          case 'range':
+          case 'select':
           $elem.val(value);
           break;
-        case 'checkbox':
+          case 'checkbox':
           $elem.prop('checked', value);
           break;
-        case 'radio':
+          case 'radio':
           $elem.filter('[value=' + value + ']').prop('checked', true);
           break;
-        default:
+          default:
+        }
+        $elem.change();
       }
-      $elem.change();
     });
 
     // Force update here.
@@ -130,8 +119,8 @@ module.exports = function(context) {
    */
   autotrace.getCloneLayout = function() {
     var out = {scale: 1, positions: []};
-    var count = autotrace.cloneCount;
-    var traceBounds = autotrace.paper.svgLayer.bounds;
+    var count = autotrace.settings.cloneCount;
+    var traceBounds = autotrace.svgLayerBounds;
 
     if (!traceBounds.width) return out;
 
@@ -252,13 +241,72 @@ module.exports = function(context) {
     setByPreset = false; // Ready for updates.
   }
 
+  /**
+   * Initialize the webview to run traces within to allow multiprocess rendering
+   */
+  function setupWebview() {
+    autotrace.$webview = $('#autotrace-webview');
+    var wv = autotrace.$webview[0];
+
+    // FWD console messages & errors.
+    wv.addEventListener('console-message', function(event) {
+      console.log('AUTOTRACE:', event.message);
+    });
+
+    // Send message handlers TO app.
+    autotrace.$webview.send = {
+      //wv.send(channel, data);
+      renderTrigger: function() {
+        wv.send('renderTrigger', autotrace.settings);
+      },
+
+      loadTraceImage: function() {
+        wv.send('loadTraceImage', autotrace.intermediary);
+      },
+
+      cleanup: function() {
+        wv.send('cleanup');
+      }
+    };
+
+    // Catch IPC messages FROM app.
+    wv.addEventListener('ipc-message', function(event) {
+      var data = event.args[0];
+      switch (event.channel) {
+        case 'paperReady':
+          // Only run on first window init.
+          autotrace.autoTraceLoaded = true;
+          autotrace.$webview.send.loadTraceImage();
+          autotrace.$webview.css('opacity', 1);
+          break;
+        case 'progress':
+          break;
+        case 'initLoaded':
+          autotrace.imageInitLoaded = true;
+          autotrace.renderUpdate(); // Run Initial render.
+          break;
+        case 'renderComplete':
+          renderUpdateComplete();
+          /* falls through */
+        case 'clonePreview':
+          autotrace.exportJSON = data.exportJSON;
+          autotrace.previewRasterData = data.previewRaster;
+          autotrace.svgLayerBounds = data.svgLayerBounds;
+          clonePreview();
+          break;
+      }
+    });
+
+    wv.addEventListener('dom-ready', function(){
+      wv.openDevTools(); // DEBUG
+    });
+  }
 
   /**
-   * Place/import the traced SVG data from this paperscope to the editor.
+   * Place/import the traced SVG data from the data to the editor.
    */
   function importTrace() {
-    var json = autotrace.paper.svgLayer.exportJSON();
-    mainWindow.editorPaperScope.activate();
+    var json = autotrace.exportJSON;
 
     // Import the JSON of the SVG trace layer into a temporary layer,
     // then group the contents of that layer, and ditch the layer.
@@ -279,7 +327,7 @@ module.exports = function(context) {
       mainWindow.editorPaperScope.mainLayer.addChildren(items);
 
       // Select added items if only one being cloned.
-      if (autotrace.cloneCount === 1) {
+      if (autotrace.settings.cloneCount === 1) {
         mainWindow.editorPaperScope.selectAll(items);
       }
       g.remove();
@@ -318,7 +366,7 @@ module.exports = function(context) {
         case 'clone-2':
         case 'clone-4':
         case 'clone-8':
-          autotrace.cloneCount = parseInt(this.name.split('-')[1]);
+          autotrace.settings.cloneCount = parseInt(this.name.split('-')[1]);
 
           // Only mixed tracetype needs to re-render the trace.
           if (autotrace.settings.tracetype === 'mixed') {
@@ -356,15 +404,11 @@ module.exports = function(context) {
   autotrace.init = function() {
     bindSettings();
     bindButtons();
+    setupWebview();
   };
 
   // Window show event.
   autotrace.show = function() {
-    autoTraceLoad();
-
-    // Activate the trace preview paperscope.
-    autotrace.paper.activate();
-
     // Apply given preset settings.
     applySettings(_.extend({},
       autotrace.defaults,
@@ -373,26 +417,16 @@ module.exports = function(context) {
 
     // Default to 1x.
     $('button[name=clone-1]').click();
-
-    // Init load and build the images
-    autotrace.paper.loadTraceImage().then(function() {
-      autotrace.imageInitLoaded = true;
-      autotrace.renderUpdate();
-    });
   };
 
   // Trigger the normal trace render update.
   autotrace.renderUpdate = function () {
-    if (autoTraceLoaded &&
-        !autotrace.renderUpdateRunning &&
+    if (!autotrace.renderUpdateRunning &&
         autotrace.imageInitLoaded) {
       autotrace.renderUpdateRunning = true;
       $loadingBar.css('opacity', 100);
 
-      autotrace.paper.renderTraceImage()
-      .then(autotrace.paper.renderTraceVector)
-      .then(clonePreview)
-      .done(renderUpdateComplete);
+      autotrace.$webview.send.renderTrigger();
     }
   };
 
@@ -406,15 +440,14 @@ module.exports = function(context) {
 
   // Window hide event.
   autotrace.hide = function() {
-    if (autoTraceLoaded) {
+    if (autotrace.autoTraceLoaded) {
       // Cleanup the window.
-      autotrace.paper.cleanup();
+      autotrace.$webview.send.cleanup();
+      $('div.trace-preview img.trace').remove();
+
       autotrace.renderUpdateRunning = false;
       autotrace.imageInitLoaded = false;
     }
-
-    // Re-activate the default editor paperscope .
-    mainWindow.editorPaperScope.activate();
   };
 
   /**
@@ -428,9 +461,17 @@ module.exports = function(context) {
   autotrace.imageTransfer = function(file, preset) {
     // Load the image, if good, open the window. Otherwise, fail out!
     jimp.read(file).then(function(image) {
-      autotrace.sourceImage = image;
-      autotrace.preset = preset;
-      mainWindow.overlay.toggleWindow('autotrace', true);
+      // Save the image out as a transfer PNG to get it to the second process.
+      image
+        .contain(512, 512)
+        .write(autotrace.intermediary, function() {
+          // Only try to run init if we're fully loaded.
+          if (autotrace.autoTraceLoaded) {
+            autotrace.$webview.send.loadTraceImage();
+          }
+          autotrace.preset = preset;
+          mainWindow.overlay.toggleWindow('autotrace', true);
+        });
     }).catch(function (err) {
       var tryAgain = mainWindow.dialog({
         t: 'MessageBox',
@@ -456,11 +497,6 @@ module.exports = function(context) {
   autotrace.resize = function() {
     var sidebarWidth = 230;
     var previewWidth = $atWindow.width() - sidebarWidth - 20;
-    $('#autotrace-preview').css({
-      width: previewWidth,
-      height: $atWindow.height() - 40,
-    });
-
     // Loading wait bar.
     $('.loader', context).css({
       width: previewWidth/2 - 50,

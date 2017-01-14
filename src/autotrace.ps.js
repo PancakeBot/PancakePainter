@@ -1,17 +1,79 @@
 /*
- * @file This PaperScript file controls the secondary paper instance in the app
+ * @file This PaperScript file controls the paper instance running in a webview
  * for adjustment and preview of autotraced import user content before it gets
- * placed into the editor.
+ * placed into the editor. This JS runs in a separate process within the
+ * webview, therefore it must communicate solely with the central app via IPC
+ * messages.
  */
  /* globals
-   $, _, paper, Layer, Group, Raster, view, project, app, Path, Point,
-   mainWindow
+   window, paper, Layer, Group, Raster, view, project, Path, Point
  */
- var jimp = require('jimp');
+var _ = require('underscore');
+var jimp = require('jimp');
+var ipc = window.ipc = require('electron').ipcRenderer;
+var remote = require('electron').remote;
+var app = window.app = remote.app;
+var path = require('path');
 
-// Localize autotrace to be the parent window object (holds settings, paths).
-var autotrace = mainWindow.overlay.windows.autotrace;
-paper.strokeWidth = 5; // Custom
+var autotrace = window.autotrace = {
+  offset: 3, // Amount to offset paths for line conversion.
+  settings: {},
+  intermediary: path.join(app.getPath('temp'), 'pp_tempraster.png'),
+  tracebmp: path.join(app.getPath('temp'), 'pp_tracesource.bmp'),
+  previewRasterData: "", // Placeholder for datauri of preview image.
+  clonePreview: function() {
+    ipc.sendToHost('clonePreview', exportRenderData());
+  },
+};
+
+/*
+      ██ ██████   ██████      ██████  ██████  ███    ███ ███    ███ ███████
+      ██ ██   ██ ██          ██      ██    ██ ████  ████ ████  ████ ██
+      ██ ██████  ██          ██      ██    ██ ██ ████ ██ ██ ████ ██ ███████
+      ██ ██      ██          ██      ██    ██ ██  ██  ██ ██  ██  ██      ██
+      ██ ██       ██████      ██████  ██████  ██      ██ ██      ██ ███████
+Interprocess communication and handlers between the main app and this process ==
+==============================================================================*/
+ipc.on('loadTraceImage', function(event, imagePath) { /* jshint ignore:line */
+  paper.loadTraceImage(imagePath).then(function() {
+    ipc.sendToHost('initLoaded');
+  });
+});
+
+ipc.on('renderTrigger', function(event, settings) { /* jshint ignore:line */
+  autotrace.settings = settings;
+  paper.renderTraceImage()
+    .then(paper.renderTraceVector)
+    .then(function() {
+      ipc.sendToHost('renderComplete', exportRenderData());
+    });
+});
+
+ipc.on('cleanup', function() {
+  paper.cleanup();
+});
+
+function exportRenderData() {
+  return {
+    exportJSON: paper.svgLayer.exportJSON(),
+    previewRaster: autotrace.previewRasterData,
+    svgLayerBounds: {
+      width: paper.svgLayer.bounds.width,
+      height: paper.svgLayer.bounds.height,
+    },
+  };
+}
+
+
+/*
+   █████  ██    ██ ████████  ██████  ████████ ██████   █████   ██████ ███████
+  ██   ██ ██    ██    ██    ██    ██    ██    ██   ██ ██   ██ ██      ██
+  ███████ ██    ██    ██    ██    ██    ██    ██████  ███████ ██      █████
+  ██   ██ ██    ██    ██    ██    ██    ██    ██   ██ ██   ██ ██      ██
+  ██   ██  ██████     ██     ██████     ██    ██   ██ ██   ██  ██████ ███████
+Central functions for autotrace import/export & conversion =====================
+==============================================================================*/
+paper.strokeWidth = 5;
 
 // Layer Management
 paper.sepLayer = project.getActiveLayer();
@@ -32,7 +94,7 @@ paper.svgLayer = svgLayer;
 
 // Load Salient Helpers
 _.each(['utils', 'autotrace'], function(helperName) {
-  paper[helperName] = require('./helpers/helper.' + helperName)(paper);
+  paper[helperName] = require('../helpers/helper.' + helperName)(paper);
 });
 
 // Initialize the colors to snap to based on the pancake shades.
@@ -44,40 +106,35 @@ paper.utils.snapColorSetup(app.constants.pancakeShades);
  * @return {Promise}
  *   When promise is resolved, autotrace.tracebmp is saved & ready.
  */
-paper.loadTraceImage = function() {
-  autotrace.paper.activate();
+paper.loadTraceImage = function(imagePath) {
   imageLayer.removeChildren();
   imageLayer.activate();
 
   // Return promise to manage execution/failure.
   return new Promise(function(resolve) {
-    // Resize source image to max 512px on a side, save it to intermediary.
-    var tempPng = autotrace.intermediary;
-    autotrace.sourceImage.contain(512, 512).write(tempPng, function() {
-      var buster = Math.random().toString(36).substr(2, 5);
-      autotrace.paper.activate();
-      paper.traceImg = new Group([new Raster({
-        source: autotrace.intermediary + "?cachebust=" + buster,
-        position: view.center
-      })]);
+    // Save source image to intermediary.
+    var buster = Math.random().toString(36).substr(2, 5);
+    paper.traceImg = new Group([new Raster({
+      source: imagePath + "?cachebust=" + buster,
+      position: view.center
+    })]);
 
-      // Really Paper? I shouldn't have to be so explicit.
-      imageLayer.addChild(paper.traceImg);
+    // Really Paper? I shouldn't have to be so explicit.
+    imageLayer.addChild(paper.traceImg);
 
-      paper.traceImg.img = paper.traceImg.children[0];
+    paper.traceImg.img = paper.traceImg.children[0];
 
-      // When the image actually loads...
-      paper.traceImg.img.onLoad = function() {
-        paper.traceImg.pInitialBounds = this.bounds;
+    // When the image actually loads...
+    paper.traceImg.img.onLoad = function() {
+      paper.traceImg.pInitialBounds = this.bounds;
 
-        // Scale image and set center position on the left.
-        paper.utils.fitScale(this, view, 0.4);
-        paper.traceImg.position.x = view.bounds.width / 4;
+      // Scale image and set center position on the left.
+      paper.utils.fitScale(this, view, 0.4);
+      paper.traceImg.position.x = view.bounds.width / 4;
 
-        // All done.
-        resolve();
-      };
-    });
+      // All done.
+      resolve();
+    };
   });
 };
 
@@ -180,9 +237,7 @@ paper.renderTraceVector = function() {
 paper.cleanup = function() {
   svgLayer.removeChildren();
   imageLayer.removeChildren();
-  $('div.trace-preview img.trace').remove();
 };
-
 
 //==============================================================================
 
@@ -203,7 +258,6 @@ function renderFillsVector() {
     paper.autotrace.getImageFills(img, options).then(function(data) {
       fills = tempLayer.importSVG(data);
       if (fills) {
-        autotrace.paper.activate();
         paper.tracedGroup = fills;
 
         // Remove any previous work and append built data to svgLayer.
@@ -245,7 +299,7 @@ function renderLinesVector() {
       if (lines) {
         lines.strokeWidth = 5;
         lines.strokeCap = 'round';
-        autotrace.paper.activate();
+
         paper.utils.recursiveLengthCull(lines, 8);
         paper.tracedGroup = lines;
 
@@ -281,7 +335,6 @@ function renderMixedVector() {
   return new Promise(function(resolve, reject) {
     paper.autotrace.getImageLines(img, options).then(function(data) {
       lines = tempLayer.importSVG(data);
-      autotrace.paper.activate();
       paper.tracedGroup = new Group();
 
       if (lines) {
@@ -303,7 +356,7 @@ function renderMixedVector() {
       paper.utils.flattenSubtractLayer(fills);
 
       // Calculate offset based on scale approximation and constant offset.
-      var offset = autotrace.offset * (autotrace.cloneCount / 2);
+      var offset = autotrace.offset * (autotrace.settings.cloneCount / 2);
       paper.utils.destroyThinFeatures(fills, offset);
       paper.tracedGroup.addChildren(fills.children);
 
@@ -327,8 +380,6 @@ function renderMixedVector() {
  */
 function normalizeSVG(layer) {
   layer = layer ? layer : svgLayer;
-
-  autotrace.paper.activate();
 
   // Scale vectors and set center position on the right.
   paper.utils.fitScale(layer, view, 0.4);
@@ -355,9 +406,15 @@ paper.renderPreviewRaster = function(){
   autotrace.previewRasterData = paper.utils.getDataURI(svgLayer);
 };
 
+/*
+        ██████   █████  ██████  ███████ ██████          ██ ███████
+        ██   ██ ██   ██ ██   ██ ██      ██   ██         ██ ██
+        ██████  ███████ ██████  █████   ██████          ██ ███████
+        ██      ██   ██ ██      ██      ██   ██    ██   ██      ██
+        ██      ██   ██ ██      ███████ ██   ██ ██  █████  ███████
+Native PaperScript Events ======================================================
+==============================================================================*/
 
-// Native Paper.JS PaperScript Events ==========================================
-// =============================================================================
 function onMouseMove(event) { /* jshint ignore:line */
   svgLayer.selected = false;
   if (event.item && event.item.parent === svgLayer) {
@@ -398,3 +455,6 @@ function onResize() {
   paper.utils.fitScale(svgLayer, view, 0.4);
   svgLayer.position = new Point((view.center.x/2) * 3, view.center.y);
 }
+
+// Notify the main app that paper.js is ready.
+ipc.sendToHost('paperReady');
