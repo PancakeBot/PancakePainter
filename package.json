@@ -11,7 +11,7 @@
   "iconURL": "http://raw.githubusercontent.com/PancakeBot/PancakePainter/master/resources/win32/app.ico",
   "scripts": {
     "start": "electron .",
-    "test": "jshint **/*.js --exclude=node_modules/*",
+    "test": "jshint src/**/*.js menus/*.js --exclude=node_modules/*,/src/libs/*",
     "watch": "sass --watch src/styles/index.scss:src/styles/index.css"
   },
   "dependencies": {
