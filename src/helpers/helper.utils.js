@@ -195,6 +195,99 @@ module.exports = function(paper) {
     },
 
     /**
+     * Flatten a given Paper layer into technically non-overlapping
+     * self-subtracted paths and compound paths (via async).
+     * @param  {Paper.Layer} layer
+     *   Layer to work on. All children of the layer will be effected.
+     *   Ensure no groups are in the layer before running this.
+     * @return {ProgressPromise}
+     *   Promise resolution returns layer acted upon, progress given on status.
+     */
+    flattenSubtractLayerAsync: function(layer) {
+      return new ProgressPromise(function(resolve, reject, progress) {
+        // Original set of children.
+        var children = _.extend([], layer.children);
+        if (!children.length) {
+          resolve(layer);
+          return;
+        }
+
+        // Compute a list of all fills to be subtracted from each other assuming
+        // lower paths don't subtract from higher ones.
+        var subtractList = [];
+        for (var srcI = 0; srcI < children.length; srcI++) {
+          for (var destI = srcI; destI < children.length; destI++) {
+            if (children[srcI].fillColor && children[srcI].fillColor) {
+              subtractList.push([srcI, destI]);
+            }
+          }
+        }
+
+        if (!subtractList.length) {
+          reject();
+          return;
+        }
+
+        // Move through the flat list linearly.
+        var subtractListIndex = 0;
+        var subtractListInterval = setInterval(function() {
+          var item = subtractList[subtractListIndex];
+          paper.utils.flattenSubtractItem(layer, children, item[0], item[1]);
+          subtractListIndex++;
+
+          // Update promise progress percentage.
+          progress(Math.round((subtractListIndex/subtractList.length) * 100));
+
+          if (typeof subtractList[subtractListIndex] === 'undefined') {
+            clearInterval(subtractListInterval);
+            resolve(layer);
+          }
+        }, 0);
+      });
+    },
+
+    /**
+     * A component of flattenSubtractLayerAsync above, this subtracts an index
+     * of the given child list from another index in the list.
+     * @param  {Paper.Layer} layer
+     *   Paper layer we're applying to (for child reinsertion).
+     * @param  {Array} children
+     *   Array of child objects.
+     * @param  {Number} srcIndex
+     *   Index for the source to then subtract the destination from.
+     * @param  {Number} destIndex
+     *   Index for the destination to have it subtracted from the source.
+     */
+    flattenSubtractItem: function(layer, children, srcIndex, destIndex) {
+      var srcPath = children[srcIndex];
+      var destPath = children[destIndex];
+
+      if (destIndex !== srcIndex) {
+        var tmpPath = srcPath; // Hold onto the original path
+
+        if (srcPath instanceof paper.Group) {
+          var g = srcPath;
+          g.remove(); // Remove from the layer.
+          srcPath = children[srcIndex] = g.removeChildren(1); // Set to child
+        }
+
+        // Dead path? we're done.
+        if (!srcPath || srcPath.length === 0) {
+          return;
+        }
+
+        // Set srcPath to the subtracted one inserted at the same index.
+        srcPath = children[srcIndex] = layer.insertChild(
+          srcIndex,
+          srcPath.subtract(destPath)
+        );
+        srcPath.data = _.extend({}, tmpPath.data);
+
+        tmpPath.remove(); // Remove the old srcPath
+      }
+    },
+
+    /**
      * Destroy all "thin" fill paths/compounds on a given layer, removing or
      * replacing them with simplified approximations via competing offsets.
      * @param  {Paper.Layer}  layer
