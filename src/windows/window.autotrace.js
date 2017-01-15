@@ -7,7 +7,7 @@
  * We have full access to globals loaded in the mainWindow as needed, just
  * reference them below.
  **/
- /*globals window, $, path, app, mainWindow, i18n, _ */
+ /*globals window, $, path, app, mainWindow, i18n, _, paper */
 
 module.exports = function(context) {
   var jimp = require('jimp');
@@ -112,100 +112,16 @@ module.exports = function(context) {
 
 
   /**
-   * Figure out what the center positions and scales should be for cloneCount
-   * and the currently traced image dimensions.
+   * Wrapper for utility for creating duplicate item layouts.
    * @return {Object}
    *   Contains array of positions (in x,y array format) and scale key.
    */
   autotrace.getCloneLayout = function() {
-    var out = {scale: 1, positions: []};
-    var count = autotrace.settings.cloneCount;
-    var traceBounds = autotrace.svgLayerBounds;
-
-    if (!traceBounds.width) return out;
-
-    var griddleBounds = mainWindow.editorPaperScope.view.bounds;
-    var griddleAspect = griddleBounds.height / griddleBounds.width;
-    var traceAspect = traceBounds.height / traceBounds.width;
-    var landscape = traceAspect < griddleAspect;
-
-    // Every cloned item has the same size regardless of count.
-    var fillPercent;
-    var q = {width: griddleBounds.width / 4, height: griddleBounds.height / 4};
-
-    // How many?
-    switch (count) {
-      case 1: // 1 item, center, 80% fill.
-        fillPercent = 80;
-        out.positions = [[q.width * 2, q.height * 2]];
-        break;
-      case 2: // 2 items, 90% of 50% width/height. SBS or TB
-        fillPercent = 50;
-
-        if (landscape) { // SBS
-          out.positions = [
-            [q.width * 2, q.height],     // Center Top.
-            [q.width * 2, q.height * 3], // Center Bottom.
-          ];
-        } else { // Top/Bottom
-          out.positions = [
-            [q.width, q.height * 2],     // Left Middle.
-            [q.width * 3, q.height * 2], // Right Middle.
-          ];
-        }
-        break;
-      case 4: // 4 items, 92% of 25% width/height. Simple Quadrant
-        fillPercent = 35;
-        out.positions = [
-          [q.width, q.height],         // Top Left.
-          [q.width * 3, q.height],     // Top Right.
-          [q.width, q.height * 3],     // Bottom Left.
-          [q.width * 3, q.height * 3], // Bottom Right.
-        ];
-        break;
-      case 8: // 8 items, 95% of 12.5% width/height. SBS or TB 4x grouping.
-        fillPercent = 25;
-        // Eighth measurement.
-        var e = {width: q.width / 2, height: q.height / 2};
-
-        if (landscape) { // SBS 4 rows of 2.
-          out.positions = [
-            [q.width, e.height],         // A Left.
-            [q.width * 3, e.height],     // A Right.
-
-            [q.width, e.height * 3],     // B Left.
-            [q.width * 3, e.height * 3], // B Right.
-
-            [q.width, e.height * 5],     // C Left.
-            [q.width * 3, e.height * 5], // C Right.
-
-            [q.width, e.height * 7],     // D Left.
-            [q.width * 3, e.height * 7], // D Right.
-          ];
-        } else { // Top/Bottom 2 rows of 4.
-          out.positions = [
-            [e.width, q.height],         // Top Left a.
-            [e.width * 3, q.height],     // Top Left b.
-            [e.width * 5, q.height],     // Top Right a.
-            [e.width * 7, q.height],     // Top Right b.
-
-            [e.width, q.height * 3],     // Bottom Left a.
-            [e.width * 3, q.height * 3], // Bottom Left b.
-            [e.width * 5, q.height * 3], // Bottom Right a.
-            [e.width * 7, q.height * 3], // Bottom Right b.
-          ];
-        }
-        break;
-    }
-
-    fillPercent /= 100;
-    var scale = {
-      x: (griddleBounds.width * fillPercent) / traceBounds.width,
-      y: (griddleBounds.height * fillPercent) / traceBounds.height
-    };
-
-    out.scale = (scale.x < scale.y ? scale.x : scale.y);
-    return out;
+    return paper.utils.getDuplicationLayout(
+      autotrace.settings.cloneCount,
+      autotrace.svgLayerBounds,
+      mainWindow.editorPaperScope.view.bounds
+    );
   };
 
 
