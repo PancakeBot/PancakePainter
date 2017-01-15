@@ -49,7 +49,7 @@ module.exports = function(context) {
   // Avoids update thrashing cause by mass updates.
   var setByPreset = false;
 
-  var $loadingBar = $('.bar-loader', context);
+  var $loadingBar = $('.loader', context);
 
   /**
    * Apply a flat key:value object to the elements as input values.
@@ -280,6 +280,7 @@ module.exports = function(context) {
           autotrace.$webview.css('opacity', 1);
           break;
         case 'progress':
+          $('progress', context).val(data);
           break;
         case 'initLoaded':
           autotrace.imageInitLoaded = true;
@@ -293,6 +294,7 @@ module.exports = function(context) {
           autotrace.previewRasterData = data.previewRaster;
           autotrace.svgLayerBounds = data.svgLayerBounds;
           clonePreview();
+          $('progress', context).val(0);
           break;
       }
     });

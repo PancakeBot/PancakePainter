@@ -111,6 +111,15 @@ canvas#autotrace-preview {
       bottom: 1.5em;
       transition: opacity .3s;
       opacity: 0;
+
+      progress {
+        position: absolute;
+        top: 0;
+        opacity: 0.8;
+        height: 100%;
+        width: 100%;
+        mix-blend-mode: hard-light;
+      }
     }
 
     #autotrace-webview {

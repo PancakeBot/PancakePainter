@@ -10,7 +10,10 @@
 </div>
 
 <div class="overlay-content">
-  <div class="bar-loader loader" data-i18n="[title]common.loading"></div>
+  <aside class="loader" data-i18n="[title]common.loading">
+    <div class="bar-loader"></div>
+    <progress value="0" max="100"></progress>
+  </aside>
   <webview id="autotrace-webview" nodeintegration="true" disablewebsecurity="true" src="windows/window.autotrace.webview.html"></webview>
 
   <div class="sidebar">

@@ -7,6 +7,7 @@ module.exports = function(paper) {
   var _ = require('underscore');
   var canvasBuffer = require('electron-canvas-to-buffer');
   var fs = require('fs-plus');
+  const ProgressPromise = require('progress-promise');
 
   utils = {
     /**
