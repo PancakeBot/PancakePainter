@@ -46,6 +46,9 @@ module.exports = function(grunt) {
           'app-version': version,
           overwrite: true,
           prune: true,
+          'osx-sign': {
+            identity: '3rd Party Mac Developer Application: StoreBound LLC (AEJ8NZZ3TC)'
+          },
           'app-bundle-id': 'pancakepainter-main',
           'helper-bundle-id': 'pancakepainter-helper'
         }
