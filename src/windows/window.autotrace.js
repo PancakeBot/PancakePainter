@@ -216,7 +216,7 @@ module.exports = function(context) {
     });
 
     wv.addEventListener('dom-ready', function(){
-      wv.openDevTools(); // DEBUG
+      //wv.openDevTools(); // DEBUG
     });
   }
 
