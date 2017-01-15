@@ -119,6 +119,7 @@ canvas#autotrace-preview {
         height: 100%;
         width: 100%;
         mix-blend-mode: hard-light;
+        -webkit-appearance: none;
       }
     }
 

@@ -81,7 +81,8 @@ canvas#autotrace-preview {
         opacity: 0.8;
         height: 100%;
         width: 100%;
-        mix-blend-mode: hard-light; }
+        mix-blend-mode: hard-light;
+        -webkit-appearance: none; }
     #autotrace .overlay-content #autotrace-webview {
       flex-grow: 1;
       border: 2px dashed #6D6060;
