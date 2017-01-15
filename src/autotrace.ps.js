@@ -260,19 +260,24 @@ function renderFillsVector() {
       if (fills) {
         paper.tracedGroup = fills;
 
-        // Remove any previous work and append built data to svgLayer.
-        svgLayer.removeChildren();
-        svgLayer.addChild(paper.tracedGroup);
-
         // Flatten and subtract all fills together to ensure no underlapping.
-        paper.utils.ungroupAllGroups(svgLayer);
-        paper.utils.flattenSubtractLayer(svgLayer);
+        paper.utils.ungroupAllGroups(tempLayer);
 
-        // Normalize & recolor the final trace.
-        normalizeSVG();
+        paper.utils.flattenSubtractLayerAsync(tempLayer)
+          .progress(function(value) {
+            ipc.sendToHost('progress', value);
+          })
+          .then(function() {
+            // Remove any previous work and append built data to svgLayer.
+            svgLayer.removeChildren();
+            svgLayer.addChildren(tempLayer.children);
 
-        // Resolve the promise.
-        resolve();
+            // Normalize & recolor the final trace.
+            normalizeSVG();
+
+            // Resolve the promise.
+            resolve();
+          });
       } else {
         reject(Error('No data returned from trace.'));
       }
@@ -335,10 +340,8 @@ function renderMixedVector() {
   return new Promise(function(resolve, reject) {
     paper.autotrace.getImageLines(img, options).then(function(data) {
       lines = tempLayer.importSVG(data);
-      paper.tracedGroup = new Group();
-
+      lines.remove();
       if (lines) {
-        paper.tracedGroup.addChild(lines);
         lines.strokeWidth = 5;
         lines.strokeCap = 'round';
         paper.utils.recursiveLengthCull(lines, 8); // Clean up noise lines.
@@ -351,23 +354,31 @@ function renderMixedVector() {
       // Reject the promise at this point as we have no lines or fills.
       if (!fills && !lines) {
         reject(Error('No data returned from line or fill trace.'));
+        return;
       }
 
-      paper.utils.flattenSubtractLayer(fills);
+      // Flatten and subtract all fills together to ensure no underlapping.
+      paper.utils.ungroupAllGroups(tempLayer);
 
-      // Calculate offset based on scale approximation and constant offset.
-      var offset = autotrace.offset * (autotrace.settings.cloneCount / 2);
-      paper.utils.destroyThinFeatures(fills, offset);
-      paper.tracedGroup.addChildren(fills.children);
+      paper.utils.flattenSubtractLayerAsync(tempLayer)
+        .progress(function(value) {
+          ipc.sendToHost('progress', value);
+        })
+        .then(function() {
+          // Calculate offset based on scale approximation and constant offset.
+          var offset = autotrace.offset * (autotrace.settings.cloneCount / 2);
+          paper.utils.destroyThinFeatures(tempLayer, offset);
 
-      // Remove any previous work and append built data to svgLayer.
-      svgLayer.removeChildren();
-      svgLayer.addChild(paper.tracedGroup);
+          // Remove any previous work and append built data to svgLayer.
+          svgLayer.removeChildren();
+          svgLayer.addChildren(lines.children);
+          svgLayer.addChildren(tempLayer.children);
 
-      normalizeSVG();
+          normalizeSVG();
 
-      // Resolve the promise.
-      resolve();
+          // Resolve the promise.
+          resolve();
+        });
     });
   });
 }
