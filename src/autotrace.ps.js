@@ -16,7 +16,7 @@ var app = window.app = remote.app;
 var path = require('path');
 
 var autotrace = window.autotrace = {
-  offset: 3, // Amount to offset paths for line conversion.
+  offset: 6, // Amount to offset paths for line conversion.
   settings: {},
   intermediary: path.join(app.getPath('temp'), 'pp_tempraster.png'),
   tracebmp: path.join(app.getPath('temp'), 'pp_tracesource.bmp'),
