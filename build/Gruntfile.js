@@ -111,8 +111,8 @@ module.exports = function(grunt) {
       options: {
         basepath: 'build/dist/' + appInfo.name + '-darwin-x64',
         title: 'Install ' + appInfo.releaseInfo.appName,
-        icon: 'resources/darwin/app.icns',
-        background: 'resources/darwin/dmg_back.png',
+        icon: '../../../resources/darwin/app.icns',
+        background: '../../../resources/darwin/dmg_back.png',
         'icon-size': 80,
         contents: [
           {x: 448, y: 344, type: 'link', path: '/Applications'},
