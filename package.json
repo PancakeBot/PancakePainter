@@ -8,6 +8,17 @@
   "electronVersion": "1.0.1",
   "license": "Apache-2.0",
   "copyright": "Copyright (C) PancakeBot Inc., all rights reserved. Code under Apache v2.0 free and open source license.",
+  "releaseInfo": {
+    "description": "Interactive drawing software to create pancake images for your PancakeBot. See more about the PancakeBot @ http://pancakebot.com or Fork & improve the project @ https://github.com/PancakeBot/PancakePainter",
+    "company": "StoreBound LLC.",
+    "appName": "PancakePainter",
+    "copyright": "PancakeBot & PancakePainter names copyright © PancakeBot LLC, all rights reserved. Code under Apache v2.0 free and open source license.",
+    "categories": [
+      "Utility",
+      "Graphics",
+      "Education"
+    ]
+  },
   "iconURL": "http://raw.githubusercontent.com/PancakeBot/PancakePainter/master/resources/win32/app.ico",
   "scripts": {
     "start": "electron .",

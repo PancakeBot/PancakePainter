@@ -3,10 +3,23 @@ var path = require('path');
 module.exports = function(grunt) {
   // Load the plugins...
   grunt.loadNpmTasks('grunt-electron');
-  if (process.platform === 'win32') {
-    grunt.loadNpmTasks('grunt-electron-installer');
+
+  // Load all platform specific tasks:
+  switch (process.platform) {
+    case 'win32':
+      grunt.loadNpmTasks('grunt-electron-installer');
+      break;
+
+    case 'darwin':
+      grunt.loadNpmTasks('grunt-appdmg');
+      break;
+
+    default:
+      grunt.loadNpmTasks('grunt-electron-installer-debian');
+      grunt.loadNpmTasks('grunt-electron-installer-redhat');
+      break;
   }
-  //if (process.platform === 'darwin') grunt.loadNpmTasks('grunt-appdmg');
+
 
   // Load the tasks in '/tasks'
   grunt.loadTasks('tasks');
@@ -77,6 +90,40 @@ module.exports = function(grunt) {
             InternalName: appInfo.name
           }
         }
+      },
+      linbuild: {
+        options: {
+          name: appInfo.name,
+          dir: './',
+          out: 'build/dist',
+          icon: 'resources/app.png',
+          ignore: buildIgnore,
+          version: appInfo.electronVersion,
+          platform: 'linux',
+          arch: 'x64',
+          'app-version': appInfo.version,
+          overwrite: true,
+          prune: true
+        }
+      },
+    },
+    appdmg: {
+      options: {
+        basepath: 'build/dist/' + appInfo.name + '-darwin-x64',
+        title: 'Install ' + appInfo.releaseInfo.appName,
+        icon: 'resources/darwin/app.icns',
+        background: 'resources/darwin/dmg_back.png',
+        'icon-size': 80,
+        contents: [
+          {x: 448, y: 344, type: 'link', path: '/Applications'},
+          {x: 192, y: 344, type: 'file', path: appInfo.releaseInfo.appName +'.app'}
+        ]
+      },
+      target: {
+        dest:
+          'build/dist/' +
+           appInfo.releaseInfo.appName +
+           '_Mac_v' + appInfo.version + '.dmg'
       }
     },
     'create-windows-installer': {
@@ -95,6 +142,53 @@ module.exports = function(grunt) {
         loadingGif: 'resources/win32/install_anim.gif',
         version: numericVersion,
         authors: 'PancakeBot Inc.'
+      }
+    },
+    'electron-installer-debian': {
+      options: {
+        name: appInfo.name,
+        productName: appInfo.releaseInfo.appName,
+        description: appInfo.description,
+        productDescription: appInfo.releaseInfo.description,
+        genericName: 'Robot Controller',
+        section: 'graphics',
+        priority: 'optional',
+        version: numericVersion,
+        revision: appInfo.version.split('-')[1],
+        categories: appInfo.releaseInfo.categories,
+        lintianOverrides: [
+          'changelog-file-missing-in-native-package',
+          'executable-not-elf-or-script',
+          'extra-license-file'
+        ]
+      },
+      linux64: {
+        options: {
+          icon: 'resources/app.png',
+          arch: 'amd64'
+        },
+        src: 'build/dist/' + appInfo.name + '-linux-x64',
+        dest: 'build/dist/'
+      }
+    },
+    'electron-installer-redhat': {
+      options: {
+        name: appInfo.name,
+        productName: appInfo.releaseInfo.appName,
+        description: appInfo.description,
+        productDescription: appInfo.releaseInfo.description,
+        genericName: 'Robot Controller',
+        categories: appInfo.releaseInfo.categories,
+        version: numericVersion,
+        revision: appInfo.version.split('-')[1],
+      },
+      linux64: {
+        options: {
+          arch: 'x86_64',
+          icon: 'resources/app.png',
+        },
+        src: 'build/dist/' + appInfo.name + '-linux-x64',
+        dest: 'build/dist/'
       }
     },
   });
