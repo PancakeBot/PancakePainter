@@ -3,21 +3,28 @@
  * paths into GCODE compatible with the PancakeBot.
  **/
 "use strict";
-/*globals _ */
+/*globals _, paper, app */
 var ClipperLib = require('./libs/clipper');
 var jscut = require('./libs/jscut_custom')(ClipperLib);
 
-module.exports = function(config) {
-  var paper = config.paper;
-  var Point = paper.Point;
-  var CompoundPath = paper.CompoundPath;
-  var returnRenderer = {}; // The function/object returned by this module
+module.exports = function() {
+  // Module level scope for config data passed when code generated
+  var config = {};
 
-  // Create gcode from current project
-  returnRenderer = function generateGcode(noMirror) {
-    var workLayer = paper.project.getActiveLayer().clone();
+  /**
+   * Create gcode from a given layer
+   * @param  {Paper.Layer} sourceLayer
+   *   Layer to clone and greate GCODE from.
+   * @param  {Object} settings
+   *   Configuration/settings for the GCODE render.
+   * @return {string}
+   *   PancakeBot standard format GCODE generated from the paths on the layer.
+   */
+  var returnRenderer = function generateGcode(sourceLayer, settings) {
+    if (settings) config = settings;
+
+    var workLayer = sourceLayer.clone();
     var out = getCodeHeader();
-    config.noMirror = noMirror;
     workLayer.activate();
 
     // Empty Path Cleanup.
@@ -220,8 +227,10 @@ module.exports = function(config) {
 
   // Generate Color change
   function getCodeColorChange(id) {
+    var shades = ["Light", "Medium", "Medium dark", "Dark"];
+
     return [
-      gc('note', 'Switching Color to: ' + paper.pancakeShadeNames[id]),
+      gc('note', 'Switching Color to: ' + shades[id]),
       gc('wait', 1000),
       gc('home'),
       gc('off'),
@@ -323,7 +332,7 @@ module.exports = function(config) {
       t: pa.t
     };
 
-    var b = paper.view.bounds;
+    var b = config.sourceBounds;
     return {
       x: Math.round(
         map(b.width - (p.x - b.x), 0, b.width, pa.x, pa.l) * 1000
@@ -381,7 +390,7 @@ module.exports = function(config) {
     // Move through each color group, then each point set for distance
     var drawIndex = 0; // Track the path index to insert paths into on the layer
     _.each(colorGroups, function(group){
-      var lastPoint = new Point(0, 0); // Last point, start at the corner
+      var lastPoint = new paper.Point(0, 0); // Last point, start at the corner
       var lastPath = null; // The last path worked on for joining 0 dist paths
 
       while(group.length) {
@@ -505,12 +514,15 @@ module.exports = function(config) {
     // If there's a result, create a compound path for it.
     if (cutPaths) {
       var pathString = jscut.cam.toSvgPathData(cutPaths, pxPerInch);
-      var camPath = new CompoundPath(pathString);
+      var camPath = new paper.CompoundPath(pathString);
       camPath.data = _.extend({}, inPath.data);
       camPath.data.campath = true;
       camPath.bringToFront();
       camPath.scale(1, -1); // Flip vertically (clipper issue)
-      camPath.position = new Point(camPath.position.x, -camPath.position.y);
+      camPath.position = new paper.Point(
+        camPath.position.x,
+        -camPath.position.y
+      );
 
       if (!options.debug) {
         inPath.remove();

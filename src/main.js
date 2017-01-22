@@ -51,6 +51,24 @@ function settingsInit() {
       '#a6720e',
       '#714a00'
     ],
+    botSpeedMax: 6600, // Real world PancakeBot speed maximum.
+
+    // Real world measurement of the griddle maximum dimensions in MM
+    griddleSize: {
+      width: 507.5,
+      height: 267.7,
+    },
+
+    // Printable/drawable area in MM from furthest griddle edge.
+    printableArea: {
+      offset: {
+        left: 36.22,
+        top: 34.77,
+        right: 42, // Used exclusively for GCODE X offset
+      },
+      width: 443,
+      height: 210,
+    },
   };
 
   // Global user configurable settings.

@@ -107,20 +107,7 @@ canvas#autotrace-preview {
     padding-top: 2em;
 
     .loader {
-      position: absolute;
       bottom: 1.5em;
-      transition: opacity .3s;
-      opacity: 0;
-
-      progress {
-        position: absolute;
-        top: 0;
-        opacity: 0.8;
-        height: 100%;
-        width: 100%;
-        mix-blend-mode: hard-light;
-        -webkit-appearance: none;
-      }
     }
 
     #autotrace-webview {
@@ -261,6 +248,25 @@ canvas#autotrace-preview {
     }
   }
 }
+
+
+// Overlay Progress/busy bar ===================================================
+#overlay aside.loader {
+  position: absolute;
+  transition: opacity .3s;
+  opacity: 0;
+
+  progress {
+    position: absolute;
+    top: 0;
+    opacity: 0.8;
+    height: 100%;
+    width: 100%;
+    mix-blend-mode: hard-light;
+    -webkit-appearance: none;
+  }
+}
+
 
 // Toolbar =====================================================================
 #toolback {
@@ -412,46 +418,6 @@ canvas#autotrace-preview {
 
 // Settings window (is an overlay) =============================================
 #settings {
-  aside {
-    font-size: 0.9em;
-    margin-left: 1em;
-  }
-
-  fieldset {
-    legend {
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-
-    &> div {
-      margin-bottom: 3em;
-      &:hover .rangeslider {
-        z-index: 1 !important;
-      }
-
-      label {
-        font-weight: bold;
-      }
-    }
-  }
-
-  .rangeslider {
-    margin: 1em 0;
-    z-index: -1;
-
-    &:hover {
-      z-index: 1;
-    }
-
-    .rangeslider__fill {
-      background-color: orange;
-    }
-  }
-
-  b {
-    padding-left: .5em;
-  }
-
   .overlay-title button {
     float: right;
     margin-top: 0.8em;
@@ -468,6 +434,78 @@ canvas#autotrace-preview {
     text-decoration: underline;
     cursor: pointer;
   }
+}
+
+// Export Window & simulator preview ===========================================
+div#simulator-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 872px;
+  height: 467px;
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 872px;
+    height: 470px;
+  }
+
+  canvas#simulator-preview {
+    position: absolute;
+    top: 64px;
+    left: 62px;
+    z-index: 1;
+  }
+}
+
+#export {
+  width: 85%;
+  height: 80%;
+  padding-top: 0;
+
+  .overlay-title {
+    h2 {
+      margin: 0.5em 0 0.7em;
+    }
+  }
+
+  .overlay-title {
+    background: linear-gradient(to bottom, #eeeeee 0%, #eeeeee 41%, rgba(238, 238, 238, 0) 100%);
+  }
+
+  .overlay-content {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-right: 1.5em;
+    padding-top: 0;
+    height: 100%;
+    padding-bottom: 1em;
+
+    .loader {
+      top: 50%;
+      width: 50%;
+      left: 50%;
+      transform: translate(-50%);
+    }
+
+    #simulator-webview {
+      //background-color: rebeccapurple;
+      flex: 3 0 0;
+      margin-bottom: 1em;
+      opacity: 0;
+      transition: opacity 100ms ease-in;
+    }
+
+    & > fieldset {
+      flex: 2 0 0;
+      overflow: auto;
+    }
+
+  }
+
 }
 
 // Fancy button ================================================================
@@ -643,6 +681,46 @@ div.overlay-window {
     height: 90%;
     padding-top: 3.5em;
     box-sizing: border-box;
+
+    aside {
+      font-size: 0.9em;
+      margin-left: 1em;
+    }
+
+    fieldset {
+      legend {
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+
+      &> div {
+        margin-bottom: 3em;
+        &:hover .rangeslider {
+          z-index: 1 !important;
+        }
+
+        label {
+          font-weight: bold;
+        }
+      }
+    }
+
+    .rangeslider {
+      margin: 1em 0;
+      z-index: -1;
+
+      &:hover {
+        z-index: 1;
+      }
+
+      .rangeslider__fill {
+        background-color: orange;
+      }
+    }
+
+    b {
+      padding-left: .5em;
+    }
   }
 }
 

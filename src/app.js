@@ -18,9 +18,6 @@ window.toastr = require('toastr');
 window._ = require('underscore');
 var path = require('path');
 
-// GCODE renderer (initialized after paper is setup)
-var gcRender = require('./gcode.js');
-
 // Main Process ===========================================---------------------
 // Include global main process connector objects for the renderer (this window).
 var remote = require('electron').remote;
@@ -32,39 +29,9 @@ var fs = remote.require('fs-plus');
 
 // Bot specific configuration & state =====================---------------------
 var scale = {};
-// Real world measurement of the griddle maximum dimensions in MM
-var griddleSize = {
-  width: 507.5,
-  height: 267.7
-};
-
-// Real world PancakeBot speed maximum.
-var botSpeedMax = 6600;
-
-// Define the printable/drawable area in MM from furthest griddle edge
-var printableArea = {
-  offset: {
-    left: 36.22,
-    top: 34.77,
-    right: 42 // Used exclusively for GCODE X offset
-  },
-  width: 443,
-  height: 210
-};
-
-var renderConfig = {
-  printArea: { // Print area limitations (in 1 MM increments)
-    x: printableArea.offset.right,
-    t: 0,
-    l: printableArea.width + printableArea.offset.right,
-    y: printableArea.height
-  },
-  version: app.getVersion() // Application version written to GCODE header
-};
-setRenderSettings(); // Map saved settings to renderConfig init object
 
 // File management  =======================================---------------------
-var currentFile = {
+app.currentFile = {
   name: "", // Name for the file (no path)
   path: path.join(app.getPath('userDesktop'), i18n.t('file.default')),
   changed: false // Can close app without making any changes
@@ -74,34 +41,6 @@ var currentFile = {
 toastr.options.positionClass = "toast-bottom-right";
 toastr.options.preventDuplicates = true;
 toastr.options.newestOnTop = true;
-
-
-// Map the settings to the renderConfig object.
-// @see: main.js settings init default for explanations and default values.
-function setRenderSettings() {
-  renderConfig.flattenResolution = app.settings.v.flatten;
-  renderConfig.lineEndPreShutoff = app.settings.v.shutoff;
-  renderConfig.startWait = app.settings.v.startwait;
-  renderConfig.endWait = app.settings.v.endwait;
-  renderConfig.shadeChangeWait = app.settings.v.changewait;
-  renderConfig.useLineFill = app.settings.v.uselinefill;
-  renderConfig.fillSpacing = app.settings.v.fillspacing;
-  renderConfig.fillAngle = app.settings.v.fillangle;
-  renderConfig.fillGroupThreshold = app.settings.v.fillthresh;
-  renderConfig.shapeFillWidth = app.settings.v.shapefillwidth;
-  renderConfig.botSpeed = parseInt(
-    (app.settings.v.botspeed / 100) * botSpeedMax,
-    10
-  );
-
-  renderConfig.useColorSpeed = app.settings.v.usecolorspeed;
-  renderConfig.botColorSpeed = [
-    parseInt((app.settings.v.botspeedcolor1 / 100) * botSpeedMax, 10),
-    parseInt((app.settings.v.botspeedcolor2 / 100) * botSpeedMax, 10),
-    parseInt((app.settings.v.botspeedcolor3 / 100) * botSpeedMax, 10),
-    parseInt((app.settings.v.botspeedcolor4 / 100) * botSpeedMax, 10)
-  ];
-}
 
 // Page loaded
 $(function(){
@@ -141,9 +80,10 @@ i18n.translateElementsIn = function(context) {
 function initEditor() {
   var $griddle = $('#editor-wrapper img');
   var $editor = $('#editor');
+  var ac = app.constants;
 
-  $griddle.aspect = griddleSize.height / griddleSize.width;
-  $editor.aspect = printableArea.height / printableArea.width;
+  $griddle.aspect = ac.griddleSize.height / ac.griddleSize.width;
+  $editor.aspect = ac.printableArea.height / ac.printableArea.width;
 
   var margin = { // Margin around griddle in absolute pixels to restrict sizing
     l: 10,  // Buffer
@@ -178,14 +118,14 @@ function initEditor() {
 
     scale = (scale.x < scale.y ? scale.x : scale.y);
 
-    var mmPerPX = $griddle.width() / griddleSize.width;
+    var mmPerPX = $griddle.width() / ac.griddleSize.width;
 
     var off = $griddle.offset();
     $editor.css({
-      top: off.top + (mmPerPX * printableArea.offset.top),
-      left: off.left + (mmPerPX * printableArea.offset.left),
-      width: printableArea.width * mmPerPX,
-      height: printableArea.height * mmPerPX
+      top: off.top + (mmPerPX * ac.printableArea.offset.top),
+      left: off.left + (mmPerPX * ac.printableArea.offset.left),
+      width: ac.printableArea.width * mmPerPX,
+      height: ac.printableArea.height * mmPerPX
     });
 
     // Resize functionality for the autotrace window.
@@ -225,10 +165,6 @@ function editorLoadedInit() { /* jshint ignore:line */
 
   // Bind remaining controls.
   bindControls();
-
-  // Load the renderer once paper is ready
-  renderConfig.paper = paper;
-  gcRender = gcRender(renderConfig);
 }
 
 // Build the toolbar DOM dynamically.
@@ -347,7 +283,7 @@ function selectColor(index) {
       });
 
       paper.view.update();
-      currentFile.changed = true;
+      app.currentFile.changed = true;
     }
   }
 }
@@ -463,18 +399,7 @@ function bindControls() {
   app.menuClick = function(menu, callback) {
     switch (menu) {
       case 'file.export':
-      case 'file.exportmirrored':
-        mainWindow.dialog({
-          t: 'SaveDialog',
-          title: i18n.t('export.title'),
-          defaultPath: path.join(
-            app.getPath('userDesktop'),
-            currentFile.name.split('.')[0]
-          ),
-          filters: [
-            { name: 'PancakeBot GCODE', extensions: ['gcode'] }
-          ]
-        }, function(filePath){
+        mainWindow.overlay.windows.export.pickFile(function(filePath) {
           if (!filePath) return; // Cancelled
 
           // Verify file extension
@@ -482,48 +407,19 @@ function bindControls() {
             filePath += '.gcode';
           }
 
-          // Throw up the overlay and activate the exporting note.
-          mainWindow.overlay.toggleFrostedOverlay(true, function(){
-            $('#exporting').fadeIn('slow', function(){
-              // Run in a timeout to allow the previous code to run first.
-              setTimeout(function() {
-                try {
-                  fs.writeFileSync(
-                    filePath,
-                    gcRender(menu === 'file.exportmirrored')
-                  ); // Write file!
-                } catch(e) {
-                  // Catch errors in export.
-                  mainWindow.overlay.toggleFrostedOverlay(false);
-                  $('#exporting').fadeOut('slow',function(){
-                    // Notify user
-                    toastr.error(
-                      i18n.t('export.err', {file: path.parse(filePath).base})
-                    );
-                  });
-                }
-
-                mainWindow.overlay.toggleFrostedOverlay(false);
-                $('#exporting').fadeOut('slow',function(){
-                  // Notify user
-                  toastr.success(
-                    i18n.t('export.note', {file: path.parse(filePath).base})
-                  );
-                });
-              }, 200);
-            });
-          });
+          mainWindow.overlay.toggleWindow('overlay', true);
         });
+
         break;
       case 'file.saveas':
-        currentFile.name = "";
+        app.currentFile.name = "";
         /* falls through */
       case 'file.save':
-        if (currentFile.name === "") {
+        if (app.currentFile.name === "") {
           mainWindow.dialog({
             t: 'SaveDialog',
             title: i18n.t(menu), // Same app namespace i18n key for title :)
-            defaultPath: currentFile.path,
+            defaultPath: app.currentFile.path,
             filters: [
               { name: i18n.t('file.type'), extensions: ['pbp'] }
             ]
@@ -534,26 +430,26 @@ function bindControls() {
             if (filePath.split('.').pop().toLowerCase() !== 'pbp') {
               filePath += '.pbp';
             }
-            currentFile.path = filePath;
-            currentFile.name = path.parse(filePath).base;
+            app.currentFile.path = filePath;
+            app.currentFile.name = path.parse(filePath).base;
 
             try {
-              fs.writeFileSync(currentFile.path, paper.getPBP()); // Write file!
-              toastr.success(i18n.t('file.note', {file: currentFile.name}));
-              currentFile.changed = false;
+              fs.writeFileSync(app.currentFile.path, paper.getPBP()); // Write file!
+              toastr.success(i18n.t('file.note', {file: app.currentFile.name}));
+              app.currentFile.changed = false;
             } catch(e) {
-              toastr.error(i18n.t('file.error', {file: currentFile.name}));
+              toastr.error(i18n.t('file.error', {file: app.currentFile.name}));
             }
 
             if (callback) callback();
           });
         } else {
           try {
-            fs.writeFileSync(currentFile.path, paper.getPBP()); // Write file!
-            toastr.success(i18n.t('file.note', {file: currentFile.name}));
-            currentFile.changed = false;
+            fs.writeFileSync(app.currentFile.path, paper.getPBP()); // Write file!
+            toastr.success(i18n.t('file.note', {file: app.currentFile.name}));
+            app.currentFile.changed = false;
           } catch(e) {
-            toastr.error(i18n.t('file.error', {file: currentFile.name}));
+            toastr.error(i18n.t('file.error', {file: app.currentFile.name}));
           }
         }
 
@@ -608,39 +504,7 @@ function bindControls() {
     }
   });
 
-  $('#settings button').click(function(){
-    if (this.id === 'done') {
-      mainWindow.overlay.toggleWindow('settings', false);
-    } else if (this.id === 'reset') {
-      var doReset = mainWindow.dialog({
-        t: 'MessageBox',
-        type: 'question',
-        message: i18n.t('settings.resetconfirm'),
-        detail: i18n.t('settings.resetconfirmdetail'),
-        buttons: [
-          i18n.t('common.button.cancel'),
-          i18n.t('settings.button.reset')
-        ]
-      });
-      if (doReset !== 0) {
-        // Clear the file, reload settings, push to elements.
-        app.settings.clear();
-        app.settings.load();
-        $('#settings .managed').each(function(){
-          $(this).val(app.settings.v[this.id]);
-          if (this.type === "checkbox") {
-            $(this).prop('checked', app.settings.v[this.id]);
-          } else {
-            $(this).val(app.settings.v[this.id]);
-          }
-        });
-        setRenderSettings();
-        $('input[type="range"]').rangeslider('update', true);
-      }
-    }
-  });
-
-  // Setup rangeslider overlay and preview.
+  // Setup rangeslider overlay and preview everywhere used.
   $('input[type="range"]').on('input', function(){
     var e = $(this).siblings('b');
     if ($(this).attr('data-unit')) {
@@ -654,13 +518,13 @@ function bindControls() {
     polyfill: false
   });
 
-  // Fancy checkbox
+  // Setup fancy checkbox everywhere used.
   $('input[type="checkbox"].fancy').after($('<div>').click(function(){
     $(this).siblings('input[type="checkbox"]').click();
   }));
 
-  // Complete Settings management
-  $('#settings .managed').each(function(){
+  // Input based Settings management I/O.
+  $('.settings-managed').each(function(){
     var key = this.id; // IDs required!
     var v = app.settings.v;
 
@@ -680,11 +544,14 @@ function bindControls() {
       if (this.type === 'checkbox') {
         app.settings.v[key] = $(this).prop('checked');
       } else {
-        app.settings.v[key] = parseInt(this.value);
+        app.settings.v[key] = parseFloat(this.value);
       }
 
       app.settings.save();
-      setRenderSettings();
+
+      if ($('#overlay').is(':visible')) {
+        mainWindow.overlay.windows.export.setRenderSettings();
+      }
     }).change();
 
     // Force default value on blur invalidation.
@@ -802,9 +669,9 @@ mainWindow.overlay = {
 // Check the current file status and alert the user what to do before continuing
 // This is pretty forceful and there's no way to back out.
 function checkFileStatus(callback) {
-  if (currentFile.changed) {
+  if (app.currentFile.changed) {
     var doSave = 0;
-    if (currentFile.name === "") { // New file or existing?
+    if (app.currentFile.name === "") { // New file or existing?
       // Save new is async and needs to cancel the close and use a callback
       doSave = mainWindow.dialog({
         t: 'MessageBox',
@@ -828,7 +695,7 @@ function checkFileStatus(callback) {
         t: 'MessageBox',
         type: 'warning',
         message: i18n.t('file.confirm.changed'),
-        detail: i18n.t('file.confirm.save', {file: currentFile.name}),
+        detail: i18n.t('file.confirm.save', {file: app.currentFile.name}),
         buttons:[
           i18n.t('file.button.discard'),
           i18n.t('file.button.save'),
@@ -855,8 +722,6 @@ function checkFileStatus(callback) {
   if (callback) callback();
   return true;
 }
-
-
 
 
 // Prevent drag/dropping onto the window (it's really bad!)

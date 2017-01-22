@@ -4,7 +4,7 @@
  */
  /* globals
    window, mainWindow, _, toastr, i18n, paper, view, project, scale, app,
-   Raster, Group, Point, Path, Layer, currentFile, path, fs, editorLoadedInit
+   Raster, Group, Point, Path, Layer, path, fs, editorLoadedInit
  */
 
 var dataURI = require('datauri');
@@ -137,8 +137,8 @@ paper.newPBP = function(noLayers) {
   view.update();
 
   // Reset current file status (keeping previous file name, for kicks)
-  currentFile.name = "";
-  currentFile.changed = false;
+  app.currentFile.name = "";
+  app.currentFile.changed = false;
 };
 
 // Just Empty/Clear the workspace.
@@ -234,7 +234,7 @@ paper.getPBP = function(){
 
 // Called whenever the file is changed from a tool
 paper.fileChanged = function() {
-  currentFile.changed = true;
+  app.currentFile.changed = true;
   paper.undo.stateChanged();
 };
 
@@ -256,9 +256,9 @@ paper.cleanPath = function(path){
 paper.loadPBP = function(filePath){
   paper.newPBP(true);
 
-  currentFile.name = path.parse(filePath).base;
-  currentFile.path = filePath;
-  currentFile.changed = false;
+  app.currentFile.name = path.parse(filePath).base;
+  app.currentFile.path = filePath;
+  app.currentFile.changed = false;
 
   project.importJSON(fs.readFileSync(filePath, "utf8"));
 
@@ -273,7 +273,7 @@ paper.loadPBP = function(filePath){
     paper.traceImage.img = paper.traceImage.children[0];
   }
 
-  toastr.info(i18n.t('file.opened', {file: currentFile.name}));
+  toastr.info(i18n.t('file.opened', {file: app.currentFile.name}));
   paper.undo.clearState();
   view.update();
 };

@@ -1,5 +1,91 @@
 <div class="overlay-title">
-  <button id="done" data-i18n>settings.done</button>
-  <button id="reset" data-i18n>settings.reset</button>
-  <h2 data-i18n>Export window!</h2>
+  <h2 data-i18n>export.title</h2>
+</div>
+<div class="overlay-content">
+  <aside class="loader" data-i18n="[title]common.loading">
+    <div class="bar-loader"></div>
+    <progress value="0" max="100"></progress>
+  </aside>
+  <webview id="simulator-webview" nodeintegration="true" disablewebsecurity="true" src="windows/window.export.webview.html"></webview>
+  <fieldset>
+    <legend data-i18n>settings.gcode.title</legend>
+    <button id="done" data-i18n>settings.done</button>
+    <button id="reset" data-i18n>settings.reset</button>
+
+    <div>
+      <label for="mirrorexport" data-i18n>settings.gcode.mirrorexport</label>
+      <input id="mirrorexport" checked class="fancy" type="checkbox">
+      <aside data-i18n>settings.gcode.mirrorexportinfo</aside>
+    </div>
+
+    <div>
+      <label for="botspeed" data-i18n>settings.gcode.botspeed</label><b>00</b>
+      <input id="botspeed" class="settings-managed" data-unit="percent" type="range" min="25" default="70" max="100" step="1">
+      <aside data-i18n>settings.gcode.botspeedinfo</aside>
+    </div>
+
+    <div>
+      <label for="shapefillwidth" data-i18n>settings.gcode.shapefillwidth</label><b>00</b>
+      <input id="shapefillwidth" class="settings-managed" data-unit="millimeters" type="range" min="1" default="3" max="11" step="0.1">
+      <aside data-i18n>settings.gcode.shapefillwidthinfo</aside>
+    </div>
+
+    <div>
+      <label for="shutoff" data-i18n>settings.gcode.shutoff</label><b>00</b>
+      <input id="shutoff" class="settings-managed" data-unit="pixels" type="range" min="0" default="25" max="200" step="1">
+      <aside data-i18n>settings.gcode.shutoffinfo</aside>
+    </div>
+
+    <div>
+      <label for="startwait" data-i18n>settings.gcode.startwait</label><b>00</b>
+      <input id="startwait" class="settings-managed" data-unit="milliseconds" type="range" min="0" default="600" max="2000" step="1">
+      <aside data-i18n>settings.gcode.startwaitinfo</aside>
+    </div>
+
+    <div>
+      <label for="endwait" data-i18n>settings.gcode.endwait</label><b>00</b>
+      <input id="endwait" class="settings-managed" data-unit="milliseconds" type="range" min="0" default="250" max="2000" step="1">
+      <aside data-i18n>settings.gcode.endwaitinfo</aside>
+    </div>
+
+    <div>
+      <label for="changewait" data-i18n>settings.gcode.changewait</label><b>00</b>
+      <input id="changewait" class="settings-managed" data-unit="seconds" type="range" min="0" default="15" max="200" step="1">
+      <aside data-i18n>settings.gcode.changewaitinfo</aside>
+    </div>
+
+    <div>
+      <label for="flatten" data-i18n>settings.gcode.flatten</label><b>00</b>
+      <input id="flatten" class="settings-managed" data-unit="pixels" type="range" min="1" default="2" max="50" step="1">
+      <aside data-i18n>settings.gcode.flatteninfo</aside>
+    </div>
+
+    <div>
+      <label for="uselinefill" data-i18n>settings.gcode.uselinefill</label>
+      <input id="uselinefill" class="settings-managed fancy" type="checkbox">
+      <aside data-i18n>settings.gcode.uselinefillinfo</aside>
+    </div>
+
+    <fieldset class="collapsible">
+      <legend data-i18n>settings.gcode.linefillgroup</legend>
+      <div>
+        <label for="fillspacing" data-i18n>settings.gcode.fillspacing</label><b>00</b>
+        <input id="fillspacing" class="settings-managed" data-unit="pixels" type="range" min="2" default="10" max="30" step="1">
+        <aside data-i18n>settings.gcode.fillspacinginfo</aside>
+      </div>
+
+      <div>
+        <label for="fillangle" data-i18n>settings.gcode.fillangle</label><b>00</b>
+        <input id="fillangle" class="settings-managed" data-unit="degrees" type="range" min="-180" default="23" max="180" step="1">
+        <aside data-i18n>settings.gcode.fillangleinfo</aside>
+      </div>
+
+      <div>
+        <label for="fillthresh" data-i18n>settings.gcode.fillthresh</label><b>00</b>
+        <input id="fillthresh" class="settings-managed" data-unit="pixels" type="range" min="0" max="100" default="27" step="1">
+        <aside data-i18n>settings.gcode.fillthreshinfo</aside>
+      </div>
+    </fieldset>
+
+  </fieldset>
 </div>
