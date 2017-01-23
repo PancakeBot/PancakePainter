@@ -1,0 +1,147 @@
+// Styles for fancy sliders, buttons & inputs.
+
+// Fancy button ================================================================
+button.fancy{
+  cursor: pointer;
+  display: inline-block;
+  border:1px solid #439E2C;
+  color: #fff;
+  border-radius: 7px;
+  font-family: Verdana;
+  width: auto;
+  height: auto;
+  font-size: 1em;
+  padding: 0.15em 1em;
+  box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.59);
+  background-image: linear-gradient(to top, #1D612F, #36943F);
+
+  &:hover, &:active{
+    border:1px solid #0dff00;
+    color: #fff;
+    background-image: linear-gradient(to top, #2d9448, #4cc757);
+  }
+}
+
+button.fancy.orange{
+  border:1px solid #c87140;
+  color: #ffffff;
+  background-image: linear-gradient(to top, #d1831c, #b65800);
+
+  &:hover, &:active{
+    border:1px solid #cb9c41;
+    color: #fff;
+    background-image: linear-gradient(to top, #ee9e33, #e08631);
+  }
+}
+
+button.fancy.red{
+  border:1px solid #a8685c;
+  color: #4e4d4d;
+  background-image: linear-gradient(to top, #d4cbcb, #e7cfcf);
+
+  &:hover, &:active {
+    border:1px solid #cb4141;
+    color: #fff;
+    background-image: linear-gradient(to top, #611d1d, #943636);
+  }
+}
+
+// X to close button. ==========================================================
+button.x-close {
+  cursor: pointer;
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+  border: none;
+  font-size: 1.3em;
+  color: #E21A1A;
+  background-color: #bdbdbd;
+  font-weight: bold;
+
+  &:hover, &:active {
+    color: #bdbdbd;
+    background-color: #E21A1A;
+  }
+
+}
+
+// Fancy iOS8 Checkbox =========================================================
+input.fancy[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+
+  &:disabled{
+    &+ div {
+      opacity: 0.8;
+      background-image: linear-gradient(90deg, #add5ac 50%, transparent 50%);
+    }
+
+    &:checked + div {
+      border: 2px solid #add5ac;
+    }
+  }
+
+  &:checked + div {
+    padding-left: 1em; width: 1em;
+    background-position: 0 0;
+    border: 2px solid #64bd63;
+  }
+
+  &+ div {
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    width: 2em;	height: 1em;
+    border: 2px solid rgba(0,0,0,.3);
+    border-radius: 999px;
+    background: white;
+    background-image: linear-gradient(90deg, #64bd63 50%, transparent 50%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    background-origin: border-box;
+    background-clip: border-box;
+    overflow: hidden;
+    transition-duration: .2s;
+    transition-property: padding, width, background-position, text-indent;
+    font-size: 112%; /* change this and see how they adjust! */
+
+    &:before {
+      content: ' ';
+      float: left;
+      width: 1.65em; height: 1.65em;
+      margin: -.1em;
+      border: 1px solid rgba(0,0,0,.35);
+      border-radius: inherit;
+      background: white;
+      background-color: white;
+      box-shadow: 0 .1em .1em .1em hsla(0,0%,100%,.8) inset,
+                  0 0 .5em rgba(0,0,0,.3);
+      color: white;
+      text-shadow: 0 -1px 1px rgba(0,0,0,.3);
+      text-indent: -2.5em;
+    }
+  }
+
+  &:active + div:before {
+    background-color: #eee;
+  }
+
+  &:focus + div {
+    box-shadow: 0 .1em .1em rgba(0,0,0,.2) inset,
+                0 .45em 0 .1em rgba(0,0,0,.05) inset,
+                0 0 .4em 1px rgba(255,0,0,.5);
+  }
+
+  &+ div:before, &+ div:after {
+    font: bold 60%/1.9 sans-serif;
+    text-transform: uppercase;
+  }
+
+  &+ div:after {
+    content: ' ';
+    float: left;
+    text-indent: .5em;
+    color: rgba(0,0,0,.45);
+    text-shadow: none;
+  }
+}
