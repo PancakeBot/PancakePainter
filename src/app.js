@@ -129,8 +129,8 @@ function initEditor() {
     });
 
     // Resize functionality for the autotrace window.
-    if (mainWindow.overlay.windows.autotrace) {
-      mainWindow.overlay.windows.autotrace.resize();
+    if (mainWindow.overlay.currentWindow.resize) {
+      mainWindow.overlay.currentWindow.resize();
     }
 
     editorLoad(); // Load the editor (if it hasn't already been loaded)
@@ -581,6 +581,7 @@ mainWindow.overlay = {
 
       // Show or hide?
       if (toggle) {
+        mainWindow.overlay.currentWindow = mainWindow.overlay.windows[name];
         this.toggleFrostedOverlay(true, function(){
           $elem.fadeIn('slow');
           $(window).resize();
@@ -664,6 +665,8 @@ mainWindow.overlay = {
       if (callback) callback();
     }
   },
+
+  currentWindow: {}
 };
 
 // Check the current file status and alert the user what to do before continuing
