@@ -39,20 +39,12 @@ canvas#autotrace-preview {
   height: 70%; }
   #autotrace .overlay-title h2 {
     margin: 0.5em 0 0; }
-  #autotrace .overlay-title button[name=cancel] {
-    cursor: pointer;
-    position: absolute;
-    right: 0.5em;
-    top: 0.5em;
-    border: none;
-    font-size: 1.3em;
-    color: #E21A1A;
-    font-weight: bold; }
   #autotrace .overlay-title .presets {
     position: absolute;
-    right: 2em;
+    right: 4em;
     top: 8px; }
     #autotrace .overlay-title .presets button {
+      cursor: pointer;
       margin-right: 0.7em;
       background-size: cover;
       background-repeat: no-repeat;
@@ -142,11 +134,13 @@ canvas#autotrace-preview {
           #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-4] {
             background-image: url("../images/icon-autotrace-color-5.png"); }
       #autotrace .overlay-content div.sidebar fieldset.preview {
-        height: 150px; }
+        height: 150px;
+        overflow: visible; }
         #autotrace .overlay-content div.sidebar fieldset.preview button[name=import] {
           position: relative;
           top: -9px;
-          margin-left: 28%; }
+          margin-left: 28%;
+          font-size: 1.2em; }
         #autotrace .overlay-content div.sidebar fieldset.preview .options button {
           display: inline-block;
           width: 23%; }
@@ -364,113 +358,55 @@ canvas#autotrace-preview {
     background-position: 0 0; }
   100% {
     background-position: 28px 0; } }
-#color {
-  float: left;
-  width: 65px;
-  height: 65px;
-  overflow: visible;
-  margin-top: 10px;
-  z-index: 6; }
-  #color:hover #picker {
-    transform: scale(1); }
-  #color #picker {
-    width: 56px;
-    height: 56px;
-    margin-top: 1px;
-    margin-left: 5px; }
-    #color #picker a {
-      border: 1px solid black;
-      box-sizing: border-box;
-      content: ' ';
-      display: block;
-      width: 50%;
-      height: 50%;
-      border-radius: 50%;
-      float: left; }
-      #color #picker a.active {
-        display: block;
-        border: 5px solid red; }
-
-#settings .overlay-title button {
-  float: right;
-  margin-top: 0.8em;
-  margin-right: 1em;
-  font-weight: bold;
-  font-size: 1.2em;
-  padding: 0.3em 0.5em; }
-#settings #reset {
-  background-color: transparent;
-  border: none;
-  color: red;
-  text-decoration: underline;
-  cursor: pointer; }
-
-div#simulator-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 872px;
-  height: 467px; }
-  div#simulator-wrapper img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 872px;
-    height: 470px; }
-  div#simulator-wrapper canvas#simulator-preview {
-    position: absolute;
-    top: 64px;
-    left: 62px;
-    z-index: 1; }
-
-#export {
-  width: 85%;
-  height: 80%;
-  padding-top: 0; }
-  #export .overlay-title h2 {
-    margin: 0.5em 0 0.7em; }
-  #export .overlay-title {
-    background: linear-gradient(to bottom, #eeeeee 0%, #eeeeee 41%, rgba(238, 238, 238, 0) 100%); }
-  #export .overlay-content {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    padding-right: 1.5em;
-    padding-top: 0;
-    height: 100%;
-    padding-bottom: 1em; }
-    #export .overlay-content .loader {
-      top: 50%;
-      width: 50%;
-      left: 50%;
-      transform: translate(-50%); }
-    #export .overlay-content #simulator-webview {
-      flex: 3 0 0;
-      margin-bottom: 1em;
-      opacity: 0;
-      transition: opacity 100ms ease-in; }
-    #export .overlay-content > fieldset {
-      flex: 2 0 0;
-      overflow: auto; }
-
 button.fancy {
   cursor: pointer;
   display: inline-block;
   border: 1px solid #439E2C;
   color: #fff;
-  border-radius: 10px 10px 11px 9px;
+  border-radius: 7px;
   font-family: Verdana;
   width: auto;
   height: auto;
-  font-size: 16px;
-  padding: 3px 20px;
-  box-shadow: 0px 3px 11px 0 #000;
-  background-image: linear-gradient(to top, #1D612F, #36943F);
-  background-color: #409C4F; }
+  font-size: 1em;
+  padding: 0.15em 1em;
+  box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.59);
+  background-image: linear-gradient(to top, #1D612F, #36943F); }
   button.fancy:hover, button.fancy:active {
-    border: 1px solid #5D7FBC;
+    border: 1px solid #0dff00;
     color: #fff;
-    background-color: #97A8C7; }
+    background-image: linear-gradient(to top, #2d9448, #4cc757); }
+
+button.fancy.orange {
+  border: 1px solid #c87140;
+  color: #ffffff;
+  background-image: linear-gradient(to top, #d1831c, #b65800); }
+  button.fancy.orange:hover, button.fancy.orange:active {
+    border: 1px solid #cb9c41;
+    color: #fff;
+    background-image: linear-gradient(to top, #ee9e33, #e08631); }
+
+button.fancy.red {
+  border: 1px solid #a8685c;
+  color: #4e4d4d;
+  background-image: linear-gradient(to top, #d4cbcb, #e7cfcf); }
+  button.fancy.red:hover, button.fancy.red:active {
+    border: 1px solid #cb4141;
+    color: #fff;
+    background-image: linear-gradient(to top, #611d1d, #943636); }
+
+button.x-close {
+  cursor: pointer;
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+  border: none;
+  font-size: 1.3em;
+  color: #E21A1A;
+  background-color: #bdbdbd;
+  font-weight: bold; }
+  button.x-close:hover, button.x-close:active {
+    color: #bdbdbd;
+    background-color: #E21A1A; }
 
 input.fancy[type="checkbox"] {
   position: absolute;
@@ -531,6 +467,113 @@ input.fancy[type="checkbox"] {
     text-indent: .5em;
     color: rgba(0, 0, 0, 0.45);
     text-shadow: none; }
+
+#color {
+  float: left;
+  width: 65px;
+  height: 65px;
+  overflow: visible;
+  margin-top: 10px;
+  z-index: 6; }
+  #color:hover #picker {
+    transform: scale(1); }
+  #color #picker {
+    width: 56px;
+    height: 56px;
+    margin-top: 1px;
+    margin-left: 5px; }
+    #color #picker a {
+      border: 1px solid black;
+      box-sizing: border-box;
+      content: ' ';
+      display: block;
+      width: 50%;
+      height: 50%;
+      border-radius: 50%;
+      float: left; }
+      #color #picker a.active {
+        display: block;
+        border: 5px solid red; }
+
+#settings .overlay-title button {
+  float: right;
+  margin-top: 0.8em;
+  margin-right: 1em;
+  font-weight: bold;
+  font-size: 1.2em;
+  padding: 0.3em 0.5em; }
+#settings #reset {
+  background-color: transparent;
+  border: none;
+  color: red;
+  text-decoration: underline;
+  cursor: pointer; }
+
+div#simulator-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1744px;
+  height: 934px; }
+  div#simulator-wrapper.pannable {
+    cursor: move; }
+  div#simulator-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1744px;
+    height: 940px; }
+  div#simulator-wrapper canvas#simulator-preview {
+    position: absolute;
+    top: 128px;
+    left: 124px;
+    z-index: 1; }
+
+#export {
+  width: 85%;
+  height: 80%;
+  padding-top: 0; }
+  #export .overlay-title h2 {
+    margin: 0.5em 0 0.7em; }
+  #export .overlay-title {
+    background: linear-gradient(to bottom, #eeeeee 0%, #eeeeee 41%, rgba(238, 238, 238, 0) 100%); }
+  #export .overlay-content {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-right: 1.5em;
+    padding-top: 0;
+    height: 100%;
+    padding-bottom: 1em; }
+    #export .overlay-content .loader {
+      top: 50%;
+      width: 50%;
+      left: 50%;
+      transform: translate(-50%);
+      margin: 0; }
+    #export .overlay-content #simulator-webview {
+      flex: 3 0 0;
+      margin-bottom: 1em;
+      opacity: 0;
+      transition: opacity 100ms ease-in; }
+    #export .overlay-content > fieldset {
+      flex: 2 0 0;
+      overflow: hidden;
+      position: relative; }
+      #export .overlay-content > fieldset .operations {
+        position: absolute;
+        right: 1em;
+        top: 0;
+        font-size: 0.8em; }
+        #export .overlay-content > fieldset .operations button {
+          margin-left: 1em; }
+      #export .overlay-content > fieldset div.flex-wrapper {
+        display: flex;
+        overflow-y: auto;
+        margin-top: 0.5em; }
+        #export .overlay-content > fieldset div.flex-wrapper fieldset.col {
+          flex: 2 0 0;
+          border: none; }
 
 #exporting {
   display: none;
@@ -595,15 +638,15 @@ div.overlay-window {
     box-sizing: border-box; }
     div.overlay-window .overlay-content aside {
       font-size: 0.9em;
-      margin-left: 1em; }
+      text-indent: 2em; }
     div.overlay-window .overlay-content fieldset legend {
       font-weight: bold;
       font-size: 1.2em; }
-    div.overlay-window .overlay-content fieldset > div {
+    div.overlay-window .overlay-content fieldset > div.field-wrapper {
       margin-bottom: 3em; }
-      div.overlay-window .overlay-content fieldset > div:hover .rangeslider {
+      div.overlay-window .overlay-content fieldset > div.field-wrapper:hover .rangeslider {
         z-index: 1 !important; }
-      div.overlay-window .overlay-content fieldset > div label {
+      div.overlay-window .overlay-content fieldset > div.field-wrapper label {
         font-weight: bold; }
     div.overlay-window .overlay-content .rangeslider {
       margin: 1em 0;

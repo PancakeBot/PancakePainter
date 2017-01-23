@@ -128,7 +128,13 @@
     "start": "Export",
     "wait": "Exporting, please wait…",
     "err" : "Error exporting \"__file__\", please report this issue with the problem project file.",
-    "note" : "Successfully exported \"__file__\" for printing."
+    "note" : "Successfully exported \"__file__\" for printing.",
+    "buttons": {
+      "cancel": "Cancel",
+      "reset": "Reset Settings",
+      "export": "Export to File",
+      "reselect": "Select a Different File"
+    }
   },
   "settings": {
     "done": "Done",
@@ -180,7 +186,7 @@
       "startwait": "Line start pump ON wait time:",
       "startwaitinfo": "The number of milliseconds to wait before we start moving at the beggining of a line once the pump has turned on. Correct value depends on batter viscosity and pump pressure.",
       "mirrorexport": "Mirror export",
-      "mirrorexportinfo": "Mirrors image before rendering GCODE, so pancake will appear correctly when flipped.",
+      "mirrorexportinfo": "Mirror image before rendering GCODE, so pancake will appear correctly when flipped.",
       "endwait": "Line end pump OFF wait time:",
       "endwaitinfo": "The number of milliseconds to wait at the end of a line. Pump should have already shutoff early, this should ensure a clean line end. Correct value depends on batter viscosity and pump pressure.",
       "changewait": "Seconds between bottle/shade changes:",

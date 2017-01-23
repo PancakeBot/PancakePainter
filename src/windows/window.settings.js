@@ -6,58 +6,42 @@
  * We have full access to globals loaded in the mainWindow as needed, just
  * reference them below.
  **/
- /* globals $, mainWindow, i18n, app,  */
+ /* globals $, mainWindow */
 
 module.exports = function(context) {
   var settings = {};
 
-
   function bindButtons() {
-
-
     $('button', context).click(function() {
-      if (this.id === 'done') {
-        mainWindow.overlay.toggleWindow('settings', false);
-      } else if (this.id === 'reset') {
-        var doReset = mainWindow.dialog({
-          t: 'MessageBox',
-          type: 'question',
-          message: i18n.t('settings.resetconfirm'),
-          detail: i18n.t('settings.resetconfirmdetail'),
-          buttons: [
-            i18n.t('common.button.cancel'),
-            i18n.t('settings.button.reset')
-          ]
-        });
-        if (doReset !== 0) {
-          // Clear the file, reload settings, push to elements.
-          app.settings.clear();
-          app.settings.load();
-          $('#settings .managed').each(function(){
-            $(this).val(app.settings.v[this.id]);
-            if (this.type === "checkbox") {
-              $(this).prop('checked', app.settings.v[this.id]);
-            } else {
-              $(this).val(app.settings.v[this.id]);
-            }
-          });
-          setRenderSettings();
-          $('input[type="range"]').rangeslider('update', true);
-        }
+      switch(this.name) {
+        case 'done':
+          mainWindow.overlay.toggleWindow('settings', false);
+          break;
+
+        case 'reset':
+          mainWindow.resetSettings();
+          break;
       }
     });
   }
 
-
-
+  /**
+   * Window initialization callback, triggered on window import.
+   */
   settings.init = function() {
     bindButtons();
   };
 
+  /**
+   * Window show event callback, triggered on window show.
+   */
   settings.show = function() {
 
   };
 
+  /**
+   * Window hide event callback, triggered on window close.
+   */
   settings.hide = function() {
 
   };

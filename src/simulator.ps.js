@@ -28,11 +28,12 @@ var printArea = { // Default Print area limitations (in MM)
       ██ ██████  ██          ██      ██    ██ ██ ████ ██ ██ ████ ██ ███████
       ██ ██      ██          ██      ██    ██ ██  ██  ██ ██  ██  ██      ██
       ██ ██       ██████      ██████  ██████  ██      ██ ██      ██ ███████
-Interprocess communication and handlers between the main app and this process ==
+== Interprocess communication and handlers between main app <=> this process ===
 ==============================================================================*/
 ipc.on('loadInit', function(event, jsonData) { /* jshint ignore:line */
   paper.sourceLayer.removeChildren();
   paper.sourceLayer.importJSON(jsonData);
+  $(window).resize();
   ipc.sendToHost('initLoaded');
 });
 
@@ -46,19 +47,86 @@ ipc.on('cleanup', function() {
   paper.cleanup();
 });
 
+
+/*
+          ██████  ██ ███    ██ ██████  ██ ███    ██  ██████  ███████
+          ██   ██ ██ ████   ██ ██   ██ ██ ████   ██ ██       ██
+          ██████  ██ ██ ██  ██ ██   ██ ██ ██ ██  ██ ██   ███ ███████
+          ██   ██ ██ ██  ██ ██ ██   ██ ██ ██  ██ ██ ██    ██      ██
+          ██████  ██ ██   ████ ██████  ██ ██   ████  ██████  ███████
+== jQuery DOM/window bindings for events/etc ===================================
+==============================================================================*/
+
+// Bind resize event for scale matching.
+var scaleOffset = 0;
+var translateOffset = [0, 0];
 $(window).on('resize', function() {
-  var s = {w:762, h:465};
+  var s = {w:1524, h:934};
   var w = {w: $(this).width(), h: $(this).height()};
 
   // Use the smallest scale.
   var scale = {x: w.w / s.w,  y: w.h / s.h};
-  scale = (scale.x < scale.y ? scale.x : scale.y);
+  scale = (scale.x < scale.y ? scale.x : scale.y) + scaleOffset;
 
-  $('div#simulator-wrapper').css('transform', 'translate(-50%, -52%) scale(' + scale + ')');
+  var tO = translateOffset;
+  var sO = scaleOffset;
+  var translate = [
+    'calc(-50% - ' + (tO[0] * sO).toFixed(3) + 'px)',
+    'calc(-52% - ' + (tO[1] * sO).toFixed(3) + 'px)'
+  ];
+  var transforms = [
+    'translate(' + translate[0] + ', ' + translate[1] + ')',
+    'scale(' + scale + ')',
+  ];
+  $('div#simulator-wrapper')
+    .css('transform', transforms.join(' '))
+    .toggleClass('pannable', !!sO);
 });
 
-// Setup layers ================================================================
-// =============================================================================
+// Bind to the mousewheel for preview zooming.
+$('div#simulator-wrapper').on('mousewheel', function(e) {
+  if (e.originalEvent.deltaY < 0) { // Wheel up, zoom in!
+    scaleOffset += 0.1;
+    scaleOffset = Math.min(2, scaleOffset);
+  } else {  // Wheel down, zoom out!
+    scaleOffset -= 0.1;
+    scaleOffset = Math.max(0, scaleOffset);
+  }
+  $(window).resize();
+});
+
+var dragStart = null;
+$('div#simulator-wrapper').on('mousedown mouseup mousemove', function(e) {
+  switch (e.type) {
+    case 'mousedown':
+      dragStart = [
+        e.originalEvent.screenX + translateOffset[0],
+        e.originalEvent.screenY + translateOffset[1]
+      ];
+      break;
+    case 'mousemove':
+      if (dragStart) {
+        translateOffset = [
+          dragStart[0] - e.originalEvent.screenX,
+          dragStart[1] - e.originalEvent.screenY
+        ];
+        $(window).resize();
+      }
+      break;
+    case 'mouseup':
+      dragStart = null;
+      break;
+  }
+});
+
+/*
+              ██       █████  ██    ██ ███████ ██████  ███████
+              ██      ██   ██  ██  ██  ██      ██   ██ ██
+              ██      ███████   ████   █████   ██████  ███████
+              ██      ██   ██    ██    ██      ██   ██      ██
+              ███████ ██   ██    ██    ███████ ██   ██ ███████
+== Paper.JS setup for layers and other globals =================================
+==============================================================================*/
 paper.shadeLayers = [new Layer(), new Layer(), new Layer(), new Layer()];
 paper.shadeLayers.empty = function() {
   _.each(this, function(layer) {

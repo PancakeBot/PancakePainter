@@ -1,12 +1,12 @@
 /**
- * @file This is the window node module for the advanced settings window
+ * @file This is the window node module for the export/settings window
  * that supplies init and binding code for the PancakePainter window API.
  * Exports function returns a window control object that allows triggering on
  * init, show, and hide events.
  * We have full access to globals loaded in the mainWindow as needed, just
  * reference them below.
  **/
-/* globals mainWindow, app, $, paper, i18n, fs, toastr, path */
+/* globals window, mainWindow, app, $, paper, i18n, fs, toastr, path */
 
 module.exports = function(context) {
   var exportData = {
@@ -20,6 +20,9 @@ module.exports = function(context) {
 
   var $loadingBar = $('.loader', context);
 
+  /**
+   * Initialize the renderConfig object for GCODE export with static constants.
+   */
   function initRenderConfig() {
     var ac = app.constants;
     exportData.renderConfig = {
@@ -33,10 +36,50 @@ module.exports = function(context) {
     };
   }
 
-  // Bind the window's settings inputs into a single object on change.
+  /**
+   * Bind change on the non-managed inputs to trigger setRenderSettings.
+   */
   function bindSettings() {
-    $('input:not(.settings-managed)').change(function() {
+    $('input:not(.settings-managed)', context).change(function() {
       exportData.setRenderSettings();
+    });
+  }
+
+  /**
+   * Bind the various buttons on the window.
+   */
+  function bindButtons() {
+    $('button', context).click(function() {
+      switch(this.name) {
+        case 'cancel':
+          mainWindow.overlay.toggleWindow('export', false);
+          break;
+
+        case 'reset':
+          mainWindow.resetSettings();
+          break;
+
+        case 'reselect':
+          exportData.pickFile(function(filePath) {
+            if (filePath) {
+              exportData.filePath = filePath;
+              mainWindow.overlay.toggleWindow('overlay', true);
+            }
+          });
+          break;
+
+        case 'export':
+          exportData.saveData();
+          break;
+      }
+    });
+
+    // Bind ESC key exit.
+    // TODO: Build this off data attr global bind thing.
+    $(context).keydown(function(e){
+      if (e.keyCode === 27) { // Global escape key exit window
+        $('button[name=cancel]', context).click();
+      }
     });
   }
 
@@ -67,7 +110,7 @@ module.exports = function(context) {
 
     // Catch IPC messages FROM app.
     wv.addEventListener('ipc-message', function(event) {
-      console.log('RECV ', event.channel);
+      //console.log('RECV ', event.channel); // DEBUG
       var data = event.args[0];
       switch (event.channel) {
         case 'paperReady':
@@ -76,9 +119,6 @@ module.exports = function(context) {
           exportData.$webview.send.loadInit();
           exportData.$webview.css('opacity', 1);
           break;
-        /*case 'progress':
-          $('progress', context).val(data);
-          break;*/
         case 'initLoaded':
           exportData.initLoaded = true;
           exportData.renderUpdate(); // Run Initial render.
@@ -91,7 +131,7 @@ module.exports = function(context) {
     });
 
     wv.addEventListener('dom-ready', function(){
-      wv.openDevTools(); // DEBUG
+      //wv.openDevTools(); // DEBUG
     });
   }
 
@@ -139,9 +179,18 @@ module.exports = function(context) {
     exportData.renderUpdate();
   };
 
+  /**
+   * Save rendered GCODE data to the given initialized filePath.
+   */
   exportData.saveData = function() {
     try {
       fs.writeFileSync(exportData.filePath, exportData.gcode); // Write file!
+
+      // Notify user
+      toastr.success(
+        i18n.t('export.note', {file: path.parse(exportData.filePath).base})
+      );
+      mainWindow.overlay.toggleWindow('export', false); // Hide window.
     } catch(e) {
       console.error(e);
       // Notify user
@@ -150,12 +199,13 @@ module.exports = function(context) {
       );
     }
 
-    // Notify user
-    toastr.success(
-      i18n.t('export.note', {file: path.parse(exportData.filePath).base})
-    );
   };
 
+  /**
+   * Spawn the file save dialog for GCODE export, returns filePath in callback.
+   * @param  {Function} callback
+   *   Function to call back when the user is done picking the file.
+   */
   exportData.pickFile = function(callback) {
     mainWindow.dialog({
       t: 'SaveDialog',
@@ -167,9 +217,19 @@ module.exports = function(context) {
       filters: [
         { name: 'PancakeBot GCODE', extensions: ['gcode'] }
       ]
-    }, callback);
+    }, function(filePath) {
+      // Verify file extension
+      if (filePath && filePath.split('.').pop().toLowerCase() !== 'gcode') {
+        filePath += '.gcode';
+      }
+
+      callback(filePath);
+    });
   };
 
+  /**
+   * Run a render multiprocess render update.
+   */
   exportData.renderUpdate = function () {
     if (!exportData.renderUpdateRunning && exportData.initLoaded) {
       exportData.renderUpdateRunning = true;
@@ -187,18 +247,41 @@ module.exports = function(context) {
     $loadingBar.css('opacity', 0);
   }
 
+  /**
+   * Window initialization callback, triggered on window import.
+   */
   exportData.init = function() {
+    $(window).on('settingsChanged', exportData.setRenderSettings);
     setupWebview();
     initRenderConfig();
     bindSettings();
+    bindButtons();
   };
 
+  /**
+   * Window show event callback, triggered on window show.
+   */
   exportData.show = function() {
+    if (exportData.simulatorLoaded) {
+      exportData.$webview.send.loadInit();
+    }
     exportData.setRenderSettings();
   };
 
+  /**
+   * Window hide event callback, triggered on window close.
+   */
   exportData.hide = function() {
+    exportData.$webview.send.cleanup();
     exportData.initLoaded = false;
+  };
+
+  /**
+   * Window resize event callback, triggered on window resize.
+   */
+  exportData.resize = function() {
+    var h = $('.overlay-content > fieldset', context).height();
+    $('div.flex-wrapper', context).height(h - 18);
   };
 
   return exportData;

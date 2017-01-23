@@ -64,23 +64,13 @@ canvas#autotrace-preview {
       margin: 0.5em 0 0;
     }
 
-    button[name=cancel] {
-      cursor: pointer;
-      position: absolute;
-      right: 0.5em;
-      top: 0.5em;
-      border: none;
-      font-size: 1.3em;
-      color: #E21A1A;
-      font-weight: bold;
-    }
-
     .presets {
       position: absolute;
-      right: 2em;
+      right: 4em;
       top: 8px;
 
       button {
+        cursor: pointer;
         margin-right: 0.7em;
         background-size: cover;
         background-repeat: no-repeat;
@@ -214,11 +204,13 @@ canvas#autotrace-preview {
       // Preview
       fieldset.preview {
         height: 150px;
+        overflow: visible;
 
         button[name=import] {
           position: relative;
           top: -9px;
           margin-left: 28%;
+          font-size: 1.2em;
         }
 
         .options {
@@ -248,7 +240,6 @@ canvas#autotrace-preview {
     }
   }
 }
-
 
 // Overlay Progress/busy bar ===================================================
 #overlay aside.loader {
@@ -377,6 +368,9 @@ canvas#autotrace-preview {
 // Fancy Loader animations =====================================================
 @import 'loaders';
 
+// Other Fancy elements
+@import 'fancy-elements';
+
 // Color Picker ================================================================
 #color {
   // Separation border and LOTS of distance from the other tools
@@ -441,21 +435,25 @@ div#simulator-wrapper {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 872px;
-  height: 467px;
+  width: 1744px;
+  height: 934px;
+
+  &.pannable {
+    cursor:move;
+  }
 
   img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 872px;
-    height: 470px;
+    width: 1744px;
+    height: 940px;
   }
 
   canvas#simulator-preview {
     position: absolute;
-    top: 64px;
-    left: 62px;
+    top: 128px;
+    left: 124px;
     z-index: 1;
   }
 }
@@ -489,127 +487,46 @@ div#simulator-wrapper {
       width: 50%;
       left: 50%;
       transform: translate(-50%);
+      margin: 0;
     }
 
     #simulator-webview {
-      //background-color: rebeccapurple;
-      flex: 3 0 0;
+      flex: 3 0 0; // Fill 3/5 of height.
       margin-bottom: 1em;
       opacity: 0;
       transition: opacity 100ms ease-in;
     }
 
-    & > fieldset {
-      flex: 2 0 0;
-      overflow: auto;
+    & > fieldset { // Fieldset in content below preview webview.
+      flex: 2 0 0; // Fill 2/5 of height.
+      overflow: hidden;
+      position: relative;
+
+      .operations {
+        position: absolute;
+        right: 1em;
+        top: 0;
+        font-size: 0.8em;
+
+        button {
+          margin-left: 1em;
+        }
+      }
+
+      div.flex-wrapper {
+        display: flex;
+        overflow-y: auto;
+        margin-top: 0.5em;
+
+        fieldset.col {
+          flex: 2 0 0;
+          border: none;
+        }
+      }
     }
 
   }
 
-}
-
-// Fancy button ================================================================
-button.fancy{
-  cursor: pointer;
-  display: inline-block;
-  border:1px solid #439E2C;
-  color: #fff;
-  border-radius: 10px 10px 11px 9px;
-  font-family: Verdana;
-  width: auto;
-  height: auto;
-  font-size: 16px;
-  padding: 3px 20px;
-  box-shadow: 0px 3px 11px 0 #000;
-  background-image: linear-gradient(to top, #1D612F, #36943F);
-  background-color: #409C4F;
-
-  &:hover, &:active{
-    border:1px solid #5D7FBC;
-    color: #fff;
-    background-color: #97A8C7;
-  }
-}
-
-// Fancy iOS8 Checkbox
-input.fancy[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-
-  &:disabled{
-    &+ div {
-      opacity: 0.8;
-      background-image: linear-gradient(90deg, #add5ac 50%, transparent 50%);
-    }
-
-    &:checked + div {
-      border: 2px solid #add5ac;
-    }
-  }
-
-  &:checked + div {
-    padding-left: 1em; width: 1em;
-    background-position: 0 0;
-    border: 2px solid #64bd63;
-  }
-
-  &+ div {
-    cursor: pointer;
-    display: inline-block;
-    vertical-align: middle;
-    width: 2em;	height: 1em;
-    border: 2px solid rgba(0,0,0,.3);
-    border-radius: 999px;
-    background: white;
-    background-image: linear-gradient(90deg, #64bd63 50%, transparent 50%);
-    background-size: 200% 100%;
-    background-position: 100% 0;
-    background-origin: border-box;
-    background-clip: border-box;
-    overflow: hidden;
-    transition-duration: .2s;
-    transition-property: padding, width, background-position, text-indent;
-    font-size: 112%; /* change this and see how they adjust! */
-
-    &:before {
-      content: ' ';
-      float: left;
-      width: 1.65em; height: 1.65em;
-      margin: -.1em;
-      border: 1px solid rgba(0,0,0,.35);
-      border-radius: inherit;
-      background: white;
-      background-color: white;
-      box-shadow: 0 .1em .1em .1em hsla(0,0%,100%,.8) inset,
-                  0 0 .5em rgba(0,0,0,.3);
-      color: white;
-      text-shadow: 0 -1px 1px rgba(0,0,0,.3);
-      text-indent: -2.5em;
-    }
-  }
-
-  &:active + div:before {
-    background-color: #eee;
-  }
-
-  &:focus + div {
-    box-shadow: 0 .1em .1em rgba(0,0,0,.2) inset,
-                0 .45em 0 .1em rgba(0,0,0,.05) inset,
-                0 0 .4em 1px rgba(255,0,0,.5);
-  }
-
-  &+ div:before, &+ div:after {
-    font: bold 60%/1.9 sans-serif;
-    text-transform: uppercase;
-  }
-
-  &+ div:after {
-    content: ' ';
-    float: left;
-    text-indent: .5em;
-    color: rgba(0,0,0,.45);
-    text-shadow: none;
-  }
 }
 
 // Export wait message =========================================================
@@ -684,7 +601,7 @@ div.overlay-window {
 
     aside {
       font-size: 0.9em;
-      margin-left: 1em;
+      text-indent: 2em;
     }
 
     fieldset {
@@ -693,7 +610,7 @@ div.overlay-window {
         font-size: 1.2em;
       }
 
-      &> div {
+      &> div.field-wrapper {
         margin-bottom: 3em;
         &:hover .rangeslider {
           z-index: 1 !important;

@@ -256,7 +256,9 @@ module.exports = function(context) {
     mainWindow.editorPaperScope.fileChanged();
   }
 
-  // Bind the buttons on the window.
+  /**
+   * Bind the buttons on the window.
+   */
   function bindButtons() {
     $('button', context).click(function() {
       switch(this.name) {
@@ -298,14 +300,14 @@ module.exports = function(context) {
 
     // Bind ESC key exit.
     // TODO: Build this off data attr global bind thing.
-    $(window).keydown(function(e){
+    $(context).keydown(function(e){
       if (e.keyCode === 27) { // Global escape key exit window
         $('button[name=cancel]', context).click();
       }
     });
 
     // Bind special action on outline checkbox.
-    $('input[name=outline]').change(function() {
+    $('input[name=outline]', context).change(function() {
       if ($(this).prop('checked')) {
         if (autotrace.settings.posterize === '5') {
           autotrace.settings.posterize = 4;
@@ -318,24 +320,6 @@ module.exports = function(context) {
     });
   }
 
-  // Init after build event.
-  autotrace.init = function() {
-    bindSettings();
-    bindButtons();
-    setupWebview();
-  };
-
-  // Window show event.
-  autotrace.show = function() {
-    // Apply given preset settings.
-    applySettings(_.extend({},
-      autotrace.defaults,
-      autotrace.presets[autotrace.preset]
-    ));
-
-    // Default to 1x.
-    $('button[name=clone-1]').click();
-  };
 
   // Trigger the normal trace render update.
   autotrace.renderUpdate = function () {
@@ -356,12 +340,37 @@ module.exports = function(context) {
     $loadingBar.css('opacity', 0);
   }
 
-  // Window hide event.
+  /**
+  * Window initialization callback, triggered on window import.
+  */
+  autotrace.init = function() {
+    bindSettings();
+    bindButtons();
+    setupWebview();
+  };
+
+  /**
+  * Window show event callback, triggered on window show.
+  */
+  autotrace.show = function() {
+    // Apply given preset settings.
+    applySettings(_.extend({},
+      autotrace.defaults,
+      autotrace.presets[autotrace.preset]
+    ));
+
+    // Default to 1x.
+    $('button[name=clone-1]', context).click();
+  };
+
+  /**
+   * Window hide event callback, triggered on window close.
+   */
   autotrace.hide = function() {
     if (autotrace.autoTraceLoaded) {
       // Cleanup the window.
       autotrace.$webview.send.cleanup();
-      $('div.trace-preview img.trace').remove();
+      $('div.trace-preview img.trace', context).remove();
 
       autotrace.renderUpdateRunning = false;
       autotrace.imageInitLoaded = false;
@@ -423,7 +432,7 @@ module.exports = function(context) {
 
     // Settings sidebar
     var prevHeight = $('.sidebar .preview', context).height();
-    $('.sidebar .settings').css({
+    $('.sidebar .settings', context).css({
       height: $atWindow.height() - prevHeight - 80,
     });
   };
