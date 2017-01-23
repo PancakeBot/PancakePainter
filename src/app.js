@@ -402,15 +402,11 @@ function bindControls() {
         mainWindow.overlay.windows.export.pickFile(function(filePath) {
           if (!filePath) return; // Cancelled
 
-          // Verify file extension
-          if (filePath.split('.').pop().toLowerCase() !== 'gcode') {
-            filePath += '.gcode';
-          }
-
-          mainWindow.overlay.toggleWindow('overlay', true);
+          mainWindow.overlay.windows.export.filePath = filePath;
+          mainWindow.overlay.toggleWindow('export', true);
         });
-
         break;
+
       case 'file.saveas':
         app.currentFile.name = "";
         /* falls through */
