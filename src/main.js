@@ -122,7 +122,11 @@ function settingsInit() {
       }
 
       this.save(); // Resave when we're done loading.
-    }
+    },
+    reset: function() {
+      this.clear();
+      this.load();
+    },
   };
 
   app.settings.load();
