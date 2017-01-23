@@ -362,6 +362,35 @@ module.exports = function(paper) {
 
   tool.onKeyDown = function (event) {
     if (paper.selectRect) {
+
+      // Nudge selected objects.
+      if (['up', 'down', 'left', 'right'].indexOf(event.key) !== -1) {
+        var adjust = [0, 0];
+        var amount = event.modifiers.shift ? 50 : 10;
+        switch (event.key) {
+          case 'up':
+            adjust[1] = -amount;
+            break;
+          case 'down':
+            adjust[1] = amount;
+            break;
+          case 'left':
+            adjust[0] = -amount;
+            break;
+          case 'right':
+            adjust[0] = amount;
+            break;
+        }
+
+        // Actually move by adjusted amount.
+        paper.selectRect.translate(adjust);
+        _.each(paper.selectRect.ppaths, function(path) {
+          path.translate(adjust);
+        });
+
+        paper.fileChanged();
+      }
+
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
         _.each(paper.selectRect.ppaths, function(path){
