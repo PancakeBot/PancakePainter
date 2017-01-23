@@ -599,6 +599,7 @@ div.overlay-window {
     padding-top: 3.5em;
     box-sizing: border-box;
 
+
     aside {
       font-size: 0.9em;
       text-indent: 2em;
@@ -624,11 +625,6 @@ div.overlay-window {
 
     .rangeslider {
       margin: 1em 0;
-      z-index: -1;
-
-      &:hover {
-        z-index: 1;
-      }
 
       .rangeslider__fill {
         background-color: orange;

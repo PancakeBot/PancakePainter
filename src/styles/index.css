@@ -649,10 +649,7 @@ div.overlay-window {
       div.overlay-window .overlay-content fieldset > div.field-wrapper label {
         font-weight: bold; }
     div.overlay-window .overlay-content .rangeslider {
-      margin: 1em 0;
-      z-index: -1; }
-      div.overlay-window .overlay-content .rangeslider:hover {
-        z-index: 1; }
+      margin: 1em 0; }
       div.overlay-window .overlay-content .rangeslider .rangeslider__fill {
         background-color: orange; }
     div.overlay-window .overlay-content b {
