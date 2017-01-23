@@ -22,7 +22,7 @@ module.exports = function(paper) {
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
   var lastScaleRatio = 1;
-  var segment, path, selectChangeOnly;
+  var segment, path, selectChangeOnly, marquee;
   paper.imageTraceMode = false;
 
   // Externalize deseletion
@@ -152,6 +152,15 @@ module.exports = function(paper) {
       if (!event.modifiers.shift) {
         paper.deselect();
       }
+
+      // Not selecting anything, create marquee!
+      marquee = new Path.Rectangle({
+        point: event.point,
+        size: [1, 1],
+        strokeColor: 'white',
+        strokeWidth: 3,
+        dashArray: [10, 4],
+      });
       return;
     }
 
@@ -233,6 +242,15 @@ module.exports = function(paper) {
   };
 
   tool.onMouseDrag = function(event) {
+
+    // Marquee select sizing.
+    if (marquee) {
+      marquee.segments[3].point.y = event.point.y;
+      marquee.segments[2].point = event.point;
+      marquee.segments[1].point.x = event.point.x;
+      return;
+    }
+
     if (event.modifiers.shift) return;
     if (selectionRectangleScale !== null) {
       // Path scale adjustment
@@ -317,6 +335,23 @@ module.exports = function(paper) {
   tool.onMouseUp = function() {
     selectionRectangleScale = null;
     selectionRectangleRotation = null;
+
+    // Completing marquee selection.
+    if (marquee) {
+      var selectPaths = [];
+      var selectBounds = marquee.bounds;
+      marquee.remove();
+      marquee = null;
+
+      _.each(paper.mainLayer.children, function(path) {
+        if (path.isInside(selectBounds)) {
+          selectPaths.push(path);
+        }
+      });
+
+      tool.selectAll(selectPaths);
+      return;
+    }
 
     // If we have a mouse up with either of these, the file has changed!
     if ((path || segment) && !selectChangeOnly) {
