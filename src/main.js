@@ -85,7 +85,7 @@ function settingsInit() {
       lastFile: '',
       flatten: 2,          // Flatten curve value (smaller value = more points)
       shutoff: 25,          // Remaining line length threshold for pump shutoff
-      startwait: 600,       // Time to wait for batter flow begin
+      startwait: 350,       // Time to wait for batter flow begin
       endwait: 250,         // Time to wait for batter flow at end of line
       changewait: 15,       // Number of seconds to wait between shade changes.
       botspeed: 70,         // Locked stepper speed percentage written to GCODE
