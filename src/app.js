@@ -524,7 +524,7 @@ function bindControls() {
   }));
 
   // Input based Settings management I/O.
-  $('.settings-managed').each(function(){
+  $('.settings-managed').each(function() {
     var key = this.id; // IDs required!
     var v = app.settings.v;
 
@@ -548,10 +548,7 @@ function bindControls() {
       }
 
       app.settings.save();
-
-      if ($('#overlay').is(':visible')) {
-        mainWindow.overlay.windows.export.setRenderSettings();
-      }
+      $(window).triggerHandler('settingsChanged');
     }).change();
 
     // Force default value on blur invalidation.
@@ -562,6 +559,37 @@ function bindControls() {
       }
     });
   });
+
+  // Add settings reset helper function.
+  mainWindow.resetSettings = function() {
+    var doReset = mainWindow.dialog({
+      t: 'MessageBox',
+      type: 'question',
+      message: i18n.t('settings.resetconfirm'),
+      detail: i18n.t('settings.resetconfirmdetail'),
+      buttons: [
+        i18n.t('common.button.cancel'),
+        i18n.t('settings.button.reset')
+      ]
+    });
+    if (doReset !== 0) {
+      // Clear the file, reload settings, push to elements.
+      app.settings.reset();
+      $('.settings-managed').each(function() {
+        $(this).val(app.settings.v[this.id]);
+        if (this.type === "checkbox") {
+          $(this).prop('checked', app.settings.v[this.id]);
+        } else {
+          $(this).val(app.settings.v[this.id]);
+        }
+      });
+      $('input[type="range"]')
+        .trigger('input')
+        .rangeslider('update', true);
+
+      $(window).triggerHandler('settingsChanged');
+    }
+  };
 }
 
 window.onbeforeunload = function() {
