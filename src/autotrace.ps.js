@@ -6,14 +6,16 @@
  * messages.
  */
  /* globals
-   window, paper, Layer, Group, Raster, view, project, Path, Point
+   window, paper, Color, Layer, Group, Raster, view, project, Path, Point
  */
 var _ = require('underscore');
+var $ = require('jquery');
 var jimp = require('jimp');
 var ipc = window.ipc = require('electron').ipcRenderer;
 var remote = require('electron').remote;
 var app = window.app = remote.app;
 var path = require('path');
+var pickColorMode = false;
 
 var autotrace = window.autotrace = {
   offset: 6, // Amount to offset paths for line conversion.
@@ -47,6 +49,10 @@ ipc.on('renderTrigger', function(event, settings) { /* jshint ignore:line */
     .then(function() {
       ipc.sendToHost('renderComplete', exportRenderData());
     });
+});
+
+ipc.on('pickColor', function(event, cancel) { /* jshint ignore:line */
+  toggleColorPickMode(!cancel);
 });
 
 ipc.on('cleanup', function() {
@@ -96,6 +102,12 @@ paper.svgLayer = svgLayer;
 _.each(['utils', 'autotrace'], function(helperName) {
   paper[helperName] = require('../helpers/helper.' + helperName)(paper);
 });
+
+// Set colorPickMode on/off.
+function toggleColorPickMode(toggle) {
+  pickColorMode = !!toggle;
+  $('canvas').toggleClass('color-pick', pickColorMode);
+}
 
 // Initialize the colors to snap to based on the pancake shades.
 paper.utils.snapColorSetup(app.constants.pancakeShades);
@@ -428,12 +440,24 @@ Native PaperScript Events ======================================================
 
 function onMouseMove(event) { /* jshint ignore:line */
   svgLayer.selected = false;
-  if (event.item && event.item.parent === svgLayer) {
+  if (event.item && event.item.parent === svgLayer && !pickColorMode) {
     event.item.selected = true;
   }
 }
 
 function onMouseDown(event) { /* jshint ignore:line */
+  // If picking a color, return it via IPC, cancel picking.
+  if (pickColorMode) {
+    var d = $('canvas')[0]
+             .getContext('2d')
+             .getImageData(event.point.x, event.point.y, 1, 1)
+             .data;
+    var c = new Color(d[0]/255, d[1]/255, d[2]/255);
+    ipc.sendToHost('colorPicked', c.toCSS(true));
+    toggleColorPickMode(false);
+    return;
+  }
+
   var hitResult = project.hitTest(event.point, {
     stroke: true,
     segments: true,

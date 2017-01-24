@@ -53,6 +53,10 @@ canvas#autotrace-preview {
   top: 0;
   width: 100%;
   height: 100%;
+
+  &.color-pick {
+    cursor: url('../images/cursor-eyedropper.png') 1 29, auto;
+  }
 }
 
 #autotrace {
@@ -159,6 +163,37 @@ canvas#autotrace-preview {
 
         label {
           font-weight: bold;
+        }
+
+        button[name=transparent-pick] {
+          width: 27px;
+          height: 26px;
+          background-image: url("../images/cursor-eyedropper.png");
+          background-size: 20px;
+          cursor: pointer;
+          border: 1px solid black;
+          background-color: beige;
+          background-position: center;
+          background-repeat: no-repeat;
+
+          &:hover {
+            border-color: red;
+            background-color: white;
+          }
+
+          &.active {
+            background-color: red;
+            outline: 1px dashed yellow;
+            box-shadow: 0 0 0 1px #EA3556;
+            animation: 1s animateBorder infinite;
+          }
+        }
+
+        @keyframes animateBorder {
+          to {
+            outline-color: #EA3556;
+            box-shadow: 0 0 0 6px yellow;
+          }
         }
 
         .posterize-selector {

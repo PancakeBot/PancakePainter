@@ -43,6 +43,7 @@ module.exports = function(context) {
     $webview: {}, // Placeholder for jQuery object of webview DOM.
     exportJSON: "", // Placeholder string for the exported JSON from renderer.
     svgLayerBounds: {}, // Placeholder for data transfer of bounds.
+    pickingColor: false, // True when picking a color from the canvas.
   };
 
   // Switch for detecting if a setting was changed by preset or by hand.
@@ -180,6 +181,13 @@ module.exports = function(context) {
         wv.send('loadTraceImage', autotrace.intermediary);
       },
 
+      pickColor: function(cancel) {
+        $('button[name=transparent-pick]', context)
+          .toggleClass('active', !cancel);
+        autotrace.pickingColor = !cancel;
+        wv.send('pickColor', cancel);
+      },
+
       cleanup: function() {
         wv.send('cleanup');
       }
@@ -201,6 +209,10 @@ module.exports = function(context) {
         case 'initLoaded':
           autotrace.imageInitLoaded = true;
           autotrace.renderUpdate(); // Run Initial render.
+          break;
+        case 'colorPicked':
+          $('input[name=transparent]', context).val(data).change();
+          autotrace.$webview.send.pickColor(true);
           break;
         case 'renderComplete':
           renderUpdateComplete();
@@ -279,7 +291,7 @@ module.exports = function(context) {
           break;
 
         case 'transparent-pick':
-          // TODO: add colorpicker
+          autotrace.$webview.send.pickColor();
           break;
 
         case 'clone-1':
@@ -302,7 +314,12 @@ module.exports = function(context) {
     // TODO: Build this off data attr global bind thing.
     $(context).keydown(function(e){
       if (e.keyCode === 27) { // Global escape key exit window
-        $('button[name=cancel]', context).click();
+        if (autotrace.pickingColor) {
+          // Cancel picking color if escape pressed while picking.
+          autotrace.$webview.send.pickColor(true);
+        } else {
+          $('button[name=cancel]', context).click();
+        }
       }
     });
 
