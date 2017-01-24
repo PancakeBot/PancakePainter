@@ -284,6 +284,11 @@ function renderFillsVector() {
             svgLayer.removeChildren();
             svgLayer.addChildren(tempLayer.children);
 
+            // Force all paths back into apply their matrices.
+            _.each(svgLayer.children, function(path) {
+              path.applyMatrix = true;
+            });
+
             // Normalize & recolor the final trace.
             normalizeSVG();
 
