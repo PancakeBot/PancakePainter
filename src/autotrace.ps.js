@@ -423,6 +423,11 @@ function normalizeSVG(layer) {
   }
   paper.utils.autoColor(layer, limit, autotrace.settings.outline);
 
+  // Force all paths back into apply their matrices.
+  _.each(svgLayer.children, function(path) {
+    path.applyMatrix = true;
+  });
+
   paper.renderPreviewRaster();
 }
 
