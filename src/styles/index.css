@@ -45,19 +45,26 @@ canvas#autotrace-preview {
     position: absolute;
     right: 4em;
     top: 8px; }
+    #autotrace .overlay-title .presets label {
+      position: relative;
+      top: -23px; }
     #autotrace .overlay-title .presets button {
       cursor: pointer;
       margin-right: 0.7em;
       background-size: cover;
       background-repeat: no-repeat;
-      width: 70px;
-      height: 35px;
-      border-radius: 13px;
-      box-shadow: #333 2px 2px 4px; }
+      width: 48px;
+      height: 44px;
+      border: 0 none;
+      background-color: transparent;
+      border-radius: 18px;
+      background-position: center; }
+      #autotrace .overlay-title .presets button:hover {
+        border: 1px solid red; }
     #autotrace .overlay-title .presets button[name=simple] {
-      background-image: url("../images/icon-autotrace-simple.png"); }
+      background-image: url("../images/icon-autotrace-simple.svg"); }
     #autotrace .overlay-title .presets button[name=complex] {
-      background-image: url("../images/icon-autotrace-complex.png"); }
+      background-image: url("../images/icon-autotrace-complex.svg"); }
   #autotrace .overlay-content {
     display: flex;
     position: relative;
@@ -150,13 +157,13 @@ canvas#autotrace-preview {
           #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select:hover {
             -webkit-filter: brightness(1.2) grayscale(0.5) opacity(0.9); }
           #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-1] {
-            background-image: url("../images/icon-autotrace-color-2.png"); }
+            background-image: url("../images/icon-autotrace-color-2.svg"); }
           #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-2] {
-            background-image: url("../images/icon-autotrace-color-3.png"); }
+            background-image: url("../images/icon-autotrace-color-3.svg"); }
           #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-3] {
-            background-image: url("../images/icon-autotrace-color-4.png"); }
+            background-image: url("../images/icon-autotrace-color-4.svg"); }
           #autotrace .overlay-content div.sidebar fieldset.settings .posterize-selector label.posterize-select[for=posterize-4] {
-            background-image: url("../images/icon-autotrace-color-5.png"); }
+            background-image: url("../images/icon-autotrace-color-5.svg"); }
       #autotrace .overlay-content div.sidebar fieldset.preview {
         height: 150px;
         overflow: visible; }
@@ -265,19 +272,21 @@ canvas#autotrace-preview {
       width: 85px; }
 
 .menu-item, .menu-open-button {
-  background: #ff0000;
   border-radius: 100%;
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   position: absolute;
   color: white;
   text-align: center;
-  line-height: 80px;
+  line-height: 65px;
   transform: translate3d(0, 0, 0);
-  transition: transform ease-out 200ms; }
+  transition: all ease-out 200ms; }
 
 .menu-open {
   display: none; }
+
+.menu-item {
+  top: 8px; }
 
 .menu {
   box-sizing: border-box;
@@ -305,17 +314,21 @@ canvas#autotrace-preview {
     display: inline-block;
     width: 100%;
     height: 100%;
-    background-size: 77px;
-    background-position: 2px 5px;
-    background-repeat: no-repeat; }
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: all ease-out 200ms; }
     .menu-item i.manual {
-      background-image: url("../images/icon-manual.png"); }
+      background-image: url("../images/icon-manual.svg"); }
     .menu-item i.simple {
-      background-image: url("../images/icon-autotrace-simple.png"); }
+      background-image: url("../images/icon-autotrace-simple.svg"); }
     .menu-item i.complex {
-      background-image: url("../images/icon-autotrace-complex.png"); }
+      background-image: url("../images/icon-autotrace-complex.svg"); }
 
 .menu-open-button {
+  width: 80px;
+  height: 80px;
+  background-color: transparent;
   background-position: -1px;
   background-image: url("../images/icon-import.png");
   background-size: 160px;
@@ -334,16 +347,27 @@ canvas#autotrace-preview {
   transform: scale(0.8, 0.8) translate3d(0, 0, 0); }
 
 .menu-open:checked ~ .menu-item {
+  width: 80px;
+  height: 80px;
+  background: #ff0000;
   transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33); }
   .menu-open:checked ~ .menu-item:nth-child(3) {
     transition-duration: 160ms;
-    transform: translate3d(91.54964px, 69.59644px, 0); }
+    transform: translate3d(99.04027px, 67.7571px, 0); }
   .menu-open:checked ~ .menu-item:nth-child(4) {
     transition-duration: 240ms;
-    transform: translate3d(0.09158px, 114.99996px, 0); }
+    transform: translate3d(0.09556px, 119.99996px, 0); }
   .menu-open:checked ~ .menu-item:nth-child(5) {
     transition-duration: 320ms;
-    transform: translate3d(-91.43868px, 69.74216px, 0); }
+    transform: translate3d(-98.93223px, 67.91475px, 0); }
+  .menu-open:checked ~ .menu-item:hover {
+    margin-top: -20px;
+    margin-left: -20px;
+    width: 120px;
+    height: 120px;
+    background: white; }
+    .menu-open:checked ~ .menu-item:hover i {
+      background-size: 87%; }
 
 .spin-loader {
   margin: 60px auto;

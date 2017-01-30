@@ -73,22 +73,33 @@ canvas#autotrace-preview {
       right: 4em;
       top: 8px;
 
+      label {
+        position: relative;
+        top: -23px;
+      }
+
       button {
         cursor: pointer;
         margin-right: 0.7em;
         background-size: cover;
         background-repeat: no-repeat;
-        width: 70px;
-        height: 35px;
-        border-radius: 13px;
-        box-shadow: #333 2px 2px 4px;
+        width: 48px;
+        height: 44px;
+        border: 0 none;
+        background-color: transparent;
+        border-radius: 18px;
+        background-position: center;
+
+        &:hover {
+          border: 1px solid red;
+        }
       }
 
       button[name=simple] {
-        background-image: url('../images/icon-autotrace-simple.png');
+        background-image: url('../images/icon-autotrace-simple.svg');
       }
       button[name=complex] {
-        background-image: url('../images/icon-autotrace-complex.png');
+        background-image: url('../images/icon-autotrace-complex.svg');
       }
     }
   }
@@ -227,10 +238,10 @@ canvas#autotrace-preview {
             &:hover {
               -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
             }
-            &[for=posterize-1] {background-image: url('../images/icon-autotrace-color-2.png')};
-            &[for=posterize-2] {background-image: url('../images/icon-autotrace-color-3.png')};
-            &[for=posterize-3] {background-image: url('../images/icon-autotrace-color-4.png')};
-            &[for=posterize-4] {background-image: url('../images/icon-autotrace-color-5.png')};
+            &[for=posterize-1] {background-image: url('../images/icon-autotrace-color-2.svg')};
+            &[for=posterize-2] {background-image: url('../images/icon-autotrace-color-3.svg')};
+            &[for=posterize-3] {background-image: url('../images/icon-autotrace-color-4.svg')};
+            &[for=posterize-4] {background-image: url('../images/icon-autotrace-color-5.svg')};
           }
 
         }

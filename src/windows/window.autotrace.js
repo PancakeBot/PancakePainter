@@ -337,7 +337,6 @@ module.exports = function(context) {
     });
   }
 
-
   // Trigger the normal trace render update.
   autotrace.renderUpdate = function () {
     if (!autotrace.renderUpdateRunning &&
