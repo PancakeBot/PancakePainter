@@ -7,10 +7,12 @@
   },
   "common": {
     "done": "Done",
+    "loading": "Loading…",
     "complete": "Complete",
     "drawnote": "The design above will resemble the actual pancake once it has been flipped.",
     "button": {
       "cancel": "Cancel",
+      "import": "Place",
       "yes": "Yes",
       "no": "No"
     }
@@ -64,14 +66,75 @@
   },
   "import": {
     "title": "Import image for tracing…",
-    "files": "Web format tracing image"
+    "autotitle": {
+      "simple": "Import simple logo/cartoon image for tracing…",
+      "complex": "Import complex image/photo for tracing…"
+    },
+    "files": "Web format tracing image",
+    "err": {
+      "title": "Error opening image file for tracing",
+      "message": "There was a problem loading \"__file__\"",
+      "desc": "The error given was:\n\"__err__\"",
+      "button": "Choose Another File"
+    },
+    "auto": {
+      "title": "Automatic Trace",
+      "options": {
+        "manual": "Place image in background for manual tracing",
+        "simple": "Automatic trace for logos or cartoons",
+        "complex": "Automatic trace for complex art or photos"
+      },
+      "place": {
+        "title": "Placement options"
+      },
+      "settings": {
+        "title": "Settings",
+        "transparent": "Transparent color",
+        "transparent-pick": "Pick color from image",
+        "colors": "Shade Limit (1-4)",
+        "presets": {
+          "title": "Presets:",
+          "simple": "Logos/Cartoons",
+          "complex": "Photos/Complex art"
+        },
+        "types": {
+          "title": "Trace type",
+          "options": {
+            "mixed": {
+              "title": "Dynamic Lines/Fills",
+              "desc": "Good for logos and cartoons. Bad for photos or complex art."
+            },
+            "fills": {
+              "title": "Fills/shapes only",
+              "desc": "Better for photos and complex art. Bad for line art and cartoons."
+            },
+            "lines": {
+              "title": "Lines only",
+              "desc": "Good for simple line/coloring book art. Bad for cartoons, photos or complex art."
+            }
+          }
+        },
+        "preprocess": "Preprocessing",
+        "outline": "Outline fills in darker shade",
+        "invert": "Invert colors",
+        "contrast": "Contrast",
+        "brightness": "Brightness",
+        "blur": "Blur"
+      }
+    }
   },
   "export": {
     "title": "Export creation for printing…",
     "start": "Export",
     "wait": "Exporting, please wait…",
     "err" : "Error exporting \"__file__\", please report this issue with the problem project file.",
-    "note" : "Successfully exported \"__file__\" for printing."
+    "note" : "Successfully exported \"__file__\" for printing.",
+    "buttons": {
+      "cancel": "Cancel",
+      "reset": "Reset Settings",
+      "export": "Export to File",
+      "reselect": "Select a Different File"
+    }
   },
   "settings": {
     "done": "Done",
@@ -103,6 +166,10 @@
         "label": " dv/px",
         "title": "device pixels"
       },
+      "px": {
+        "label": "px",
+        "title": "pixels"
+      },
       "degrees": {
         "label": "°",
         "title": "degrees"
@@ -118,10 +185,13 @@
       "shutoffinfo": "The distance of travel before the end of a line that the pump should turn off ahead of, prevents line end drip increase. Larger distance means pump will shut off sooner.",
       "startwait": "Line start pump ON wait time:",
       "startwaitinfo": "The number of milliseconds to wait before we start moving at the beggining of a line once the pump has turned on. Correct value depends on batter viscosity and pump pressure.",
+      "mirrorexport": "Mirror export",
+      "mirrorexportinfo": "Mirror image before rendering GCODE, so pancake will appear correctly when flipped.",
       "endwait": "Line end pump OFF wait time:",
       "endwaitinfo": "The number of milliseconds to wait at the end of a line. Pump should have already shutoff early, this should ensure a clean line end. Correct value depends on batter viscosity and pump pressure.",
       "changewait": "Seconds between bottle/shade changes:",
       "changewaitinfo": "Amount of time the bot will wait between shade/color changes. Bot will remain parked during this time to allow cooking or bottle change.",
+      "linefillgroup": "Line Fill Options",
       "uselinefill": "Use diagonal line fill:",
       "uselinefillinfo": "If enabled, PancakePainter will use the diagonal line fill algorithm when creating GCODE to fill shapes, instead of the default shape fill algorithm.",
       "fillspacing": "Line fill spacing:",

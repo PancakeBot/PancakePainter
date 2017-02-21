@@ -1,0 +1,42 @@
+<div class="overlay-title">
+  <button name="done" data-i18n>settings.done</button>
+  <button name="reset" data-i18n>settings.reset</button>
+  <h2 data-i18n>settings.title</h2>
+</div>
+<div class="overlay-content">
+  <fieldset>
+    <legend data-i18n>settings.gcode.title</legend>
+
+    <div class="field-wrapper">
+      <label for="botspeed" data-i18n>settings.gcode.botspeed</label><b>00</b>
+      <input id="botspeed" class="settings-managed" data-unit="percent" type="range" min="25" default="70" max="100" step="1">
+      <aside data-i18n>settings.gcode.botspeedinfo</aside>
+    </div>
+
+    <div class="field-wrapper">
+      <label for="usecolorspeed" data-i18n>settings.gcode.usecolorspeed</label>
+      <input id="usecolorspeed" class="settings-managed fancy" type="checkbox">
+      <aside data-i18n>settings.gcode.usecolorspeedinfo</aside>
+    </div>
+
+    <div class="field-wrapper">
+      <label for="botspeedcolor1" data-i18n>settings.gcode.botspeedcolor1</label><b>00</b>
+      <input id="botspeedcolor1" class="settings-managed" data-unit="percent" type="range" min="25" default="100" max="100" step="1">
+    </div>
+
+    <div class="field-wrapper">
+      <label for="botspeedcolor2" data-i18n>settings.gcode.botspeedcolor2</label><b>00</b>
+      <input id="botspeedcolor2" class="settings-managed" data-unit="percent" type="range" min="25" default="80" max="100" step="1">
+    </div>
+
+    <div class="field-wrapper">
+      <label for="botspeedcolor3" data-i18n>settings.gcode.botspeedcolor3</label><b>00</b>
+      <input id="botspeedcolor3" class="settings-managed" data-unit="percent" type="range" min="25" default="80" max="100" step="1">
+    </div>
+
+    <div class="field-wrapper">
+      <label for="botspeedcolor4" data-i18n>settings.gcode.botspeedcolor4</label><b>00</b>
+      <input id="botspeedcolor4" class="settings-managed" data-unit="percent" type="range" min="25" default="50" max="100" step="1">
+    </div>
+  </fieldset>
+</div>

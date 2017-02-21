@@ -1,0 +1,37 @@
+Core: 
+- Speed up
+- Improve tracing quality
+- Bugs?!
+- Recognition of Circle and Ellipse pieces.
+- Addition of code to recognize lines, splines and circles even if there is
+  a lot of noise
+- Currently pictures have to fit completely into memory
+- New algorithm to work best with anti-aliased pictures
+- 3D recognition
+- Better list management, that means the current generation of lists is time
+  consuming and fragmentates the heap.
+- Outlines are traced two times that means that it could be faster and if we
+  trace and fit every outline only once we will not have the problems with
+  unwanted gaps anymore.
+- Better thinning algorithm like CAT (Chordal Axis Transformation)
+
+Input:
+- Migrate to new plug-in interface using glib(0.32.0)
+- Support of image libraries as freeimage, gdk-pixbuf or paintlib(0.32.0)
+
+Output:
+- Migrate to new plug-in interface using glib(0.32.0)
+- Output API abstraction(0.32.0)
+- New export formats like wmf, cdr, cmx, compressed pdf, compressed svg and
+  dxf with splines...
+
+Library and its clients:
+- Graphical user interface
+  -- For gnome/gtk+, frontline is under developing.
+     See http://autotrace.sourceforge.net/frontline
+  -- For KDE/Qt?
+
+Misc:
+- Gettextize(0.32.0)
+- Better documentations
+- Predefined parameter system(discussed as aop file, 0.32.0)

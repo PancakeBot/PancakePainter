@@ -1,0 +1,102 @@
+<div class="overlay-title">
+  <button name="cancel" class="x-close" data-i18n="[title]common.button.cancel">X</button>
+  <h2 data-i18n>export.title</h2>
+</div>
+<div class="overlay-content">
+  <aside class="loader" data-i18n="[title]common.loading">
+    <div class="bar-loader"></div>
+    <progress value="0" max="100"></progress>
+  </aside>
+  <webview id="simulator-webview" nodeintegration="true" disablewebsecurity="true" src="windows/window.export.webview.html"></webview>
+  <fieldset>
+    <legend data-i18n>settings.gcode.title</legend>
+
+    <div class="operations">
+      <button name="reset" class="fancy red" data-i18n>export.buttons.reset</button>
+      <button name="reselect" class="fancy orange" data-i18n>export.buttons.reselect</button>
+      <button name="export" class="fancy" data-i18n>export.buttons.export</button>
+    </div>
+
+    <div class="flex-wrapper">
+      <fieldset class="col">
+        <div class="field-wrapper">
+          <label for="shapefillwidth" data-i18n>settings.gcode.shapefillwidth</label><b>00</b>
+          <input id="shapefillwidth" class="settings-managed" data-unit="millimeters" type="range" min="1" default="3" max="11" step="0.1">
+          <aside data-i18n>settings.gcode.shapefillwidthinfo</aside>
+        </div>
+
+        <div class="field-wrapper">
+          <label for="shutoff" data-i18n>settings.gcode.shutoff</label><b>00</b>
+          <input id="shutoff" class="settings-managed" data-unit="pixels" type="range" min="0" default="25" max="200" step="1">
+          <aside data-i18n>settings.gcode.shutoffinfo</aside>
+        </div>
+
+        <div class="field-wrapper">
+          <label for="startwait" data-i18n>settings.gcode.startwait</label><b>00</b>
+          <input id="startwait" class="settings-managed" data-unit="milliseconds" type="range" min="0" default="350" max="2000" step="1">
+          <aside data-i18n>settings.gcode.startwaitinfo</aside>
+        </div>
+
+        <div class="field-wrapper">
+          <label for="endwait" data-i18n>settings.gcode.endwait</label><b>00</b>
+          <input id="endwait" class="settings-managed" data-unit="milliseconds" type="range" min="0" default="250" max="2000" step="1">
+          <aside data-i18n>settings.gcode.endwaitinfo</aside>
+        </div>
+
+        <div class="field-wrapper">
+          <label for="changewait" data-i18n>settings.gcode.changewait</label><b>00</b>
+          <input id="changewait" class="settings-managed" data-unit="seconds" type="range" min="0" default="15" max="200" step="1">
+          <aside data-i18n>settings.gcode.changewaitinfo</aside>
+        </div>
+      </fieldset>
+
+      <fieldset class="col">
+        <div class="field-wrapper">
+          <label for="mirrorexport" data-i18n>settings.gcode.mirrorexport</label>
+          <input id="mirrorexport" checked class="fancy" type="checkbox">
+          <aside data-i18n>settings.gcode.mirrorexportinfo</aside>
+        </div>
+
+        <div class="field-wrapper">
+          <label for="flatten" data-i18n>settings.gcode.flatten</label><b>00</b>
+          <input id="flatten" class="settings-managed" data-unit="pixels" type="range" min="1" default="2" max="50" step="1">
+          <aside data-i18n>settings.gcode.flatteninfo</aside>
+        </div>
+
+        <div class="field-wrapper">
+          <label for="uselinefill" data-i18n>settings.gcode.uselinefill</label>
+          <input id="uselinefill" class="settings-managed fancy" type="checkbox">
+          <aside data-i18n>settings.gcode.uselinefillinfo</aside>
+        </div>
+
+        <div class="field-wrapper">
+          <label for="useshortest" data-i18n>settings.gcode.useshortest</label>
+          <input id="useshortest" class="settings-managed fancy" type="checkbox">
+          <aside data-i18n>settings.gcode.useshortestinfo</aside>
+        </div>
+
+        <fieldset>
+          <legend data-i18n>settings.gcode.linefillgroup</legend>
+          <div class="field-wrapper">
+            <label for="fillspacing" data-i18n>settings.gcode.fillspacing</label><b>00</b>
+            <input id="fillspacing" class="settings-managed" data-unit="pixels" type="range" min="2" default="10" max="30" step="1">
+            <aside data-i18n>settings.gcode.fillspacinginfo</aside>
+          </div>
+
+          <div class="field-wrapper">
+            <label for="fillangle" data-i18n>settings.gcode.fillangle</label><b>00</b>
+            <input id="fillangle" class="settings-managed" data-unit="degrees" type="range" min="-180" default="23" max="180" step="1">
+            <aside data-i18n>settings.gcode.fillangleinfo</aside>
+          </div>
+
+          <div class="field-wrapper">
+            <label for="fillthresh" data-i18n>settings.gcode.fillthresh</label><b>00</b>
+            <input id="fillthresh" class="settings-managed" data-unit="pixels" type="range" min="0" max="100" default="27" step="1">
+            <aside data-i18n>settings.gcode.fillthreshinfo</aside>
+          </div>
+        </fieldset>
+      </fieldset>
+    </div>
+
+  </fieldset>
+</div>

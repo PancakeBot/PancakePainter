@@ -39,9 +39,39 @@ function start() {
 var mainWindow = null;
 
 /**
- * Initialize the settings & defaults
+ * Initialize the settings, constants & defaults
  */
 function settingsInit() {
+  // Global application constants (set and referenced from here only!)
+  // TODO: Gather more of these from around the app.
+  app.constants = {
+    pancakeShades: [
+      '#ffea7e',
+      '#e2bc15',
+      '#a6720e',
+      '#714a00'
+    ],
+    botSpeedMax: 6600, // Real world PancakeBot speed maximum.
+
+    // Real world measurement of the griddle maximum dimensions in MM
+    griddleSize: {
+      width: 507.5,
+      height: 267.7,
+    },
+
+    // Printable/drawable area in MM from furthest griddle edge.
+    printableArea: {
+      offset: {
+        left: 36.22,
+        top: 34.77,
+        right: 42, // Used exclusively for GCODE X offset
+      },
+      width: 443,
+      height: 210,
+    },
+  };
+
+  // Global user configurable settings.
   var settingsFile = appPath + 'settings.json';
   app.settings = {
     v: {}, // Values are saved to/from here
@@ -53,23 +83,23 @@ function settingsInit() {
         x: 'center'
       },
       lastFile: '',
-      flatten: 15,          // Flatten curve value (smaller value = more points)
-      shutoff: 20,          // Remaining line length threshold for pump shutoff
-      startwait: 450,       // Time to wait for batter flow begin
+      flatten: 2,          // Flatten curve value (smaller value = more points)
+      shutoff: 25,          // Remaining line length threshold for pump shutoff
+      startwait: 350,       // Time to wait for batter flow begin
       endwait: 250,         // Time to wait for batter flow at end of line
-      changewait: 35,       // Number of seconds to wait between shade changes.
+      changewait: 15,       // Number of seconds to wait between shade changes.
       botspeed: 70,         // Locked stepper speed percentage written to GCODE
       usecolorspeed: false, // Whether to use different speeds for colors.
       useshortest: true,   // Whether to travel sort the final layer.
-      botspeedcolor1: 70,   // Light speed.
-      botspeedcolor2: 70,   // Medium speed.
-      botspeedcolor3: 70,   // Medium Dark speed.
-      botspeedcolor4: 70,   // Dark speed.
+      botspeedcolor1: 100,  // Light speed.
+      botspeedcolor2: 80,   // Medium speed.
+      botspeedcolor3: 80,   // Medium Dark speed.
+      botspeedcolor4: 50,   // Dark speed.
       uselinefill: false,   // Whether to use line fill over shape fill.
-      fillspacing: 15,      // Space between each trace fill line
+      fillspacing: 10,      // Space between each trace fill line
       fillangle: 23,        // Angle of line for trace fill
       fillthresh: 27,       // Threshold to group zig zags
-      shapefillwidth: 4     // Effective fill space.
+      shapefillwidth: 3     // Effective fill space.
     },
     clear: function() {
       fs.removeSync(settingsFile);
@@ -93,7 +123,11 @@ function settingsInit() {
       }
 
       this.save(); // Resave when we're done loading.
-    }
+    },
+    reset: function() {
+      this.clear();
+      this.load();
+    },
   };
 
   app.settings.load();
@@ -124,7 +158,7 @@ function windowInit() {
       sendMissingTo: 'fallback|current|all', // Send missing values to
       lng: 'en-US'
     }, function(){
-
+      // Setup main window.
       var windowSettings = {
         minWidth: 680,
         minHeight: 420,

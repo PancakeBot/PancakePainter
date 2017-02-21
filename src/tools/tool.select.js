@@ -21,7 +21,8 @@ module.exports = function(paper) {
   paper.selectRectLast = null;
   var selectionRectangleScale = null;
   var selectionRectangleRotation = null;
-  var segment, path, selectChangeOnly;
+  var lastScaleRatio = 1;
+  var segment, path, selectChangeOnly, marquee;
   paper.imageTraceMode = false;
 
   // Externalize deseletion
@@ -151,6 +152,15 @@ module.exports = function(paper) {
       if (!event.modifiers.shift) {
         paper.deselect();
       }
+
+      // Not selecting anything, create marquee!
+      marquee = new Path.Rectangle({
+        point: event.point,
+        size: [1, 1],
+        strokeColor: 'white',
+        strokeWidth: 3,
+        dashArray: [10, 4],
+      });
       return;
     }
 
@@ -180,6 +190,7 @@ module.exports = function(paper) {
         // Scale hitbox
         var center = event.point.subtract(paper.selectRect.bounds.center);
         selectionRectangleScale = center.length / path.scaling.x;
+        lastScaleRatio = 1;
       }
     }
 
@@ -231,24 +242,40 @@ module.exports = function(paper) {
   };
 
   tool.onMouseDrag = function(event) {
+
+    // Marquee select sizing.
+    if (marquee) {
+      marquee.segments[3].point.y = event.point.y;
+      marquee.segments[2].point = event.point;
+      marquee.segments[1].point.x = event.point.x;
+      return;
+    }
+
     if (event.modifiers.shift) return;
     if (selectionRectangleScale !== null) {
       // Path scale adjustment
       var centerDiff = event.point.subtract(paper.selectRect.bounds.center);
       var ratio = centerDiff.length / selectionRectangleScale;
-      var scaling = new Point(ratio, ratio);
-      paper.selectRect.scaling = scaling;
+      paper.selectRect.scale(1/lastScaleRatio, paper.selectRect.bounds.center);
+      paper.selectRect.scale(ratio, paper.selectRect.bounds.center);
+
       _.each(paper.selectRect.ppaths, function(path){
-        path.scaling = scaling;
+        path.scale(1/lastScaleRatio, paper.selectRect.bounds.center);
+        path.scale(ratio, paper.selectRect.bounds.center);
       });
 
+      lastScaleRatio = ratio;
       return;
     } else if (selectionRectangleRotation !== null) {
       // Path rotation adjustment
       var rotation = event.point.subtract(paper.selectRect.pivot).angle + 90;
-      paper.selectRect.rotation = rotation;
+      var lastRotation = selectionRectangleRotation;
+      selectionRectangleRotation = rotation;
+      rotation = rotation - lastRotation;
+
+      paper.selectRect.rotate(rotation);
       _.each(paper.selectRect.ppaths, function(path){
-        path.rotation = rotation;
+        path.rotate(rotation, paper.selectRect.pivot);
       });
       return;
     }
@@ -309,6 +336,23 @@ module.exports = function(paper) {
     selectionRectangleScale = null;
     selectionRectangleRotation = null;
 
+    // Completing marquee selection.
+    if (marquee) {
+      var selectPaths = [];
+      var selectBounds = marquee.bounds;
+      marquee.remove();
+      marquee = null;
+
+      _.each(paper.mainLayer.children, function(path) {
+        if (path.isInside(selectBounds)) {
+          selectPaths.push(path);
+        }
+      });
+
+      tool.selectAll(selectPaths);
+      return;
+    }
+
     // If we have a mouse up with either of these, the file has changed!
     if ((path || segment) && !selectChangeOnly) {
       paper.cleanPath(path);
@@ -318,6 +362,35 @@ module.exports = function(paper) {
 
   tool.onKeyDown = function (event) {
     if (paper.selectRect) {
+
+      // Nudge selected objects.
+      if (['up', 'down', 'left', 'right'].indexOf(event.key) !== -1) {
+        var adjust = [0, 0];
+        var amount = event.modifiers.shift ? 50 : 10;
+        switch (event.key) {
+          case 'up':
+            adjust[1] = -amount;
+            break;
+          case 'down':
+            adjust[1] = amount;
+            break;
+          case 'left':
+            adjust[0] = -amount;
+            break;
+          case 'right':
+            adjust[0] = amount;
+            break;
+        }
+
+        // Actually move by adjusted amount.
+        paper.selectRect.translate(adjust);
+        _.each(paper.selectRect.ppaths, function(path) {
+          path.translate(adjust);
+        });
+
+        paper.fileChanged();
+      }
+
       // Delete a selected path
       if (event.key === 'delete' || event.key === 'backspace') {
         _.each(paper.selectRect.ppaths, function(path){
@@ -497,11 +570,16 @@ module.exports = function(paper) {
   }
 
   // Select all top level items.
-  tool.selectAll = function() {
+  tool.selectAll = function(items) {
     paper.deselect();
 
+    // Use mainLayer or passed items argument.
+    if (typeof items !== 'object') {
+      items = paper.mainLayer.children;
+    }
+
     var paths = [];
-    _.each(project.activeLayer.children, function(path){
+    _.each(items, function(path){
       if (path instanceof paper.Path || path instanceof paper.CompoundPath) {
         paths.push(path);
       }

@@ -3,21 +3,32 @@
  * paths into GCODE compatible with the PancakeBot.
  **/
 "use strict";
-/*globals _ */
+/*globals _, paper, app */
 var ClipperLib = require('./libs/clipper');
 var jscut = require('./libs/jscut_custom')(ClipperLib);
 
-module.exports = function(config) {
-  var paper = config.paper;
-  var Point = paper.Point;
-  var CompoundPath = paper.CompoundPath;
-  var returnRenderer = {}; // The function/object returned by this module
+module.exports = function() {
+  // Module level scope for config data passed when code generated
+  var config = {};
 
-  // Create gcode from current project
-  returnRenderer = function generateGcode(noMirror) {
-    var workLayer = paper.project.getActiveLayer().clone();
+  /**
+   * Create gcode from a given layer
+   * @param  {Paper.Layer} sourceLayer
+   *   Layer to clone and greate GCODE from.
+   * @param  {Object} settings
+   *   Configuration/settings for the GCODE render.
+   * @return {string}
+   *   PancakeBot standard format GCODE generated from the paths on the layer.
+   */
+  var returnRenderer = function generateGcode(sourceLayer, settings) {
+    if (settings) config = settings;
+
+    var workLayer = sourceLayer.clone();
     var out = getCodeHeader();
-    config.noMirror = noMirror;
+    workLayer.activate();
+
+    // Empty Path Cleanup.
+    cleanAllPaths(workLayer);
 
     // Convert all fill paths in the work layer into fills.
     // Must use a fillList because removing paths changes the children list
@@ -28,7 +39,6 @@ module.exports = function(config) {
       }
     });
 
-    workLayer.activate();
     _.each(fillList, function(path){
       if (config.useLineFill) {
         paper.fillTracePath(path, config);
@@ -37,7 +47,6 @@ module.exports = function(config) {
       }
     });
 
-    var numPaths = workLayer.children.length;
     var colorGroups = [];
 
     // Flatten all compound paths into single paths.
@@ -48,6 +57,8 @@ module.exports = function(config) {
 
     // Travel sort the work layer to get everything in the right order.
     travelSortLayer(workLayer);
+
+    var numPaths = workLayer.children.length;
 
     // Move through each path on the worklayer, and group them in reverse order
     // by color shade, 0-3, darker first (indicated in the path data.color).
@@ -75,13 +86,16 @@ module.exports = function(config) {
           console.log('Bad path!', path);
         }
         pathCount++;
+
+        if (config.debug) console.log(pathCount + '/' + numPaths, path.data);
         out += [
           gc(
             'note',
-            'Starting path #' + pathCount + '/' + numPaths + ', segments: ' +
-            path.segments.length + ', length: ' + Math.round(path.length) +
-            ', color #' + (path.data.color + 1) +
-            ', type: ' + (path.data.fill ? 'fill' : 'stroke')
+            'Starting ' + (path.data.fill ? 'fill' : 'stroke') + ' path #' +
+            pathCount + '/' + numPaths + ', segments: ' + path.segments.length +
+            ', length: ' + Math.round(path.length) + ', color #' +
+            (path.data.color + 1) +
+            (path.data.toosmall ? ', too small to fill, outline only' : '')
           ),
           renderPath(path),
           gc(
@@ -213,8 +227,10 @@ module.exports = function(config) {
 
   // Generate Color change
   function getCodeColorChange(id) {
+    var shades = ["Light", "Medium", "Medium dark", "Dark"];
+
     return [
-      gc('note', 'Switching Color to: ' + paper.pancakeShadeNames[id]),
+      gc('note', 'Switching Color to: ' + shades[id]),
       gc('wait', 1000),
       gc('home'),
       gc('off'),
@@ -281,6 +297,26 @@ module.exports = function(config) {
     });
   }
 
+  // Quick cleanup helper to get rid of unexpected cruft that can break things.
+  function cleanAllPaths(layer) {
+    // Move through and delete anything useless or out of the ordinary.
+    var items = _.extend([], layer.children);
+    _.each(items, function(item) {
+      if (item.children) {
+        if (item.children.length === 0) {
+          if (config.debug) console.log('child culling', item);
+          item.remove();
+          return;
+        }
+      } else if (!item.length || item.segments.length < 2) {
+        if (config.debug) console.log('length culling', item);
+        item.remove();
+        return;
+      }
+
+    });
+  }
+
   // Convert an input Paper.js coordinate to an output bot mapped coordinate
   function reMap(p) {
     if (!p) {
@@ -296,7 +332,7 @@ module.exports = function(config) {
       t: pa.t
     };
 
-    var b = paper.view.bounds;
+    var b = config.sourceBounds;
     return {
       x: Math.round(
         map(b.width - (p.x - b.x), 0, b.width, pa.x, pa.l) * 1000
@@ -367,7 +403,7 @@ module.exports = function(config) {
       // Use the shortest distance between paths for order?
       if (config.useShortest) {
         while(group.length) {
-          var lastPoint = new Point(0, 0); // Last point, start at the corner.
+          var lastPoint = new paper.Point(0, 0); // Last point, start at corner.
           var lastPath = null; // The last path worked on, for 0 dist paths.
 
           var c = closestPointInGroup(lastPoint, group);
@@ -466,19 +502,8 @@ module.exports = function(config) {
         });
       });
     } else { // Single path
-      // With no path length, we're done.
-      if (p.length) {
-        p.remove();
-        inPath.remove();
-        return;
-      }
-
       geometries[0] = [];
-      if (p.length) {
-        p.remove();
-        inPath.remove();
-        return;
-      }
+
       p.flatten(config.flattenResolution);
       _.each(p.segments, function(s){
         geometries[0].push({
@@ -509,12 +534,15 @@ module.exports = function(config) {
     // If there's a result, create a compound path for it.
     if (cutPaths) {
       var pathString = jscut.cam.toSvgPathData(cutPaths, pxPerInch);
-      var camPath = new CompoundPath(pathString);
+      var camPath = new paper.CompoundPath(pathString);
       camPath.data = _.extend({}, inPath.data);
       camPath.data.campath = true;
       camPath.bringToFront();
       camPath.scale(1, -1); // Flip vertically (clipper issue)
-      camPath.position = new Point(camPath.position.x, -camPath.position.y);
+      camPath.position = new paper.Point(
+        camPath.position.x,
+        -camPath.position.y
+      );
 
       if (!options.debug) {
         inPath.remove();
@@ -527,8 +555,9 @@ module.exports = function(config) {
 
       paper.view.update();
     } else {
-      // Too small to be filled.
-      if (!options.debug) inPath.remove();
+      // Too small to be filled, leave the inPath untouched to allow it to
+      // become an unfilled closed outline path.
+      inPath.data.toosmall = true;
       return null;
     }
   }

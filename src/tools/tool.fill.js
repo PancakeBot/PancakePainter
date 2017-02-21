@@ -94,12 +94,13 @@ module.exports = function(paper) {
       }
     }
 
+    var rast, rastPt;
+    var boundaryPoints = [];
     try {
-      var rast = cLayer.rasterize(50);
+      rast = cLayer.rasterize(50);
       var w = rast.width; var h = rast.height;
       var pix = rast.getImageData(new Rectangle(0, 0, w, h)).data;
       var grid = ndarray(new Int8Array(pix.length/4), [w-1, h-1]);
-      var boundaryPoints = [];
 
       // Move through all RGBA pixel data to generate a 1bit map of visible pix.
       for (var p = 0; p < pix.length; p+= 4) {
@@ -109,7 +110,7 @@ module.exports = function(paper) {
         }
       }
 
-      var rastPt = rast.globalToLocal(point);
+      rastPt = rast.globalToLocal(point);
       // Offset for centered matrix position and trunc floats.
       rastPt.x = parseInt(rastPt.x + w/2);
       rastPt.y = parseInt(rastPt.y + h/2);

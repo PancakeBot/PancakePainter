@@ -1,0 +1,102 @@
+<div class="overlay-title">
+  <button name="cancel" class="x-close" data-i18n="[title]common.button.cancel">X</button>
+  <h2 data-i18n>import.auto.title</h2>
+
+  <div class="presets">
+    <label data-i18n>import.auto.settings.presets.title</label>
+    <button name="simple" data-i18n="[title]import.auto.settings.presets.simple"></button>
+    <button name="complex" data-i18n="[title]import.auto.settings.presets.complex"></button>
+  </div>
+</div>
+
+<div class="overlay-content">
+  <aside class="loader" data-i18n="[title]common.loading">
+    <div class="bar-loader"></div>
+    <progress value="0" max="100"></progress>
+  </aside>
+  <webview id="autotrace-webview" nodeintegration="true" disablewebsecurity="true" src="windows/window.autotrace.webview.html"></webview>
+
+  <div class="sidebar">
+    <fieldset class="settings">
+      <legend data-i18n>import.auto.settings.title</legend>
+      <div class="wrapper">
+        <div>
+          <label data-i18n>import.auto.settings.types.title</label>
+          <select name="tracetype">
+            <option value="mixed" selected data-i18n>import.auto.settings.types.options.mixed.title</option>
+            <option value="fills" data-i18n>import.auto.settings.types.options.fills.title</option>
+            <option value="lines" data-i18n>import.auto.settings.types.options.lines.title</option>
+          </select>
+          <aside data-i18n>import.auto.settings.types.options.mixed.desc</aside>
+        </div>
+
+        <div class="posterize-selector">
+          <label data-i18n>import.auto.settings.colors</label>
+          <div>
+            <input id="posterize-1" type="radio" checked name="posterize" value="2">
+            <label class="posterize-select" for="posterize-1" title="1 shade"></label>
+            <input id="posterize-2" type="radio" name="posterize" value="3">
+            <label class="posterize-select" for="posterize-2" title="2 shades"></label>
+            <input id="posterize-3" type="radio" name="posterize" value="4">
+            <label class="posterize-select" for="posterize-3" title="3 shades"></label>
+            <input id="posterize-4" type="radio" name="posterize" value="5">
+            <label class="posterize-select" for="posterize-4" title="4 shades"></label>
+          </div>
+        </div>
+
+        <div>
+          <label data-i18n>import.auto.settings.transparent</label>
+          <input name="transparent" list="defaultcolors" type="color" pattern="#[a-f0-9]{6}" value="#FFFFFF">
+          <button name="transparent-pick" data-i18n="[title]import.auto.settings.transparent-pick">&nbsp;</button>
+          <datalist id="defaultcolors">
+            <option>#FFFFFF</option>
+            <option>#000000</option>
+            <option>#00FF00</option>
+            <option>#FF0000</option>
+            <option>#0000FF</option>
+          </datalist>
+        </div>
+
+        <div>
+          <input name="outline" class="fancy" type="checkbox">
+          <label data-i18n>import.auto.settings.outline</label>
+        </div>
+
+        <fieldset>
+          <legend data-i18n>import.auto.settings.preprocess</legend>
+          <div>
+            <label data-i18n>import.auto.settings.blur</label><b>0</b>
+            <input name="blur" data-unit="px" type="range" min="0" value="0" max="15" step="1">
+          </div>
+
+          <div>
+            <label data-i18n>import.auto.settings.brightness</label><b>0</b>
+            <input name="brightness" type="range" min="-1" value="0" max="1" step="0.05">
+          </div>
+
+          <div>
+            <label data-i18n>import.auto.settings.contrast</label><b>0</b>
+            <input name="contrast" type="range" min="-1" value="0" max="1" step="0.05">
+          </div>
+
+          <div>
+            <input id="trace-invert" name="invert" class="fancy" type="checkbox">
+            <label for="trace-invert" data-i18n>import.auto.settings.invert</label>
+          </div>
+        </fieldset>
+      </div>
+    </fieldset>
+
+    <fieldset class="preview">
+      <legend data-i18n>import.auto.place.title</legend>
+      <div class="options">
+        <button name="clone-1">1x</button>
+        <button name="clone-2">2x</button>
+        <button name="clone-4">4x</button>
+        <button name="clone-8">8x</button>
+      </div>
+      <div class="trace-preview"></div>
+      <button name="import" class="fancy" data-i18n>common.button.import</button>
+    </fieldset>
+  </div>
+</div>
