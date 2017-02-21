@@ -1,0 +1,93 @@
+What's new in AutoTrace 0.31.1?
+- fixed compile time error appeared when an user 
+  specifies --without-pstoedit option(Ralf Stubner).
+- fixed a bug related to centerline tracing(Martin).
+- fixed bugs in dr2d output and dxf output(Martin).
+- changed the name of tracing option structure
+  field(width_weight_factor)(Masatake). This means 
+  source compatibility is broken.
+
+What's new in AutoTrace 0.31.0?
+(This NEWS items are the summary of changed from 0.30.1 to 0.30.8.
+ For more detail, see ChangeLog.)
+- improved interface between pstoedit and autotrace
+- added library level pstoedit support
+- built autotrace library as a shared library
+- corrected output when background-color is used
+- changing the license of sources files input and output 
+  to GNU Lesser Public License(LGPL)
+- checking libautotrace version number in autotrace.m4
+- output in dr2d format(Andrew Elia)
+- introduced config.h
+- corrected thin-image
+- made more portable
+- corrected a bug in fitting
+- now recognizes line width
+
+What's new in AutoTrace 0.30.8?
+- added variable line width in centerline tracing(--width-factor, --preserve-width)
+  autotrace library API is changed.
+- fixed memory leaks
+- many bugs fixes
+
+What's new in AutoTrace 0.30.6?
+- added workaround for a compile time error that appears when 
+  autotrace is linked to pstoedit-3.32.0.
+- made code that creates temporary file more portable.
+
+What's new in AutoTrace 0.30.5?
+- fixed a compile time error that appears when autotrace 
+  is not linked to pstoedit.
+
+What's new in AutoTrace 0.30.4?
+- fixed a bug reported by Gerhard Gaussling <ggrubbish@web.de>
+- improved the interface between pstoedit and autotrace
+
+What's new in AutoTrace 0.30.2?
+- added library level pstoedit support
+- built autotrace library as a shared library
+
+What's new in AutoTrace 0.30.1?
+- corrected output when background-color is used
+- changing the license of sources files input and output 
+  to GNU Lesser Public License(LGPL)
+- checking libautotrace version number in autotrace.m4
+- output in dr2d format(Andrew Elia)
+- introduced config.h
+
+What's new in AutoTrace 0.30?
+- fixed some bugs in the filtering routine
+- fixed pdf export
+- fixed despeckle
+- fixed emf export
+- better error handling mechanism
+- rpm spec file template(Han-Wen Nienhuys)
+- pkgconfig support
+- man page (R. P. C. Rodgers)
+
+What's new in AutoTrace 0.29?
+- Small bug fix for binary output
+- code rearrangements
+- CGM and MIF export
+- fixes the lowercase/uppercase problems
+- fix for swf export
+
+What's new in AutoTrace 0.28?
+- Several bug fixes
+- Progress bar
+- Cancel point
+- Efforts to make libautotrace.a thread-safe
+- Clean up library name space (all exported symbols have "at_" prefix)
+- DXF, EPD and PDF export
+- Despeckling filter
+
+What's new in AutoTrace 0.27?
+- Parts of the code were rearranged
+- Fixed a bug in color quantization
+- Centerline support
+- Elastic Reality output
+- Now works with new versions of ImageMagick
+- Swf output(via libming. You can get libming from
+	     http://www.opaque.net/ming/)
+- The dxf output was removed because it never worked.
+- Speed up and simplification of the fitting routine

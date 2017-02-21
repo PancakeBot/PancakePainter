@@ -44,6 +44,267 @@ body * {
   }
 }
 
+// Autotrace ===================================================================
+
+// Fill canvas to fit fully inside the webview.
+canvas#autotrace-preview {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+
+  &.color-pick {
+    cursor: url('../images/cursor-eyedropper.png') 1 29, auto;
+  }
+}
+
+#autotrace {
+  width: 90%;
+  height: 70%;
+
+  .overlay-title {
+    h2 {
+      margin: 0.5em 0 0;
+    }
+
+    .presets {
+      position: absolute;
+      right: 4em;
+      top: 8px;
+
+      label {
+        position: relative;
+        top: -23px;
+      }
+
+      button {
+        cursor: pointer;
+        margin-right: 0.7em;
+        background-size: cover;
+        background-repeat: no-repeat;
+        width: 48px;
+        height: 44px;
+        border: 0 none;
+        background-color: transparent;
+        border-radius: 18px;
+        background-position: center;
+
+        &:hover {
+          border: 1px solid red;
+        }
+      }
+
+      button[name=simple] {
+        background-image: url('../images/icon-autotrace-simple.svg');
+      }
+      button[name=complex] {
+        background-image: url('../images/icon-autotrace-complex.svg');
+      }
+    }
+  }
+
+  .overlay-content {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    padding-top: 2em;
+
+    .loader {
+      bottom: 1.5em;
+    }
+
+    #autotrace-webview {
+      flex-grow: 1;
+      border: 2px dashed #6D6060;
+      margin-right: 1em;
+      border-radius: 1em;
+      background-color: #444444;
+      opacity: 0;
+      transition: opacity 100ms ease-in;
+    }
+
+    div.sidebar {
+      height: 100%;
+      width: 230px;
+
+      fieldset {
+        overflow: hidden;
+        legend {
+          font-weight: bolder;
+        }
+      }
+
+      fieldset.settings {
+        position: relative;
+        padding: 0;
+        margin-bottom: 1em;
+
+        .wrapper {
+          overflow-y: auto;
+          padding: 0 0.5em;
+          height: 92%;
+
+          > div {
+            margin-bottom: 1em;
+          }
+        }
+
+        aside {
+          font-size: 0.8em;
+          font-style: italic;
+        }
+
+        b {
+          float: right;
+          font-style: italic;
+        }
+
+        .rangeslider {
+          margin: 0.5em 0;
+
+          &, .rangeslider__fill {
+            height: 12px;
+          }
+        }
+        .rangeslider__handle {
+          transform: translate(-4px, -4px) scale(0.6);
+        }
+
+        label {
+          font-weight: bold;
+        }
+
+        button[name=transparent-pick] {
+          width: 27px;
+          height: 26px;
+          background-image: url("../images/cursor-eyedropper.png");
+          background-size: 20px;
+          cursor: pointer;
+          border: 1px solid black;
+          background-color: beige;
+          background-position: center;
+          background-repeat: no-repeat;
+
+          &:hover {
+            border-color: red;
+            background-color: white;
+          }
+
+          &.active {
+            background-color: red;
+            outline: 1px dashed yellow;
+            box-shadow: 0 0 0 1px #EA3556;
+            animation: 1s animateBorder infinite;
+          }
+        }
+
+        @keyframes animateBorder {
+          to {
+            outline-color: #EA3556;
+            box-shadow: 0 0 0 6px yellow;
+          }
+        }
+
+        .posterize-selector {
+          input {
+            display: none;
+
+            &:disabled + label {
+              &:hover {
+                -webkit-filter: none;
+              }
+              opacity: .5;
+              background-color: black;
+            }
+
+            &:active + label { opacity: .9; }
+            &:checked + label {
+              -webkit-filter: none;
+            }
+          }
+
+          label.posterize-select {
+            cursor:pointer;
+            background-size:contain;
+            background-repeat:no-repeat;
+            display:inline-block;
+            width:42px;
+            height:42px;
+            transition: all 100ms ease-in;
+            -webkit-filter: brightness(1.8) grayscale(1) opacity(.7);
+
+            &:hover {
+              -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
+            }
+            &[for=posterize-1] {background-image: url('../images/icon-autotrace-color-2.svg')};
+            &[for=posterize-2] {background-image: url('../images/icon-autotrace-color-3.svg')};
+            &[for=posterize-3] {background-image: url('../images/icon-autotrace-color-4.svg')};
+            &[for=posterize-4] {background-image: url('../images/icon-autotrace-color-5.svg')};
+          }
+
+        }
+      }
+
+      // Preview
+      fieldset.preview {
+        height: 150px;
+        overflow: visible;
+
+        button[name=import] {
+          position: relative;
+          top: -9px;
+          margin-left: 28%;
+          font-size: 1.2em;
+        }
+
+        .options {
+          button {
+            display: inline-block;
+            width: 23%;
+          }
+        }
+
+        .trace-preview {
+          position: relative;
+          width: 196px;
+          height: 104px;
+          box-sizing: border-box;
+          padding-top: 14px;
+          padding-bottom: 10px;
+          padding-left: 14px;
+          padding-right: 11px;
+          background-image: url('../images/griddle.svg');
+          background-size: contain;
+
+          img.trace {
+            position: absolute;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Overlay Progress/busy bar ===================================================
+#overlay aside.loader {
+  position: absolute;
+  transition: opacity .3s;
+  opacity: 0;
+
+  progress {
+    position: absolute;
+    top: 0;
+    opacity: 0.8;
+    height: 100%;
+    width: 100%;
+    mix-blend-mode: hard-light;
+    -webkit-appearance: none;
+  }
+}
+
+
 // Toolbar =====================================================================
 #toolback {
   background-color: #3A3A3A;
@@ -89,7 +350,7 @@ body * {
     list-style: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
     float: left;
   }
 
@@ -97,6 +358,7 @@ body * {
     cursor: pointer;
     float: left;
     padding: 0.5em;
+    position: relative;
 
     &.active div {
       background-position-x: 100%;
@@ -131,10 +393,13 @@ body * {
   }
 
   #import {
+    overflow: visible;
     padding: 0;
     width: 85px;
     height: 74px;
     margin-left: 10px;
+    z-index: 1;
+
     div {
       height: 74px;
       margin-top: -3px;
@@ -142,6 +407,15 @@ body * {
     }
   }
 }
+
+// Fancy trace option dropdown =================================================
+@import 'trace-menu';
+
+// Fancy Loader animations =====================================================
+@import 'loaders';
+
+// Other Fancy elements
+@import 'fancy-elements';
 
 // Color Picker ================================================================
 #color {
@@ -184,54 +458,6 @@ body * {
 
 // Settings window (is an overlay) =============================================
 #settings {
-  aside {
-    font-size: 0.9em;
-    margin-left: 1em;
-  }
-
-  .settings-content {
-    position: fixed;
-    overflow-y: auto;
-    height: 90%;
-    padding-top: 3.5em;
-    box-sizing: border-box;
-  }
-
-  fieldset {
-    legend {
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-
-    &> div {
-      margin-bottom: 3em;
-      &:hover .rangeslider {
-        z-index: 1 !important;
-      }
-
-      label {
-        font-weight: bold;
-      }
-    }
-  }
-
-  .rangeslider {
-    margin: 1em 0;
-    z-index: -1;
-
-    &:hover {
-      z-index: 1;
-    }
-
-    .rangeslider__fill {
-      background-color: orange;
-    }
-  }
-
-  b {
-    padding-left: .5em;
-  }
-
   .overlay-title button {
     float: right;
     margin-top: 0.8em;
@@ -250,85 +476,103 @@ body * {
   }
 }
 
-// Fancy iOS8 Checkbox
-input.fancy[type="checkbox"] {
+// Export Window & simulator preview ===========================================
+div#simulator-wrapper {
   position: absolute;
-  opacity: 0;
+  top: 50%;
+  left: 50%;
+  width: 1744px;
+  height: 934px;
 
-  &:disabled{
-    &+ div {
-      opacity: 0.8;
-      background-image: linear-gradient(90deg, #add5ac 50%, transparent 50%);
-    }
+  &.pannable {
+    cursor:move;
+  }
 
-    &:checked + div {
-      border: 2px solid #add5ac;
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1744px;
+    height: 940px;
+  }
+
+  canvas#simulator-preview {
+    position: absolute;
+    top: 128px;
+    left: 124px;
+    z-index: 1;
+  }
+}
+
+#export {
+  width: 85%;
+  height: 80%;
+  padding-top: 0;
+
+  .overlay-title {
+    h2 {
+      margin: 0.5em 0 0.7em;
     }
   }
 
-  &:checked + div {
-    padding-left: 1em; width: 1em;
-    background-position: 0 0;
-    border: 2px solid #64bd63;
+  .overlay-title {
+    background: linear-gradient(to bottom, #eeeeee 0%, #eeeeee 41%, rgba(238, 238, 238, 0) 100%);
   }
 
-  &+ div {
-    cursor: pointer;
-    display: inline-block;
-    vertical-align: middle;
-    width: 2em;	height: 1em;
-    border: 2px solid rgba(0,0,0,.3);
-    border-radius: 999px;
-    background: white;
-    background-image: linear-gradient(90deg, #64bd63 50%, transparent 50%);
-    background-size: 200% 100%;
-    background-position: 100% 0;
-    background-origin: border-box;
-    background-clip: border-box;
+  .overlay-content {
     overflow: hidden;
-    transition-duration: .2s;
-    transition-property: padding, width, background-position, text-indent;
-    font-size: 112%; /* change this and see how they adjust! */
+    display: flex;
+    flex-direction: column;
+    padding-right: 1.5em;
+    padding-top: 0;
+    height: 100%;
+    padding-bottom: 1em;
 
-    &:before {
-      content: ' ';
-      float: left;
-      width: 1.65em; height: 1.65em;
-      margin: -.1em;
-      border: 1px solid rgba(0,0,0,.35);
-      border-radius: inherit;
-      background: white;
-      background-color: white;
-      box-shadow: 0 .1em .1em .1em hsla(0,0%,100%,.8) inset,
-                  0 0 .5em rgba(0,0,0,.3);
-      color: white;
-      text-shadow: 0 -1px 1px rgba(0,0,0,.3);
-      text-indent: -2.5em;
+    .loader {
+      top: 50%;
+      width: 50%;
+      left: 50%;
+      transform: translate(-50%);
+      margin: 0;
     }
+
+    #simulator-webview {
+      flex: 3 0 0; // Fill 3/5 of height.
+      margin-bottom: 1em;
+      opacity: 0;
+      transition: opacity 100ms ease-in;
+    }
+
+    & > fieldset { // Fieldset in content below preview webview.
+      flex: 2 0 0; // Fill 2/5 of height.
+      overflow: hidden;
+      position: relative;
+
+      .operations {
+        position: absolute;
+        right: 1em;
+        top: 0;
+        font-size: 0.8em;
+
+        button {
+          margin-left: 1em;
+        }
+      }
+
+      div.flex-wrapper {
+        display: flex;
+        overflow-y: auto;
+        margin-top: 0.5em;
+
+        fieldset.col {
+          flex: 2 0 0;
+          border: none;
+        }
+      }
+    }
+
   }
 
-  &:active + div:before {
-    background-color: #eee;
-  }
-
-  &:focus + div {
-    box-shadow: 0 .1em .1em rgba(0,0,0,.2) inset,
-                0 .45em 0 .1em rgba(0,0,0,.05) inset,
-                0 0 .4em 1px rgba(255,0,0,.5);
-  }
-
-  &+ div:before, &+ div:after {
-    font: bold 60%/1.9 sans-serif;
-    text-transform: uppercase;
-  }
-
-  &+ div:after {
-    content: ' ';
-    float: left;
-    text-indent: .5em;
-    color: rgba(0,0,0,.45);
-    text-shadow: none;
-  }
 }
 
 // Export wait message =========================================================
@@ -348,6 +592,7 @@ input.fancy[type="checkbox"] {
 
 // General usage overlay "window" ==============================================
 #non-overlay-wrapper {
+  transition: -webkit-filter 0.75s;
   position: absolute;
   z-index: 1;
   top: 0;
@@ -391,6 +636,50 @@ div.overlay-window {
     width: 100%;
     padding: 0 1.5em;
     box-sizing: border-box;
+  }
+
+  .overlay-content {
+    position: fixed;
+    overflow-y: auto;
+    height: 90%;
+    padding-top: 3.5em;
+    box-sizing: border-box;
+
+
+    aside {
+      font-size: 0.9em;
+      text-indent: 2em;
+    }
+
+    fieldset {
+      legend {
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+
+      &> div.field-wrapper {
+        margin-bottom: 3em;
+        &:hover .rangeslider {
+          z-index: 1 !important;
+        }
+
+        label {
+          font-weight: bold;
+        }
+      }
+    }
+
+    .rangeslider {
+      margin: 1em 0;
+
+      .rangeslider__fill {
+        background-color: orange;
+      }
+    }
+
+    b {
+      padding-left: .5em;
+    }
   }
 }
 

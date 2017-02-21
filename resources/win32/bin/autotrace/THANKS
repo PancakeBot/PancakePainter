@@ -1,0 +1,21 @@
+If soneone missing please let me
+(Martin Weber <martweb@gmx.net>) know.
+
+---
+Bernhard Herzog (Postscript, svg and sk export filter) 
+Ian MacPhedran (xfig export filter) 
+Martin Kroeker (bugfixes) 
+Tobias Polzin (bugfixes) 
+Kevin O'Gorman (Shockwave support) 
+MenTaLguY (png import filter)
+Peter Cucka (bugfixes)
+Enrico Persiani (emf export) 
+Johannes Schindelin (Magick import filter)
+Masatake YAMATO (library, help with cvs)
+Steffen Politzky (dxf export)
+David A. Bartold (part of despeckle)
+Han-Wen Nienhuys (rpm-spec file)
+R. P. C. Rodgers (man page)
+Allen Barnett (improved emf export)
+Andrew Elia (dr2d export filter)
+Ralf Stubner (bugfixes about pstoedit usage)
