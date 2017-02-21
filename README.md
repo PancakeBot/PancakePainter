@@ -1,15 +1,35 @@
 # PancakePainter!
 #### The super-simple drawing software for your PancakeBot.
 
-![PancakePainter](https://cloud.githubusercontent.com/assets/320747/10681916/96629bc8-78e3-11e5-99e6-4f6c3e13cc86.png)
-
-### Download/Install - v1.0.0
- * *Windows 7-10* ➤ [32bit](https://github.com/PancakeBot/PancakePainter/releases/download/v1.0.0/Install_PancakePainter_Win_v1.0.0.exe)
- * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.0.0/PancakePainter_Mac_v1.0.0.zip)
- * *Linux:* No build supported yet,  can run from source. [Vote here @ #39](https://github.com/PancakeBot/PancakePainter/issues/39)
+### Download/Install [Latest release] - v1.2.0
+ * *Windows 7-10* ➤ [x32](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/Install_PancakePainter_Win_32bit_v1.2.0-beta.exe) / [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/Install_PancakePainter_Win_64bit_v1.2.0-beta.exe)
+ * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/PancakePainter_Mac_v1.2.0-Beta.zip)
+ * *Linux:* No build, can run from source.
 
 #### Check the [latest release page](https://github.com/PancakeBot/PancakePainter/releases/latest) for feature notes, known issues, and other details.
 
+![PancakePainter](https://cloud.githubusercontent.com/assets/320747/10681916/96629bc8-78e3-11e5-99e6-4f6c3e13cc86.png)
+
+----
+
+#### PancakeBot is proud to present the latest pre-release version of Pancake Painter!
+Featuring a new automatic tracing functionality that makes drawing pancakes from
+pre-existing art much easier. Take your favorite cartoon, logo or photo, and
+turn them into tasty pancake art! Other new features include marquee selection
+& print preview. Give it a try at it and tell us what you think! We always are
+happy to hear your comments on how to improve the software and make your pancake
+art experience even better!
+
+![PancakePainter 1.3.0 Beta](https://cloud.githubusercontent.com/assets/320747/23157197/f7b6226c-f7ce-11e6-9cab-1eaacc071950.png)
+
+### Download/Install ***[Pre-release]*** - v1.3.0 Beta
+ * *Windows 7-10* ➤ [x32](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/Install_PancakePainter_Win_32bit_v1.3.0-beta.exe) / [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/Install_PancakePainter_Win_64bit_v1.3.0-beta.exe)
+ * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter_Mac_v1.3.0-Beta.dmg)
+ * *Linux (requires [`autotrace`](http://packages.ubuntu.com/xenial/autotrace) system package)* ➤ [x64 Ubuntu/Debian DEB](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter_1.3.0_amd64.deb) / [x64 Redhat RPM](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter-1.3.0.x86_64.rpm)
+
+
+
+----
 
 ### User Documentation
  0. **Using the drawing tool:**
@@ -17,23 +37,32 @@
    * Click single points to draw polygonal shapes, press right click or
    ESC/Enter to complete drawing.
  0. **Using the selection tool:**
-   * Click the center or near a line to select it.
+   * Click the center or near a line to select it, shift click to add to
+   selection.
+   * Alternate selection: Click and drag to create a selection marquee to fully
+   encompass any objects you'd like to select _(v1.3.0)_.
    * Once selected, click and drag the corner handles to scale the object, or
 the top rotation handle to rotate it.
    * Click and drag points on the line to move them, shift-click to remove, or
 click an area on the line without any points to add a new point.
    * Click and drag the selected object anywhere else to move it to a new
 position.
- 0. **Using the trace image import tool:**
-   * To import an image to trace by hand, click the image import icon, select
-   your image (in any standard web format, GIF, JPG, PNG), and it will be placed
-   on the canvas.
+ 0. **Manual image trace import tool:**
+   * To import an image to trace by hand, click the image import icon, then
+   select the manual import icon on the left. Select your image (in any standard
+   web format, GIF, JPG, PNG), and it will be placed on the canvas.
    * Once imported, you can move the image around and scale/rotate it as needed.
    * When done, click outside the image, press ESC, or select the drawing
    tool.
    * To adjust the image position, just click the image import button again. To
    choose a new image, press the Delete key when in edit mode then click import
    again.
+ 0. **Automatic image trace import tool _(v1.3.0)_:**
+   * Click the image import icon and select either of the two automatic trace
+   presets.
+   * Within the automatic trace window, adjust the settings to your liking.
+   * When complete, select how many copies you want & click the "Place" button.
+   * You now should have fills and strokes as if you had drawn them yourself.
  0. **Using the fill tool:**
    * The fill tool is used to visually fill an area with a specific shade, which
    will then be used to create a zig-zag fill pattern used by the PancakeBot.
