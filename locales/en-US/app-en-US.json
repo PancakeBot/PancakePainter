@@ -159,7 +159,7 @@
         "title": "millimeter(s)"
       },
       "percent": {
-        "label": "%",
+        "label": "% (__value__)",
         "title": "percent"
       },
       "pixels": {
@@ -200,6 +200,8 @@
       "fillangleinfo": "Angle of the automatic fill lines, defaults at 23, and be -180 to 180.",
       "fillthresh": "Line fill grouping threshold:",
       "fillthreshinfo": "Minimum threshold for grouping dynamic line endings together into connected groups. Large value connects more groups, 0 will ensure no groups are made.",
+      "useshortest": "Use shortest path:",
+      "useshortestinfo": "If enabled, the shortest movement path between each point for each shade will be selected when printing. When disabled, line drawing will remain in original order drawn, favoring lines before fills.",
       "shapefillwidth": "Shape fill effective batter width:",
       "shapefillwidthinfo": "Effective width of the batter line being drawn, iterated from the edge inwards on paths to be filled. Smaller values will make more lines when filling, adding more batter. Larger values will add fewer lines and less batter, and may leave some shapes unfilled or with holes in them.",
       "botspeedcolor1": "Shade 1 speed (light):",

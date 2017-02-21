@@ -90,6 +90,7 @@ function settingsInit() {
       changewait: 15,       // Number of seconds to wait between shade changes.
       botspeed: 70,         // Locked stepper speed percentage written to GCODE
       usecolorspeed: false, // Whether to use different speeds for colors.
+      useshortest: true,   // Whether to travel sort the final layer.
       botspeedcolor1: 100,  // Light speed.
       botspeedcolor2: 80,   // Medium speed.
       botspeedcolor3: 80,   // Medium Dark speed.

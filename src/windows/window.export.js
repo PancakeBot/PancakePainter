@@ -145,6 +145,7 @@ module.exports = function(context) {
     rc.endWait = app.settings.v.endwait;
     rc.shadeChangeWait = app.settings.v.changewait;
     rc.useLineFill = app.settings.v.uselinefill;
+    rc.useShortest = app.settings.v.useshortest;
     rc.fillSpacing = app.settings.v.fillspacing;
     rc.fillAngle = app.settings.v.fillangle;
     rc.fillGroupThreshold = app.settings.v.fillthresh;
