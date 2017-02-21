@@ -1,6 +1,8 @@
 # PancakePainter!
 #### The super-simple drawing software for your PancakeBot.
 
+[![Join the chat at https://gitter.im/PancakePainter/Lobby](https://badges.gitter.im/PancakePainter/Lobby.svg)](https://gitter.im/PancakePainter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ### Download/Install [Latest release] - v1.2.0
  * *Windows 7-10* ➤ [x32](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/Install_PancakePainter_Win_32bit_v1.2.0-beta.exe) / [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/Install_PancakePainter_Win_64bit_v1.2.0-beta.exe)
  * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/PancakePainter_Mac_v1.2.0-Beta.zip)
@@ -26,8 +28,6 @@ art experience even better!
  * *Windows 7-10* ➤ [x32](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/Install_PancakePainter_Win_32bit_v1.3.0-beta.exe) / [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/Install_PancakePainter_Win_64bit_v1.3.0-beta.exe)
  * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter_Mac_v1.3.0-Beta.dmg)
  * *Linux (requires [`autotrace`](http://packages.ubuntu.com/xenial/autotrace) system package)* ➤ [x64 Ubuntu/Debian DEB](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter_1.3.0_amd64.deb) / [x64 Redhat RPM](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter-1.3.0.x86_64.rpm)
-
-
 
 ----
 
