@@ -26,7 +26,10 @@
     "selectall": "Select &All"
   },
   "view" : {
-    "settings": "Advanced Settings"
+    "title": "View",
+    "settings": "Advanced Settings",
+    "reload": "Reload",
+    "devtools": "Toggle Dev Tools"
   },
   "mac": {
     "about": "About __name__",

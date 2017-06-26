@@ -1,0 +1,215 @@
+{
+  "_meta": {
+    "creator": "tuxphr34k",
+    "target": "de-DE",
+    "langname": "German",
+    "release": "1.0"
+  },
+  "common": {
+    "done": "Erledigt",
+    "loading": "Lade...",
+    "complete": "Fertig",
+    "drawnote": "Die Zeichnung zeigt den fertigen Pfannkuchen, sobald er gewendet wurde.",
+    "button": {
+      "cancel": "Abbrechen",
+      "import": "Einfügen",
+      "yes": "Ja",
+      "no": "Nein"
+    }
+  },
+  "tools": {
+    "pen": "Stift / Linie",
+    "select": "Auswahl",
+    "fill": "Füllen",
+    "error": {
+      "fill": "Füllen nicht möglich! Bitte prüfen Sie Fehler in der Konsole."
+    },
+    "warnings": {
+      "fill": {
+        "notclosed": "Der Füllbereich ist nicht abgeschlossen.",
+        "bounds": "Der Punkt befindet sich nicht in einem befüllbaren Bereich.",
+        "path": "Eine Füllung über einer bestehenden Linie ist nicht möglich.",
+        "nopaths": "Eine Füllung kann ohne geschlossene Linie nicht erstellt werden."
+      }
+    }
+  },
+  "file": {
+    "save": "Projekt &speichern",
+    "saveas": "Projekt speichern &unter...",
+    "open": "Projekt &öffnen...",
+    "opened": "Projekt \"__file__\" geöffnet",
+    "default": "Pancake Projekt",
+    "type": "PancakePainter Projekt",
+    "note": "Projekt gespeichert als \"__file__\"",
+    "new": "Neues Pancake Projekt erstellt",
+    "close": "Projekt geschlossen, neues Projekt erstellt",
+    "error": "Das Projekt konnte nicht gespeichert werden. Versuchen Sie einen anderen Pfad oder Dateinamen.",
+    "discarded": "Die Änderungen wurden verworfen.",
+    "confirm": {
+      "notsaved": "Die Projektdatei wurde nicht gespeichert!",
+      "changed": "Das Projekt wurde seit dem letzten Speichern geändert!",
+      "savenew": "Möchten Sie das Projekt speichern, bevor Sie fortfahren?",
+      "save": "Möchten Sie die Änderungen unter \"__file__\" speichern, bevor Sie fortfahren?"
+    },
+    "button": {
+      "discard": "Änderungen verwerfen",
+      "savenew": "Als neue Datei speichern",
+      "save": "Aktuelle Datei speichern"
+    }
+  },
+  "color" : {
+    "title": "Bräunung",
+    "color0": "Hell",
+    "color1": "Mittlere Bräunung",
+    "color2": "Mittlere, dunklere Bräunung",
+    "color3": "Dunkle Bräunung"
+  },
+  "import": {
+    "title": "Bild zur Verarbeitung importieren",
+    "autotitle": {
+      "simple": "Einfaches Logo oder eine Zeichnung importieren...",
+      "complex": "Komplexes Foto oder Bild importieren..."
+    },
+    "files": "Bilddateien",
+    "err": {
+      "title": "Fehler beim Öffnen der Bildquelle",
+      "message": "Die Bilddatei \"__file__\" konnte nicht geladen werden.",
+      "desc": "Fehlermeldung:\n\"__err__\"",
+      "button": "Andere Datei auswählen"
+    },
+    "auto": {
+      "title": "Automatische Bildspur",
+      "options": {
+        "manual": "Bild als Hintergrund, um manuell die Bildspur zu erstellen",
+        "simple": "Automatische Bildspur für einfache Logos oder eine Zeichnung",
+        "complex": "Automatische Bildspur für komplexe Fotos oder Bilder"
+      },
+      "place": {
+        "title": "Einfügeoptionen"
+      },
+      "settings": {
+        "title": "Einstellungen",
+        "transparent": "Transparente Farbe",
+        "transparent-pick": "Leeren Bereich aus dem Bild wählen",
+        "colors": "Anzahl Bräunungsstufen (1-4)",
+        "presets": {
+          "title": "Voreinstellungen:",
+          "simple": "Logos/Zeichnungen",
+          "complex": "Fotos/Bilder"
+        },
+        "types": {
+          "title": "Spur-Typ",
+          "options": {
+            "mixed": {
+              "title": "Dynamische Linien und Füllungen",
+              "desc": "Ideal für Logos und Zeichnungen. Schlecht für Fotos und Bilder."
+            },
+            "fills": {
+              "title": "Nur Formen und Füllungen",
+              "desc": "Ideal für Fotos und Bilder. Schlecht für Logos und Zeichnungen."
+            },
+            "lines": {
+              "title": "Nur Linien",
+              "desc": "Ideal für Strichzeichnungen und Logos. Schlecht für Zeichnungen, Fotos und Bilder."
+            }
+          }
+        },
+        "preprocess": "Vorverarbeitung...",
+        "outline": "Äußere Linien in dunklerer Bräunung",
+        "invert": "Bräunungen vertauschen",
+        "contrast": "Kontrast",
+        "brightness": "Helligkeit",
+        "blur": "Unschärfe"
+      }
+    }
+  },
+  "export": {
+    "title": "Export für den Druck...",
+    "start": "Export starten",
+    "wait": "Export wird erstellt, bitte warten...",
+    "err" : "Das Projekt \"__file__\" konnte nicht exportiert werden, bitte melden Sie diesen Fehler beim Hersteller und schicken Sie bitte das Projekt mit.",
+    "note" : "Das Projekt \"__file__\" wurde erfolgreich für den Druck exportiert.",
+    "buttons": {
+      "cancel": "Abbrechen",
+      "reset": "Zurücksetzen",
+      "export": "In Datei exportieren",
+      "reselect": "In andere Datei exportieren"
+    }
+  },
+  "settings": {
+    "done": "Erledigt",
+    "reset": "Zurücksetzen",
+    "title": "Erweiterte Einstellungen",
+    "resetconfirm": "Standardeinstellungen wiederherstellen?",
+    "resetconfirmdetail": "Dies wird alle Einstellungen auf die Standardeinstellungen zurücksetzen. Dies kann nicht rückgängig gemacht werden!",
+    "button": {
+      "reset": "Einstellungen zurücksetzen"
+    },
+    "units": {
+      "milliseconds": {
+        "label": "ms",
+        "title": "Millisekunde(n)"
+      },
+      "seconds": {
+        "label": " s",
+        "title": "Sekunde(n)"
+      },
+      "millimeters": {
+        "label": "mm",
+        "title": "Millimeter"
+      },
+      "percent": {
+        "label": "% (__value__)",
+        "title": "Prozent"
+      },
+      "pixels": {
+        "label": " dv/px",
+        "title": "Gerätepixel"
+      },
+      "px": {
+        "label": "px",
+        "title": "Pixel"
+      },
+      "degrees": {
+        "label": "°",
+        "title": "Grad"
+      }
+    },
+    "gcode": {
+      "title": "Einstellungen für den Druckexport",
+      "botspeed": "Druckgeschwindigkeit:",
+      "botspeedinfo": "Die maximale Geschwindigkeit des PancakeBot (Standard: 70%). Wenn diese Einstellung keine Auswirkungen zeigt müssen Sie möglicherweise die Firmware Ihres PancakeBots aktualisieren (PancakeBot.com). Das Erhöhen der Geschwindigkeit kann die Lebensdauer Ihres PancakeBots verringern.",
+      "flatten": "Glättungsabstand:",
+      "flatteninfo": "Die Auflösung beim Glätten von Kurven in Polygone für GCODE Koordinaten. Ein geringerer Wert erzeugt mehr Punkte und eine höhere Auflösung, ein höherer Wert erzeugt weniger Punkte und eine geringere Auflösung.",
+      "shutoff": "Abschaltdistanz der Pumpe:",
+      "shutoffinfo": "Der Abstand zum Endpunkt einer Linie, an dem die Pumpe abschaltet. Ein größerer Abstand lässt die Pumpe früher abschalten.",
+      "startwait": "Anschaltverzögerung der Pumpe:",
+      "startwaitinfo": "Die Anzahl Millisekunden, die gewartet wird, nachdem die Pumpe eingeschaltet wurde und sich dann der Kopf bewegt. Der richtige Wert hängt mit der Beschaffenheit des Teigs sowie dem Pumpendruck zusammen.",
+      "mirrorexport": "Gespiegelter Export",
+      "mirrorexportinfo": "Das Projekt wird gespiegelt, bevor die GCODE Datei erzeugt wird. Dadurch wird der Pancake nach dem Wenden richtig dargestellt.",
+      "endwait": "Abschaltverzögerung der Pumpe:",
+      "endwaitinfo": "Die Anzahl Millisekunden, die gewartet wird, bis die Pumpe am Ende einer Linie abgeschaltet wird. Der richtige Wert hängt mit der Beschaffenheit des Teigs und dem Pumpendruck zusammen. Er sollte möglichst niedrig sein.",
+      "changewait": "Zeit zwischen den Bräunungsphasen:",
+      "changewaitinfo": "Zeit zwischen den Bräunungsphasen. Der PancakeBot fährt in dieser Zeit zurück in die Parkposition, um das Tauschen der Flasche zu ermöglichen.",
+      "linefillgroup": "Füllmethode",
+      "uselinefill": "Diagonales Füllen:",
+      "uselinefillinfo": "Füllt geschlossene Formen diagonal statt dem Standard-Füll-Algorithmus.",
+      "fillspacing": "Linienabstand:",
+      "fillspacinginfo": "Abstand zwischen zwei Linien. Je mehr Abstand, desto weniger Linien werden gezeichnet. Je weniger Abstand, desto mehr Linien werden gezeichnet.",
+      "fillangle": "Füllwinkel der Linien:",
+      "fillangleinfo": "Winkel der automatischen Fülllinien, standardmäßig 23 Grad. Kann zwischen -180 und 180 Grad liegen.",
+      "fillthresh": "Gruppierungsschwelle für Füllungen:",
+      "fillthreshinfo": "Schwellwert für das Gruppieren von Linien. Ein großer Wert verbindet mehr Linien, 0 sorgt dafür, dass keine Linien gruppiert werden.",
+      "useshortest": "Verwende kürzesten Weg:",
+      "useshortestinfo": "Wenn aktiviert wird der kürzeste Pfad zwischen zwei Punkten verwendet. Wenn deaktiviert werden die Linien in der ursprünglichen Zeichnung nach der Reihe gezeichnet, Linien werden aber vor der Füllung gezeichnet.",
+      "shapefillwidth": "Effektive Breite des Teigs:",
+      "shapefillwidthinfo": "Effektive Breite des Teigs. Kleinere Werte machen mehr Linien, somit mehr Teig. Größere Werte machen kleinere Linien und weniger Teig, somit teilweise Löcher o.ä. bei kleineren Formen.",
+      "botspeedcolor1": "Geschwindigkeit 1 (hell):",
+      "botspeedcolor2": "Geschwindigkeit 2 (mittlere Bräunung):",
+      "botspeedcolor3": "Geschwindigkeit 3 (mittlere, dunklere Bräunung):",
+      "botspeedcolor4": "Geschwindigkeit 4 (dunkle Bräunung):",
+      "usecolorspeed": "Geschwindigkeit pro Bräunung:",
+      "usecolorspeedinfo": "Die Geschwindigkeit pro Bräunung einstellen, wie unten angegebene. Wenn deaktiviert wird die Geschwindigkeit oben in den Einstellungen verwendet."
+    }
+  }
+}
