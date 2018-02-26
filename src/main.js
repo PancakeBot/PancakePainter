@@ -128,13 +128,14 @@ function settingsInit() {
         }
       }
 
-      // load user config
+      // Load user config.
       var user_config = {};
       try {
         if (fs.existsSync(userSettingsFile)) {
-          user_config = JSON.parse(fs.readFileSync(userSettingsFile));
+          user_config = require(userSettingsFile);
         }
       } catch(e) {}
+      
       for(var i in user_config) {
         this.v[i] = user_config[i];
       }
