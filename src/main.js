@@ -174,7 +174,8 @@ function windowInit() {
       // Path to store file
       resSetPath: appPath + 'locales/__lng__/__ns__-__lng__.json',
       sendMissingTo: 'fallback|current|all', // Send missing values to
-      lng: 'en-US'
+      lng: app.getLocale(),
+      fallbackLng: 'en-US'
     }, function(){
       // Setup main window.
       var windowSettings = {

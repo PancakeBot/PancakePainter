@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "creator": "Korbinian Ober",
+    "target": "de-DE",
+    "langname": "German",
+    "release": "1.0.0"
+  },
+  "file": {
+    "title": "&Datei",
+    "new": "&Neues Projekt",
+    "open": "Projekt &öffnen...",
+    "close": "Projekt sch&ließen",
+    "export": "Druck&export...",
+    "exportmirrored": "&Gespiegelter Druckexport...",
+    "save": "Projekt &speichern",
+    "saveas": "Projekt speichern &unter..."
+  },
+  "edit": {
+    "title": "&Bearbeiten",
+    "undo": "&Rückgängig",
+    "redo": "&Wiederholen",
+    "cut": "&Ausschneiden",
+    "copy": "&Kopieren",
+    "paste": "&Einfügen",
+    "duplicate": "&Duplizieren",
+    "selectall": "&Alle auswählen"
+  },
+  "view" : {
+    "title": "&Ansicht",
+    "settings": "&Erweiterte Einstellungen",
+    "reload": "Neu &laden",
+    "devtools": "Entwickler&tools"
+  },
+  "mac": {
+    "about": "&Über __name__",
+    "hide": "__name__ &verstecken",
+    "services": "&Dienste",
+    "hideothers": "Andere &verstecken",
+    "show": "Alle an&zeigen",
+    "quit": "&Beenden"
+  }
+}

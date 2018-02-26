@@ -82,21 +82,21 @@ module.exports = function applyTemplate() {
       ]
     },
     {
-      label: 'View',
+      key: 'view.title',
       submenu: [
         {
           key: 'view.settings',
           accelerator: 'Shift+Alt+S'
         },
         {
-          label: 'Reload',
+          key: 'view.reload',
           accelerator: 'Control+R',
           click: function () {
             BrowserWindow.getFocusedWindow().reloadIgnoringCache();
           }
         },
         {
-          label: 'Toggle DevTools',
+          key: 'view.devtools',
           accelerator: 'Alt+Control+I',
           click: function () {
             BrowserWindow.getFocusedWindow().toggleDevTools();
