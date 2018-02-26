@@ -34,7 +34,7 @@
     "grunt-contrib-sass": "^0.9.2",
     "i18next": "^1.10.4",
     "jimp": "^0.2.27",
-    "jquery": "^2.1.4",
+    "jquery": "^2.2.4",
     "n-dimensional-flood-fill": "^1.0.0",
     "ndarray": "^1.0.18",
     "paper": "0.10.2",
