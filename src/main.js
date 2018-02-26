@@ -4,6 +4,7 @@
  * as long as the application runs.
  **/
 "use strict";
+const path = require('path');
 
 var app = require('electron').app;  // Module to control application life.
 var appPath = app.getAppPath() + '/';
@@ -73,6 +74,7 @@ function settingsInit() {
 
   // Global user configurable settings.
   var settingsFile = appPath + 'settings.json';
+  var userSettingsFile = path.join(process.env.HOME, '.config/PancakePainter/config.json');
   app.settings = {
     v: {}, // Values are saved to/from here
     defaults: {
@@ -105,7 +107,11 @@ function settingsInit() {
       fs.removeSync(settingsFile);
     },
     save: function() {
-      fs.writeFileSync(settingsFile, JSON.stringify(this.v));
+      try {
+        fs.writeFileSync(settingsFile, JSON.stringify(this.v));
+      } catch (e) {
+        fs.writeFileSync(userSettingsFile, JSON.stringify(this.v));
+      }
     },
     load: function() {
       this.v = {};
@@ -120,6 +126,18 @@ function settingsInit() {
         if (!_.has(this.v, i)) {
           this.v[i] = this.defaults[i];
         }
+      }
+
+      // Load user config.
+      var user_config = {};
+      try {
+        if (fs.existsSync(userSettingsFile)) {
+          user_config = require(userSettingsFile);
+        }
+      } catch(e) {}
+      
+      for(var i in user_config) {
+        this.v[i] = user_config[i];
       }
 
       this.save(); // Resave when we're done loading.
