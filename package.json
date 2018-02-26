@@ -36,7 +36,6 @@
     "jimp": "^0.2.27",
     "jquery": "^2.1.4",
     "n-dimensional-flood-fill": "^1.0.0",
-    "nan": "^2.6.2",
     "ndarray": "^1.0.18",
     "paper": "0.10.2",
     "progress-promise": "0.0.5",
