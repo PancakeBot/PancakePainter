@@ -1,5 +1,5 @@
 # PancakePainter!
-#### The super-simple drawing software for your PancakeBot.
+#### The super-simple drawing software for your PancakeBot, now with translation/language support!
 
 [![Join the chat at https://gitter.im/PancakePainter/Lobby](https://badges.gitter.im/PancakePainter/Lobby.svg)](https://gitter.im/PancakePainter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
