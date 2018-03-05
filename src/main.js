@@ -4,6 +4,7 @@
  * as long as the application runs.
  **/
 "use strict";
+if (require('electron-squirrel-startup')) return;
 const path = require('path');
 
 var app = require('electron').app;  // Module to control application life.

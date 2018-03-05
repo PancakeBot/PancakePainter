@@ -1,116 +1,64 @@
-var ChildProcess = require('child_process');
 var fs = require('fs-plus');
-var path = require('path');
-
-var appFolder = path.resolve(process.execPath, '..');
-var rootAppFolder = path.resolve(appFolder, '..');
-var updateDotExe = path.join(rootAppFolder, 'Update.exe');
-var exeName = path.basename(process.execPath);
-
-var spawn = function(command, args, callback) {
-  var error, spawnedProcess, stdout;
-  stdout = '';
-
-  try {
-    spawnedProcess = ChildProcess.spawn(command, args);
-  } catch (_error) {
-    error = _error;
-    process.nextTick(function() {
-      return typeof callback === "function" ? callback(error, stdout) : void 0;
-    });
-    return;
-  }
-  spawnedProcess.stdout.on('data', function(data) {
-    return stdout += data;
-  });
-
-  error = null;
-  spawnedProcess.on('error', function(processError) {
-    return error !== null ? error : error = processError;
-  });
-
-  return spawnedProcess.on('close', function(code, signal) {
-    if (code !== 0) {
-      if (error === null) {
-        error = new Error(
-          "Command failed: " + (signal !== null ? signal : code)
-        );
-      }
-    }
-
-    if (error !== null) {
-      if (error.code === null) {
-        error.code = code;
-      }
-    }
-
-    if (error !== null) {
-      if (error.stdout === null) {
-        error.stdout = stdout;
-      }
-    }
-    return typeof callback === "function" ? callback(error, stdout) : void 0;
-  });
-};
-
-var spawnUpdate = function(args, callback) {
-  return spawn(updateDotExe, args, callback);
-};
-
-var createShortcuts = function(callback) {
-  return spawnUpdate(['--createShortcut', exeName], callback);
-};
-
-var updateShortcuts = function(callback) {
-  var desktopShortcutPath;
-  var homeDirectory = fs.getHomeDirectory();
-
-  if (homeDirectory) {
-    desktopShortcutPath = path.join(
-      homeDirectory, 'Desktop', 'PancakePainter.lnk'
-    );
-
-    return fs.exists(desktopShortcutPath, function(desktopShortcutExists) {
-      return createShortcuts(function() {
-        if (desktopShortcutExists) {
-          return callback();
-        } else {
-          return fs.unlink(desktopShortcutPath, callback);
-        }
-      });
-    });
-  } else {
-    return createShortcuts(callback);
-  }
-};
-
-var removeShortcuts = function(callback) {
-  return spawnUpdate(['--removeShortcut', exeName], callback);
-};
-
-exports.spawn = spawnUpdate;
+var app = require('electron').app;
 
 exports.handleStartupEvent = function(app, squirrelCommand) {
-  switch (squirrelCommand) {
+  if (process.argv.length === 1) {
+    return false;
+  }
+
+  const ChildProcess = require('child_process');
+  const path = require('path');
+
+  const appFolder = path.resolve(process.execPath, '..');
+  const rootAtomFolder = path.resolve(appFolder, '..');
+  const updateDotExe = path.resolve(path.join(rootAtomFolder, 'Update.exe'));
+  const exeName = path.basename(process.execPath);
+
+  const spawn = function(command, args) {
+    let spawnedProcess, error;
+
+    try {
+      spawnedProcess = ChildProcess.spawn(command, args, {detached: true});
+    } catch (error) {}
+
+    return spawnedProcess;
+  };
+
+  const spawnUpdate = function(args) {
+    return spawn(updateDotExe, args);
+  };
+
+  const squirrelEvent = process.argv[1];
+  switch (squirrelEvent) {
     case '--squirrel-install':
-      createShortcuts(function() {
-        return app.quit();
-      });
-      return true;
     case '--squirrel-updated':
-      updateShortcuts(function() {
-        return app.quit();
-      });
+      // Optionally do things such as:
+      // - Add your .exe to the PATH
+      // - Write to the registry for things like file associations and
+      //   explorer context menus
+
+      // Install desktop and start menu shortcuts
+      spawnUpdate(['--createShortcut', exeName]);
+
+      setTimeout(app.quit, 1000);
       return true;
+
     case '--squirrel-uninstall':
-      removeShortcuts(function() {
-        return app.quit();
-      });
+      // Undo anything you did in the --squirrel-install and
+      // --squirrel-updated handlers
+
+      // Remove desktop and start menu shortcuts
+      spawnUpdate(['--removeShortcut', exeName]);
+
+      setTimeout(app.quit, 1000);
       return true;
+
     case '--squirrel-obsolete':
+      // This is called on the outgoing version of your app before
+      // we update to the new version - it's the opposite of
+      // --squirrel-updated
+
       app.quit();
       return true;
-    default:
-      return false;
   }
 };
