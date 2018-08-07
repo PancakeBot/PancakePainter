@@ -1,6 +1,6 @@
 {
   "name": "pancakepainter-build",
-  "version": "0.1.0",
+  "version": "1.4.0",
   "license": "Apache-2.0",
   "author": "techninja",
   "description": "Build system for PancakePainter releases",
@@ -18,9 +18,9 @@
   },
   "optionalDependencies": {
     "grunt-appdmg": "^0.3.1",
-    "grunt-electron-installer": "^2.1.0",
     "grunt-electron-installer-debian": "^0.3.0",
-    "grunt-electron-installer-redhat": "^0.3.0"
+    "grunt-electron-installer-redhat": "^0.3.0",
+    "electron-winstaller": "^2.6.4"
   },
   "scripts": {
     "start": "grunt"

@@ -4,10 +4,11 @@
  * as long as the application runs.
  **/
 "use strict";
+if (require('electron-squirrel-startup')) return;
 const path = require('path');
 
 var app = require('electron').app;  // Module to control application life.
-var appPath = app.getAppPath() + '/';
+var appPath = app.getAppPath();
 var fs = require('fs-plus');
 var _ = require('underscore');
 
@@ -73,8 +74,8 @@ function settingsInit() {
   };
 
   // Global user configurable settings.
-  var settingsFile = appPath + 'settings.json';
-  var userSettingsFile = path.join(process.env.HOME, '.config/PancakePainter/config.json');
+  var settingsFile = path.join(appPath, 'settings.json');
+  var userSettingsFile = path.join(app.getPath('userData'), 'config.json');
   app.settings = {
     v: {}, // Values are saved to/from here
     defaults: {
@@ -170,9 +171,9 @@ function windowInit() {
         defaultNs: 'app'
       },
       // Path to find file
-      resGetPath: appPath + 'locales/__lng__/__ns__-__lng__.json',
+      resGetPath: path.join(appPath, 'locales', '__lng__', '__ns__-__lng__.json'),
       // Path to store file
-      resSetPath: appPath + 'locales/__lng__/__ns__-__lng__.json',
+      resSetPath: path.join(appPath, 'locales', '__lng__', '__ns__-__lng__.json'),
       sendMissingTo: 'fallback|current|all', // Send missing values to
       lng: 'en-US'
     }, function(){
@@ -183,7 +184,7 @@ function windowInit() {
         width: app.settings.v.window.width,
         height: app.settings.v.window.height,
         resizable: true,
-        icon: appPath + "resources/app.png",
+        icon: path.join(appPath, 'resources', 'app.png'),
         title: "PancakePainter",
         fullscreenable: false // Workaround for fullscreen OSX bug :'(
       };

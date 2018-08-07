@@ -1,33 +1,16 @@
 # PancakePainter!
 #### The super-simple drawing software for your PancakeBot.
 
-[![Join the chat at https://gitter.im/PancakePainter/Lobby](https://badges.gitter.im/PancakePainter/Lobby.svg)](https://gitter.im/PancakePainter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+### Download/Install [Latest release] - v1.4.0
+ * *Windows 7-10* ➤ [x32](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/Install_PancakePainter_Win_32bit_v1.4.0.exe) / [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/Install_PancakePainter_Win_64bit_v1.4.0.exe)
+ * *Mac OSX 10.8+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/PancakePainter_Mac_v1.4.0.dmg)
+ * *Linux x64:*\* ➤ [Ubuntu/Debian](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/PancakePainter_1.4.0_amd64.deb) / [Redhat RPM](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/PancakePainter_1.4.0.x86_64.rpm)
 
-### Download/Install [Latest release] - v1.2.0
- * *Windows 7-10* ➤ [x32](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/Install_PancakePainter_Win_32bit_v1.2.0-beta.exe) / [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/Install_PancakePainter_Win_64bit_v1.2.0-beta.exe)
- * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.2.0-Beta/PancakePainter_Mac_v1.2.0-Beta.zip)
- * *Linux:* No build, can run from source.
+ <sup>\*(requires [`autotrace`](http://packages.ubuntu.com/xenial/autotrace) system package)</sup>
 
 #### Check the [latest release page](https://github.com/PancakeBot/PancakePainter/releases/latest) for feature notes, known issues, and other details.
 
 ![PancakePainter](https://cloud.githubusercontent.com/assets/320747/10681916/96629bc8-78e3-11e5-99e6-4f6c3e13cc86.png)
-
-----
-
-#### PancakeBot is proud to present the latest pre-release version of Pancake Painter!
-Featuring a new automatic tracing functionality that makes drawing pancakes from
-pre-existing art much easier. Take your favorite cartoon, logo or photo, and
-turn them into tasty pancake art! Other new features include marquee selection
-& print preview. Give it a try at it and tell us what you think! We always are
-happy to hear your comments on how to improve the software and make your pancake
-art experience even better!
-
-![PancakePainter 1.3.0 Beta](https://cloud.githubusercontent.com/assets/320747/23157197/f7b6226c-f7ce-11e6-9cab-1eaacc071950.png)
-
-### Download/Install ***[Pre-release]*** - v1.3.0 Beta
- * *Windows 7-10* ➤ [x32](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/Install_PancakePainter_Win_32bit_v1.3.0-beta.exe) / [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/Install_PancakePainter_Win_64bit_v1.3.0-beta.exe)
- * *Mac OSX 10.7+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter_Mac_v1.3.0-Beta.dmg)
- * *Linux (requires [`autotrace`](http://packages.ubuntu.com/xenial/autotrace) system package)* ➤ [x64 Ubuntu/Debian DEB](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter_1.3.0_amd64.deb) / [x64 Redhat RPM](https://github.com/PancakeBot/PancakePainter/releases/download/v1.3.0-Beta/PancakePainter-1.3.0.x86_64.rpm)
 
 ----
 

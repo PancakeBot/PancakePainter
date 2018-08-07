@@ -7,7 +7,6 @@ module.exports = function(grunt) {
   // Load all platform specific tasks:
   switch (process.platform) {
     case 'win32':
-      grunt.loadNpmTasks('grunt-electron-installer');
       break;
 
     case 'darwin':

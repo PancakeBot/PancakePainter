@@ -10,7 +10,6 @@ module.exports = function(grunt) {
   var fsp = require('fs-plus');
   var path = require('path');
 
-
   grunt.registerTask('build', 'Build the release for the current system.', function(){
     // If we're on Win32, go ahead and run create-windows-installer
     switch (process.platform) {
@@ -52,7 +51,23 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('build-win-install', 'Create Windows Installer.', function(){
-    grunt.task.run('create-windows-installer:64', 'create-windows-installer:32', 'build-win-install-post');
+    var electronInstaller = require('electron-winstaller');
+    var config = conf('create-windows-installer');
+    var done = this.async();
+    console.log("Building ia32 installer...");
+
+    electronInstaller.createWindowsInstaller(config['32']).then(function() {
+      console.log("Completed ia32 installer build, building x64 installer...");
+      electronInstaller.createWindowsInstaller(config['64']).then(function(){
+        console.log("Completed x64 installer build successfully! Running post build.");
+        done();
+        grunt.task.run('build-win-install-post');
+      }, function(e) {
+        console.log(`x64 installer build failure: ${e.message}`);
+      });
+    }, function(e) {
+      console.log(`ia32 installer build failure: ${e.message}`);
+    });
   });
 
   grunt.registerTask('build-win-install-post', 'Create Windows installer post cleanup.', function(){
