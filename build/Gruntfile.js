@@ -180,6 +180,8 @@ module.exports = function(grunt) {
         categories: appInfo.releaseInfo.categories,
         version: numericVersion,
         revision: appInfo.version.split('-')[1],
+        homepage: 'https://github.com/PancakeBot/PancakePainter',
+        license: 'ASL 2.0',
       },
       linux64: {
         options: {
