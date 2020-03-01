@@ -1,7 +1,7 @@
 # PancakePainter!
 #### The super-simple drawing software for your PancakeBot.
 
-### Download/Install [Latest release] - v1.4.0
+### Download/Install [Latest release] - v1.5.0
  * *Windows 7-10* ➤ [x32](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/Install_PancakePainter_Win_32bit_v1.4.0.exe) / [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/Install_PancakePainter_Win_64bit_v1.4.0.exe)
  * *Mac OSX 10.8+* ➤ [x64](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/PancakePainter_Mac_v1.4.0.dmg)
  * *Linux x64:*\* ➤ [Ubuntu/Debian](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/PancakePainter_1.4.0_amd64.deb) / [Redhat RPM](https://github.com/PancakeBot/PancakePainter/releases/download/v1.4.0/PancakePainter_1.4.0.x86_64.rpm)
@@ -92,7 +92,7 @@ environment setup to start hacking.
 
 ### Local Run Prerequisites
 
-#### Node.js (4.x+) & npm
+#### Node.js (>4.x to <7.x) & npm
 Required for automated builds and node module install. Electron uses Node.js
 and npm to manage running and packages. See [nodejs.org](http://nodejs.org) for
 installation for your operating system. `npm` is installed along with it. If you
