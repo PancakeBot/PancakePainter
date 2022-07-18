@@ -1,0 +1,28 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  example_matrix:
+    strategy:
+      matrix:
+#        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]        
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ 4.0 }}
+    - uses: actions/checkout@v2
+    - name: install deps
+      run: |
+        apt-get install npm node-grunt-cli 
+        npm install --force
+        npm install grunt-electron grunt-electron-installer-debian grunt-electron-installer-redhat
+    - name: build
+      run: |
+        grunt --base build
